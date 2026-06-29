@@ -16,7 +16,10 @@ import re
 from datetime import datetime, timedelta
 from pathlib import Path
 
-import pymupdf
+try:
+    import pymupdf
+except ImportError:
+    pymupdf = None
 
 logger = logging.getLogger(__name__)
 
@@ -279,6 +282,8 @@ def _find_widget(page: pymupdf.Page, suffix: str):
 
 def fill_visa_form(info: dict) -> bytes:
     """Fill the official MOFA visa application form with personal_info data."""
+    if pymupdf is None:
+        raise RuntimeError("pymupdf not installed")
     doc = pymupdf.open(str(VISA_BLANK))
     page1 = doc[0]
 
@@ -431,6 +436,8 @@ def _fill_visa_page2(page2, info: dict):
 
 def fill_schedule(info: dict) -> bytes:
     """Fill the MOFA schedule-of-stay form with day-by-day travel data."""
+    if pymupdf is None:
+        raise RuntimeError("pymupdf not installed")
     doc = pymupdf.open(str(SCHEDULE_BLANK))
     page = doc[0]
 
