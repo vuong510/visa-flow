@@ -1,6 +1,5 @@
 [build]
 builder = "nixpacks"
-buildCommand = "cd visa-client && npm ci && npm run build"
 
 [deploy]
 healthcheckPath = "/health"
