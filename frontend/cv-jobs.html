@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CV → Jobs — Skill Extractor</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #08080f;
+  --surface:   #0e0e1b;
+  --card:      #131322;
+  --card2:     #18182a;
+  --border:    #1e1e30;
+  --border2:   #252540;
+  --t1:        #e4e4f4;
+  --t2:        #7070a0;
+  --t3:        #38385a;
+  --brand:     #6366f1;
+  --brand-dim: rgba(99,102,241,.14);
+  --green:     #22c55e;
+  --green-dim: rgba(34,197,94,.12);
+  --amber:     #f59e0b;
+  --cyan:      #22d3ee;
+  --cyan-dim:  rgba(34,211,238,.12);
+  --violet:    #a78bfa;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh}
+
+/* Drop zone */
+.drop-zone{
+  border:2px dashed var(--border2);
+  border-radius:16px;
+  padding:48px 32px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .2s;
+  background:var(--card);
+}
+.drop-zone:hover,.drop-zone.drag-over{
+  border-color:var(--brand);
+  background:var(--brand-dim);
+}
+.drop-zone.drag-over{transform:scale(1.01)}
+
+/* Skill pill */
+.skill-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:999px;
+  font-size:13px;font-weight:600;
+  background:var(--brand-dim);color:var(--brand);
+  border:1px solid rgba(99,102,241,.3);
+  animation:popIn .25s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+
+/* Job card */
+.job-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:18px 20px;
+  transition:all .15s;
+  animation:slideUp .3s ease;
+}
+.job-card:hover{border-color:var(--border2);background:var(--card2);transform:translateY(-1px)}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* Source badges */
+.badge-remotive{background:rgba(34,197,94,.12);color:#22c55e;border-color:rgba(34,197,94,.3)}
+.badge-linkedin{background:rgba(10,102,194,.15);color:#5aabff;border-color:rgba(10,102,194,.3)}
+.badge-indeed{background:rgba(35,97,200,.15);color:#74b0ff;border-color:rgba(35,97,200,.3)}
+.badge-glassdoor{background:rgba(116,215,108,.1);color:#74d76c;border-color:rgba(116,215,108,.3)}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid transparent}
+
+/* Step indicator */
+.step{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--t3);transition:color .3s}
+.step.active{color:var(--t1)}
+.step.done{color:var(--green)}
+.step-dot{width:28px;height:28px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;transition:all .3s}
+.step.done .step-dot{background:var(--green);border-color:var(--green);color:#fff}
+.step.active .step-dot{border-color:var(--brand);color:var(--brand);box-shadow:0 0 0 4px var(--brand-dim)}
+
+/* Spinner */
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border2);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Progress bar */
+.progress-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--brand),var(--violet));border-radius:2px;transition:width .5s ease}
+
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:inherit}
+.btn-primary{background:var(--brand);color:#fff}.btn-primary:hover{background:#4f46e5}
+.btn-ghost{background:var(--card2);color:var(--t1);border:1px solid var(--border2)}.btn-ghost:hover{border-color:var(--border);background:var(--card)}
+
+input[type=file]{display:none}
+
+.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500;background:var(--card2);color:var(--t2);border:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav style="background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:16px">
+  <a href="/" style="color:var(--t2);font-size:13px;text-decoration:none;display:flex;align-items:center;gap:6px">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    VisaFlow
+  </a>
+  <span style="color:var(--t3)">›</span>
+  <span style="color:var(--t1);font-size:13px;font-weight:600">CV → Jobs</span>
+</nav>
+
+<div style="max-width:860px;margin:0 auto;padding:40px 24px">
+
+  <!-- Header -->
+  <div style="margin-bottom:36px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+      <div style="width:40px;height:40px;border-radius:12px;background:var(--brand-dim);display:flex;align-items:center;justify-content:center">
+        <svg width="20" height="20" fill="none" stroke="var(--brand)" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <div>
+        <h1 style="font-size:22px;font-weight:700;color:var(--t1)">CV Skill Extractor & Job Finder</h1>
+        <p style="font-size:13px;color:var(--t2);margin-top:2px">Upload your CV → Claude extracts your skills → Find matching jobs</p>
+      </div>
+    </div>
+    <div class="progress-bar" style="margin-top:20px">
+      <div class="progress-fill" id="progressBar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Steps -->
+  <div style="display:flex;gap:32px;margin-bottom:36px;flex-wrap:wrap">
+    <div class="step active" id="step1">
+      <div class="step-dot">1</div>
+      <span>Upload CV</span>
+    </div>
+    <div style="flex:1;height:2px;background:var(--border);margin:auto;min-width:24px"></div>
+    <div class="step" id="step2">
+      <div class="step-dot">2</div>
+      <span>Extract Skills</span>
+    </div>
+    <div style="flex:1;height:2px;background:var(--border);margin:auto;min-width:24px"></div>
+    <div class="step" id="step3">
+      <div class="step-dot">3</div>
+      <span>Find Jobs</span>
+    </div>
+  </div>
+
+  <!-- SECTION 1: Upload -->
+  <div id="sectionUpload">
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+      <input type="file" id="fileInput" accept=".pdf,.txt,.doc,.docx">
+      <div id="dropContent">
+        <svg width="48" height="48" fill="none" stroke="var(--t3)" stroke-width="1.5" viewBox="0 0 24 24" style="margin:0 auto 16px">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <p style="font-size:16px;font-weight:600;color:var(--t1);margin-bottom:6px">Drop your CV here</p>
+        <p style="font-size:13px;color:var(--t2)">or click to browse — PDF, TXT, DOC supported</p>
+        <p style="font-size:11px;color:var(--t3);margin-top:8px">Powered by Claude AI · Your data is not stored</p>
+      </div>
+      <div id="dropSelected" style="display:none">
+        <svg width="40" height="40" fill="none" stroke="var(--brand)" stroke-width="1.5" viewBox="0 0 24 24" style="margin:0 auto 12px">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        <p style="font-size:15px;font-weight:600;color:var(--brand)" id="selectedFileName"></p>
+        <p style="font-size:12px;color:var(--t2);margin-top:4px" id="selectedFileSize"></p>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-primary" id="btnExtract" disabled onclick="extractSkills()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg>
+        Extract Skills with Claude
+      </button>
+    </div>
+    <div id="extractError" style="display:none;margin-top:12px;padding:12px 16px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;font-size:13px;color:#ef4444"></div>
+  </div>
+
+  <!-- SECTION 2: Skills -->
+  <div id="sectionSkills" style="display:none;margin-top:32px">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)"></div>
+          <span style="font-size:14px;font-weight:600;color:var(--t1)">Core Skills Extracted</span>
+        </div>
+        <span id="skillCount" style="font-size:12px;color:var(--t2)"></span>
+      </div>
+      <div id="skillsContainer" style="display:flex;flex-wrap:wrap;gap:10px"></div>
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:gap;gap:12px">
+        <p style="font-size:12px;color:var(--t2)">Ready to search jobs based on these skills</p>
+        <button class="btn btn-primary" id="btnSearch" onclick="searchJobs()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Search Jobs
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: Jobs -->
+  <div id="sectionJobs" style="display:none;margin-top:32px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+      <div>
+        <h2 style="font-size:16px;font-weight:700;color:var(--t1)">Job Matches</h2>
+        <p style="font-size:12px;color:var(--t2);margin-top:2px" id="jobSubtitle"></p>
+      </div>
+      <button class="btn btn-ghost" onclick="resetAll()" style="font-size:12px">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Start Over
+      </button>
+    </div>
+
+    <!-- Loading state -->
+    <div id="jobsLoading" style="display:none;text-align:center;padding:48px">
+      <div class="spinner" style="width:32px;height:32px;margin:0 auto 16px"></div>
+      <p style="color:var(--t2);font-size:13px">Searching for matching jobs…</p>
+    </div>
+
+    <div id="jobsGrid" style="display:flex;flex-direction:column;gap:12px"></div>
+  </div>
+
+</div>
+
+<script>
+let selectedFile = null;
+let extractedSkills = [];
+
+// ── Drag & Drop ──────────────────────────────────────────────────
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+['dragenter','dragover'].forEach(e => dropZone.addEventListener(e, ev => {
+  ev.preventDefault(); dropZone.classList.add('drag-over');
+}));
+['dragleave','drop'].forEach(e => dropZone.addEventListener(e, ev => {
+  ev.preventDefault(); dropZone.classList.remove('drag-over');
+}));
+dropZone.addEventListener('drop', ev => {
+  const f = ev.dataTransfer.files[0];
+  if (f) setFile(f);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files[0]) setFile(fileInput.files[0]);
+});
+
+function setFile(f) {
+  selectedFile = f;
+  document.getElementById('dropContent').style.display = 'none';
+  document.getElementById('dropSelected').style.display = 'block';
+  document.getElementById('selectedFileName').textContent = f.name;
+  document.getElementById('selectedFileSize').textContent = formatBytes(f.size);
+  document.getElementById('btnExtract').disabled = false;
+  document.getElementById('extractError').style.display = 'none';
+}
+
+function formatBytes(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(1) + ' MB';
+}
+
+// ── Extract Skills ──────────────────────────────────────────────
+async function extractSkills() {
+  if (!selectedFile) return;
+
+  const btn = document.getElementById('btnExtract');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Analyzing with Claude…';
+  document.getElementById('extractError').style.display = 'none';
+  setProgress(30);
+
+  try {
+    const fd = new FormData();
+    fd.append('file', selectedFile);
+
+    const resp = await fetch('/api/v1/cv/extract-skills', { method: 'POST', body: fd });
+    const data = await resp.json();
+
+    if (!resp.ok) throw new Error(data.detail || 'Extraction failed');
+
+    extractedSkills = data.skills;
+    showSkills(extractedSkills);
+    setProgress(60);
+    markStep(1, 'done');
+    markStep(2, 'active');
+  } catch (err) {
+    document.getElementById('extractError').style.display = 'block';
+    document.getElementById('extractError').textContent = '⚠ ' + err.message;
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg> Extract Skills with Claude';
+    setProgress(0);
+  }
+}
+
+function showSkills(skills) {
+  document.getElementById('sectionSkills').style.display = 'block';
+  document.getElementById('skillCount').textContent = skills.length + ' skills found';
+  const container = document.getElementById('skillsContainer');
+  container.innerHTML = '';
+  skills.forEach((s, i) => {
+    const pill = document.createElement('div');
+    pill.className = 'skill-pill';
+    pill.style.animationDelay = (i * 40) + 'ms';
+    pill.innerHTML = `
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      ${escHtml(s)}
+    `;
+    container.appendChild(pill);
+  });
+  document.getElementById('sectionSkills').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── Search Jobs ────────────────────────────────────────────────
+async function searchJobs() {
+  document.getElementById('sectionJobs').style.display = 'block';
+  document.getElementById('jobsLoading').style.display = 'block';
+  document.getElementById('jobsGrid').innerHTML = '';
+  document.getElementById('btnSearch').disabled = true;
+  setProgress(80);
+  markStep(2, 'done');
+  markStep(3, 'active');
+  document.getElementById('sectionJobs').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  try {
+    const resp = await fetch('/api/v1/cv/search-jobs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ skills: extractedSkills }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.detail || 'Search failed');
+
+    renderJobs(data.jobs || []);
+    setProgress(100);
+    markStep(3, 'done');
+  } catch (err) {
+    document.getElementById('jobsGrid').innerHTML =
+      `<div style="padding:20px;color:#ef4444;font-size:13px">⚠ ${escHtml(err.message)}</div>`;
+  } finally {
+    document.getElementById('jobsLoading').style.display = 'none';
+  }
+}
+
+function renderJobs(jobs) {
+  const grid = document.getElementById('jobsGrid');
+  grid.innerHTML = '';
+  document.getElementById('jobSubtitle').textContent = jobs.length + ' positions found across job boards';
+
+  if (!jobs.length) {
+    grid.innerHTML = '<div style="color:var(--t2);font-size:13px;padding:20px 0">No jobs found. Try refining your skills.</div>';
+    return;
+  }
+
+  jobs.forEach((j, i) => {
+    const card = document.createElement('div');
+    card.className = 'job-card';
+    card.style.animationDelay = (i * 50) + 'ms';
+
+    const sourceCls = {
+      'Remotive': 'badge-remotive',
+      'LinkedIn': 'badge-linkedin',
+      'Indeed':   'badge-indeed',
+      'Glassdoor':'badge-glassdoor',
+    }[j.source] || '';
+
+    const tagsHtml = (j.tags || []).slice(0, 4).map(t =>
+      `<span class="tag">${escHtml(t)}</span>`
+    ).join('');
+
+    card.innerHTML = `
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+            <span class="badge ${sourceCls}">${escHtml(j.source)}</span>
+            ${j.location ? `<span style="font-size:11px;color:var(--t2)">📍 ${escHtml(j.location)}</span>` : ''}
+          </div>
+          <h3 style="font-size:14px;font-weight:600;color:var(--t1);margin-bottom:2px">${escHtml(j.title)}</h3>
+          <p style="font-size:12px;color:var(--t2)">${escHtml(j.company)}</p>
+          ${tagsHtml ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">${tagsHtml}</div>` : ''}
+        </div>
+        <a href="${escAttr(j.url)}" target="_blank" rel="noopener noreferrer"
+           style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--brand-dim);color:var(--brand);border:1px solid rgba(99,102,241,.3);border-radius:8px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0;transition:all .15s"
+           onmouseover="this.style.background='var(--brand)';this.style.color='#fff'"
+           onmouseout="this.style.background='var(--brand-dim)';this.style.color='var(--brand)'">
+          Apply
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ── Utils ───────────────────────────────────────────────────────
+function setProgress(pct) {
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function markStep(n, state) {
+  const el = document.getElementById('step' + n);
+  el.className = 'step ' + state;
+  if (state === 'done') {
+    el.querySelector('.step-dot').innerHTML = `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+  }
+}
+
+function resetAll() {
+  location.reload();
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) {
+  return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+</script>
+</body>
+</html>
