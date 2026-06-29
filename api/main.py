@@ -33,16 +33,29 @@ app.include_router(cv_jobs_router, prefix="/api/v1")
 app.include_router(visa_router, prefix="/api")
 
 FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
+REACT_DIST = Path(__file__).parent.parent / "visa-client" / "dist"
+
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
-@app.get("/")
-def root():
-    return FileResponse(FRONTEND_DIR / "index.html")
+if REACT_DIST.exists():
+    app.mount("/assets", StaticFiles(directory=str(REACT_DIST / "assets")), name="react-assets")
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
 @app.get("/cv-jobs")
 def cv_jobs_page():
     return FileResponse(FRONTEND_DIR / "cv-jobs.html")
 
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+@app.get("/")
+def root():
+    if REACT_DIST.exists():
+        return FileResponse(REACT_DIST / "index.html")
+    return FileResponse(FRONTEND_DIR / "index.html")
+
+@app.get("/{full_path:path}")
+def spa_fallback(full_path: str):
+    if REACT_DIST.exists():
+        return FileResponse(REACT_DIST / "index.html")
+    return FileResponse(FRONTEND_DIR / "index.html")
