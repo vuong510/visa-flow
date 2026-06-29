@@ -41,7 +41,8 @@ function ReadinessBanner({ uploaded, total, allPass }) {
 }
 
 export default function ChecklistScreen() {
-  const { applicationId, API_BASE, navigate, checklist: ctxChecklist, setChecklist: setCtxChecklist } = useApp()
+  const { applicationId, API_BASE, navigate, destination, checklist: ctxChecklist, setChecklist: setCtxChecklist } = useApp()
+  const [downloading, setDownloading] = useState(false)
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -139,6 +140,25 @@ export default function ChecklistScreen() {
   const uploadedCount = uploadedItems.length
   const allPass = uploadedCount === items.length && items.length > 0 && items.every(item => docs[item.id]?.status === 'pass')
 
+  async function handleDownloadForms() {
+    setDownloading(true)
+    try {
+      const res = await fetch(`${API_BASE}/api/application/${applicationId}/forms/download`)
+      if (!res.ok) throw new Error()
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'visa-forms.zip'
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      alert('Không thể tải form. Vui lòng thử lại.')
+    } finally {
+      setDownloading(false)
+    }
+  }
+
   async function handleSubmit() {
     setSubmitting(true)
     try {
@@ -165,6 +185,24 @@ export default function ChecklistScreen() {
           <div style={{ padding: '24px 20px', textAlign: 'center' }}>
             <p style={{ color: '#991b1b', marginBottom: 16 }}>{error}</p>
             <CTAButton label="Thử lại" onClick={() => { setError(''); setLoading(true); loadChecklist() }} />
+          </div>
+        )}
+
+        {!loading && !error && destination === 'japan' && (
+          <div style={{ padding: '16px 20px 0' }}>
+            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+              <div>
+                <p style={{ fontWeight: 600, fontSize: 14, color: '#1e40af', marginBottom: 2 }}>Đơn xin visa + Lịch trình</p>
+                <p style={{ fontSize: 12, color: '#3b82f6' }}>Tải form MOFA đã điền sẵn thông tin</p>
+              </div>
+              <button
+                onClick={handleDownloadForms}
+                disabled={downloading}
+                style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: downloading ? 'not-allowed' : 'pointer', opacity: downloading ? 0.6 : 1, whiteSpace: 'nowrap' }}
+              >
+                {downloading ? 'Đang tải...' : '⬇ Tải xuống'}
+              </button>
+            </div>
           </div>
         )}
 
