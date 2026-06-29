@@ -6,6 +6,7 @@ import CTAButton from '../components/CTAButton'
 import BottomSheet from '../components/BottomSheet'
 import DocumentItem from '../components/DocumentItem'
 import { useApp } from '../context/AppContext'
+import PersonalInfoModal from '../components/PersonalInfoModal'
 
 function SkeletonList() {
   return (
@@ -43,6 +44,7 @@ function ReadinessBanner({ uploaded, total, allPass }) {
 export default function ChecklistScreen() {
   const { applicationId, API_BASE, navigate, destination, checklist: ctxChecklist, setChecklist: setCtxChecklist } = useApp()
   const [downloading, setDownloading] = useState(false)
+  const [showFormModal, setShowFormModal] = useState(false)
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -140,10 +142,14 @@ export default function ChecklistScreen() {
   const uploadedCount = uploadedItems.length
   const allPass = uploadedCount === items.length && items.length > 0 && items.every(item => docs[item.id]?.status === 'pass')
 
-  async function handleDownloadForms() {
+  async function handleDownloadForms(personalInfo) {
     setDownloading(true)
     try {
-      const res = await fetch(`${API_BASE}/api/application/${applicationId}/forms/download`)
+      const res = await fetch(`${API_BASE}/api/application/${applicationId}/forms/download`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ personal_info: personalInfo }),
+      })
       if (!res.ok) throw new Error()
       const blob = await res.blob()
       const url = URL.createObjectURL(blob)
@@ -152,8 +158,9 @@ export default function ChecklistScreen() {
       a.download = 'visa-forms.zip'
       a.click()
       URL.revokeObjectURL(url)
+      setShowFormModal(false)
     } catch {
-      alert('Không thể tải form. Vui lòng thử lại.')
+      alert('Không thể tạo form. Vui lòng thử lại.')
     } finally {
       setDownloading(false)
     }
@@ -196,7 +203,7 @@ export default function ChecklistScreen() {
                 <p style={{ fontSize: 12, color: '#3b82f6' }}>Tải form MOFA đã điền sẵn thông tin</p>
               </div>
               <button
-                onClick={handleDownloadForms}
+                onClick={() => setShowFormModal(true)}
                 disabled={downloading}
                 style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: downloading ? 'not-allowed' : 'pointer', opacity: downloading ? 0.6 : 1, whiteSpace: 'nowrap' }}
               >
@@ -242,6 +249,14 @@ export default function ChecklistScreen() {
             disabled={submitting}
           />
         </BottomActionArea>
+      )}
+
+      {showFormModal && (
+        <PersonalInfoModal
+          loading={downloading}
+          onClose={() => setShowFormModal(false)}
+          onSubmit={handleDownloadForms}
+        />
       )}
 
       {detailItem && (

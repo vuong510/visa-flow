@@ -1,0 +1,6 @@
+project_name: "AI Visa Consulting Flow"
+user_name: "vuongnguyen"
+communication_language: "Vietnamese"
+document_output_language: "Vietnamese"
+user_skill_level: "senior"
+implementation_artifacts: "_bmad-output/implementation-artifacts"

@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VisaFlow AI — Brainstorm Session</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080c14;
+    --surface: #0d1420;
+    --surface2: #111827;
+    --border: #1e2d45;
+    --blue: #00c2ff;
+    --blue-dim: #0077aa;
+    --green: #00ff88;
+    --green-dim: #00994d;
+    --orange: #ff6b35;
+    --red: #da251d;
+    --yellow: #ffd700;
+    --white: #f0f4ff;
+    --muted: #6b7a9b;
+    --text: #c8d6f0;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── NOISE TEXTURE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.5;
+  }
+
+  /* ─── TYPOGRAPHY ─── */
+  h1 { font-size: clamp(2.4rem, 6vw, 5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+  h2 { font-size: clamp(1.4rem, 3vw, 2.2rem); font-weight: 700; letter-spacing: -0.02em; }
+  h3 { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.01em; }
+  .label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; }
+  .mono { font-family: 'SF Mono', 'Fira Code', monospace; }
+
+  /* ─── LAYOUT ─── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 80px 0; }
+
+  /* ─── GRADIENT TEXT ─── */
+  .grad-blue { background: linear-gradient(135deg, #00c2ff, #0077ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .grad-green { background: linear-gradient(135deg, #00ff88, #00c2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .grad-fire { background: linear-gradient(135deg, #ffd700, #ff6b35, #da251d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 120px 0 80px;
+  }
+
+  #hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(0,194,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  #hero::after {
+    content: '';
+    position: absolute;
+    bottom: -150px; left: -150px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(0,255,136,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 24px;
+  }
+  .hero-badge {
+    background: rgba(0,194,255,0.12);
+    border: 1px solid rgba(0,194,255,0.25);
+    color: var(--blue);
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .hero-date { color: var(--muted); font-size: 0.78rem; font-weight: 500; }
+
+  .hero-title { margin-bottom: 24px; }
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--muted);
+    max-width: 620px;
+    margin-bottom: 48px;
+    line-height: 1.7;
+  }
+
+  .hero-stats {
+    display: flex; gap: 48px; flex-wrap: wrap;
+  }
+  .stat-item { }
+  .stat-num {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label { color: var(--muted); font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .scroll-cue {
+    position: absolute;
+    bottom: 40px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    animation: bounce 2s infinite;
+  }
+  .scroll-cue svg { opacity: 0.5; }
+  @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+
+  /* ─── SECTION HEADER ─── */
+  .section-header { margin-bottom: 56px; }
+  .section-header .label { color: var(--blue); margin-bottom: 12px; }
+  .section-header h2 { color: var(--white); margin-bottom: 12px; }
+  .section-header p { color: var(--muted); max-width: 540px; }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0;
+  }
+
+  /* ─── TECHNIQUES GRID ─── */
+  .techniques-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
+  .technique-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.25s, transform 0.25s;
+  }
+  .technique-card:hover { border-color: rgba(0,194,255,0.4); transform: translateY(-2px); }
+  .technique-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .tc-first-principles::before { background: linear-gradient(90deg, #00c2ff, #0077ff); }
+  .tc-reverse::before { background: linear-gradient(90deg, #ff6b35, #da251d); }
+  .tc-assumption::before { background: linear-gradient(90deg, #ffd700, #ff6b35); }
+  .tc-friction::before { background: linear-gradient(90deg, #a855f7, #6366f1); }
+  .tc-empathy::before { background: linear-gradient(90deg, #00ff88, #00c2ff); }
+  .tc-roleplaying::before { background: linear-gradient(90deg, #f472b6, #a855f7); }
+  .tc-triz::before { background: linear-gradient(90deg, #22d3ee, #0ea5e9); }
+  .tc-scifi::before { background: linear-gradient(90deg, #ffd700, #00ff88); }
+
+  .technique-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+  }
+
+  .tc-first-principles .technique-icon { background: rgba(0,194,255,0.12); }
+  .tc-reverse .technique-icon { background: rgba(255,107,53,0.12); }
+  .tc-assumption .technique-icon { background: rgba(255,215,0,0.12); }
+  .tc-friction .technique-icon { background: rgba(168,85,247,0.12); }
+  .tc-empathy .technique-icon { background: rgba(0,255,136,0.12); }
+  .tc-roleplaying .technique-icon { background: rgba(244,114,182,0.12); }
+  .tc-triz .technique-icon { background: rgba(34,211,238,0.12); }
+  .tc-scifi .technique-icon { background: rgba(255,215,0,0.12); }
+
+  .technique-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.65;
+  }
+  .tc-first-principles .technique-tag { color: var(--blue); }
+  .tc-reverse .technique-tag { color: var(--orange); }
+  .tc-assumption .technique-tag { color: var(--yellow); }
+  .tc-friction .technique-tag { color: #a855f7; }
+  .tc-empathy .technique-tag { color: var(--green); }
+  .tc-roleplaying .technique-tag { color: #f472b6; }
+  .tc-triz .technique-tag { color: #22d3ee; }
+  .tc-scifi .technique-tag { color: var(--yellow); }
+
+  .technique-card h3 { color: var(--white); margin-bottom: 10px; }
+  .technique-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.65; margin-bottom: 16px; }
+
+  .idea-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill {
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    border-radius: 100px;
+    border: 1px solid;
+    font-weight: 600;
+  }
+  .tc-first-principles .pill { color: var(--blue); border-color: rgba(0,194,255,0.3); background: rgba(0,194,255,0.06); }
+  .tc-reverse .pill { color: var(--orange); border-color: rgba(255,107,53,0.3); background: rgba(255,107,53,0.06); }
+  .tc-assumption .pill { color: var(--yellow); border-color: rgba(255,215,0,0.3); background: rgba(255,215,0,0.06); }
+  .tc-friction .pill { color: #a855f7; border-color: rgba(168,85,247,0.3); background: rgba(168,85,247,0.06); }
+  .tc-empathy .pill { color: var(--green); border-color: rgba(0,255,136,0.3); background: rgba(0,255,136,0.06); }
+  .tc-roleplaying .pill { color: #f472b6; border-color: rgba(244,114,182,0.3); background: rgba(244,114,182,0.06); }
+  .tc-triz .pill { color: #22d3ee; border-color: rgba(34,211,238,0.3); background: rgba(34,211,238,0.06); }
+  .tc-scifi .pill { color: var(--yellow); border-color: rgba(255,215,0,0.3); background: rgba(255,215,0,0.06); }
+
+  /* ─── INSIGHTS BAND ─── */
+  #insights { background: var(--surface); padding: 80px 0; }
+
+  .insights-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+
+  .insight-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    position: relative;
+  }
+  .insight-card.featured {
+    border-color: rgba(0,194,255,0.35);
+    background: rgba(0,194,255,0.04);
+  }
+  .insight-card.featured-green {
+    border-color: rgba(0,255,136,0.35);
+    background: rgba(0,255,136,0.04);
+  }
+  .insight-card.featured-orange {
+    border-color: rgba(255,107,53,0.35);
+    background: rgba(255,107,53,0.04);
+  }
+  .insight-card.featured-yellow {
+    border-color: rgba(255,215,0,0.35);
+    background: rgba(255,215,0,0.04);
+  }
+  .insight-card.featured-purple {
+    border-color: rgba(168,85,247,0.35);
+    background: rgba(168,85,247,0.04);
+  }
+
+  .insight-number {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 12px;
+    opacity: 0.12;
+    position: absolute;
+    top: 16px; right: 20px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .insight-card .label { margin-bottom: 8px; }
+  .insight-card.featured .label { color: var(--blue); }
+  .insight-card.featured-green .label { color: var(--green); }
+  .insight-card.featured-orange .label { color: var(--orange); }
+  .insight-card.featured-yellow .label { color: var(--yellow); }
+  .insight-card.featured-purple .label { color: #a855f7; }
+
+  .insight-text {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  .insight-sub { font-size: 0.82rem; color: var(--muted); line-height: 1.55; }
+
+  /* ─── BIG QUOTE ─── */
+  .big-quote-block {
+    margin: 32px 0;
+    padding: 32px 40px;
+    border-left: 4px solid var(--blue);
+    background: rgba(0,194,255,0.04);
+    border-radius: 0 12px 12px 0;
+  }
+  .big-quote-block blockquote {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+  }
+  .big-quote-block .quote-attr { color: var(--muted); font-size: 0.8rem; margin-top: 12px; font-weight: 600; }
+
+  /* ─── AI PIPELINE ─── */
+  #pipeline { overflow: hidden; }
+
+  .pipeline-wrapper {
+    margin-top: 20px;
+    position: relative;
+  }
+
+  .pipeline-track {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .pipeline-track::-webkit-scrollbar { height: 4px; }
+  .pipeline-track::-webkit-scrollbar-track { background: transparent; }
+  .pipeline-track::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .pipeline-step {
+    flex: 0 0 200px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 20px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+  .pipeline-step:hover { border-color: var(--blue-dim); }
+
+  .pipeline-arrow {
+    flex: 0 0 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--border);
+    font-size: 1.4rem;
+    position: relative;
+    z-index: 1;
+  }
+  .pipeline-arrow::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), rgba(0,194,255,0.4), var(--border));
+    transform: translateY(-50%);
+  }
+  .pipeline-arrow svg { background: var(--bg); padding: 4px; z-index: 1; position: relative; }
+
+  .step-num {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 10px;
+  }
+  .step-icon { font-size: 1.8rem; margin-bottom: 10px; }
+  .step-title { font-size: 0.95rem; font-weight: 800; color: var(--white); margin-bottom: 8px; }
+  .step-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.55; }
+  .step-badge {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 100px;
+  }
+  .badge-ai { background: rgba(0,194,255,0.12); color: var(--blue); border: 1px solid rgba(0,194,255,0.2); }
+  .badge-critical { background: rgba(0,255,136,0.12); color: var(--green); border: 1px solid rgba(0,255,136,0.2); }
+  .badge-hard { background: rgba(255,107,53,0.12); color: var(--orange); border: 1px solid rgba(255,107,53,0.2); }
+  .badge-key { background: rgba(255,215,0,0.12); color: var(--yellow); border: 1px solid rgba(255,215,0,0.2); }
+
+  .step-gate {
+    position: absolute;
+    top: -10px; right: 12px;
+    background: var(--green);
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 100px;
+  }
+
+  /* ─── PIPELINE ANNOTATION ─── */
+  .pipeline-note {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .pnote {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .pnote strong { color: var(--white); display: block; margin-bottom: 4px; font-size: 0.82rem; }
+
+  /* ─── BUSINESS MODEL ─── */
+  #bizmodel { background: var(--surface); }
+
+  .biz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 700px) { .biz-grid { grid-template-columns: 1fr; } }
+
+  .biz-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+  }
+
+  .b2b2c-diagram {
+    margin: 32px 0;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+  }
+  .b2b2c-layers {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .b2b2c-layer {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: 1px solid;
+  }
+  .layer-consumer { border-color: rgba(0,194,255,0.3); background: rgba(0,194,255,0.05); }
+  .layer-brand { border-color: rgba(0,255,136,0.3); background: rgba(0,255,136,0.05); }
+  .layer-agency { border-color: rgba(255,215,0,0.25); background: rgba(255,215,0,0.04); }
+  .layer-embassy { border-color: var(--border); background: rgba(255,255,255,0.02); }
+
+  .layer-icon { font-size: 1.6rem; flex-shrink: 0; }
+  .layer-info { flex: 1; }
+  .layer-title { font-weight: 800; font-size: 0.95rem; margin-bottom: 2px; }
+  .layer-consumer .layer-title { color: var(--blue); }
+  .layer-brand .layer-title { color: var(--green); }
+  .layer-agency .layer-title { color: var(--yellow); }
+  .layer-embassy .layer-title { color: var(--muted); }
+  .layer-desc { font-size: 0.78rem; color: var(--muted); }
+  .layer-tag {
+    font-size: 0.65rem; font-weight: 800;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 100px;
+    white-space: nowrap;
+  }
+  .layer-consumer .layer-tag { background: rgba(0,194,255,0.12); color: var(--blue); }
+  .layer-brand .layer-tag { background: rgba(0,255,136,0.12); color: var(--green); }
+  .layer-agency .layer-tag { background: rgba(255,215,0,0.1); color: var(--yellow); }
+  .layer-embassy .layer-tag { background: var(--border); color: var(--muted); }
+
+  .b2b2c-connector { text-align: center; color: var(--muted); font-size: 0.75rem; letter-spacing: 0.05em; padding: 4px 0; }
+
+  /* ─── CONSTRAINTS ─── */
+  .constraints-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 600px) { .constraints-grid { grid-template-columns: 1fr; } }
+
+  .constraint-item {
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .constraint-item.accept { border-color: rgba(107,122,155,0.3); }
+  .constraint-item.fight { border-color: rgba(0,255,136,0.25); background: rgba(0,255,136,0.03); }
+
+  .constraint-label { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; }
+  .constraint-item.accept .constraint-label { color: var(--muted); }
+  .constraint-item.fight .constraint-label { color: var(--green); }
+  .constraint-item p { font-size: 0.85rem; color: var(--text); }
+
+  /* ─── MOSCOW ─── */
+  #moscow { }
+
+  .moscow-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  @media (max-width: 700px) { .moscow-grid { grid-template-columns: 1fr; } }
+
+  .moscow-card {
+    border-radius: 14px;
+    padding: 24px;
+    border: 1px solid;
+  }
+  .moscow-must { border-color: rgba(0,255,136,0.35); background: rgba(0,255,136,0.04); }
+  .moscow-should { border-color: rgba(0,194,255,0.25); background: rgba(0,194,255,0.03); }
+  .moscow-could { border-color: rgba(255,215,0,0.2); background: rgba(255,215,0,0.03); }
+  .moscow-wont { border-color: rgba(107,122,155,0.2); background: rgba(107,122,155,0.03); }
+
+  .moscow-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .moscow-letter {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 1.1rem;
+  }
+  .moscow-must .moscow-letter { background: rgba(0,255,136,0.15); color: var(--green); }
+  .moscow-should .moscow-letter { background: rgba(0,194,255,0.15); color: var(--blue); }
+  .moscow-could .moscow-letter { background: rgba(255,215,0,0.12); color: var(--yellow); }
+  .moscow-wont .moscow-letter { background: rgba(107,122,155,0.12); color: var(--muted); }
+
+  .moscow-header h3 { color: var(--white); }
+
+  .moscow-list { list-style: none; }
+  .moscow-list li {
+    font-size: 0.85rem;
+    color: var(--text);
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .moscow-list li:last-child { border-bottom: none; }
+  .moscow-list li::before { content: '→'; color: var(--muted); flex-shrink: 0; }
+
+  /* ─── SYNTHESIS (CLIMAX) ─── */
+  #synthesis {
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    padding: 100px 0;
+  }
+  #synthesis::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(0,194,255,0.06) 0%, rgba(0,255,136,0.03) 40%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .synthesis-label { text-align: center; margin-bottom: 24px; }
+  .synthesis-label .label { color: var(--yellow); }
+
+  .synthesis-headline {
+    text-align: center;
+    font-size: clamp(2rem, 5vw, 3.8rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--white);
+    margin-bottom: 56px;
+  }
+
+  .synthesis-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 56px; }
+  @media (max-width: 800px) { .synthesis-grid { grid-template-columns: 1fr; } }
+
+  .synthesis-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .synthesis-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .sc-1::after { background: linear-gradient(90deg, var(--blue), #0077ff); }
+  .sc-2::after { background: linear-gradient(90deg, var(--green), #00c2ff); }
+  .sc-3::after { background: linear-gradient(90deg, var(--yellow), var(--orange)); }
+
+  .synthesis-card .s-icon { font-size: 2.5rem; margin-bottom: 16px; }
+  .synthesis-card h3 { color: var(--white); font-size: 1.1rem; margin-bottom: 10px; }
+  .synthesis-card p { color: var(--muted); font-size: 0.85rem; line-height: 1.6; }
+
+  .synthesis-north-star {
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .ns-quote {
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.35;
+    margin-bottom: 32px;
+    padding: 32px;
+    background: linear-gradient(135deg, rgba(0,194,255,0.07), rgba(0,255,136,0.05));
+    border: 1px solid rgba(0,194,255,0.2);
+    border-radius: 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .north-star-items { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 40px; }
+  .ns-item {
+    padding: 10px 20px;
+    border-radius: 100px;
+    border: 1px solid;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+  .ns-blue { border-color: rgba(0,194,255,0.4); color: var(--blue); background: rgba(0,194,255,0.06); }
+  .ns-green { border-color: rgba(0,255,136,0.4); color: var(--green); background: rgba(0,255,136,0.06); }
+  .ns-yellow { border-color: rgba(255,215,0,0.35); color: var(--yellow); background: rgba(255,215,0,0.05); }
+  .ns-orange { border-color: rgba(255,107,53,0.4); color: var(--orange); background: rgba(255,107,53,0.06); }
+  .ns-purple { border-color: rgba(168,85,247,0.4); color: #a855f7; background: rgba(168,85,247,0.06); }
+
+  .cta-block {
+    background: linear-gradient(135deg, rgba(0,194,255,0.1), rgba(0,255,136,0.08));
+    border: 1px solid rgba(0,194,255,0.25);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+  }
+  .cta-block h2 { color: var(--white); margin-bottom: 12px; font-size: 1.8rem; }
+  .cta-block p { color: var(--muted); margin-bottom: 28px; font-size: 0.95rem; max-width: 480px; margin-left: auto; margin-right: auto; }
+  .cta-steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+  .cta-step {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 10px 20px;
+    font-size: 0.85rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .cta-step-n {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--green));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 900;
+    color: #000;
+    flex-shrink: 0;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    padding: 32px 0;
+    border-top: 1px solid var(--border);
+  }
+  .footer-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .footer-brand { font-weight: 800; color: var(--white); font-size: 1rem; }
+  .footer-brand span { color: var(--blue); }
+  .footer-meta { color: var(--muted); font-size: 0.78rem; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeInUp 0.6s ease both; }
+  .fade-in-1 { animation-delay: 0.1s; }
+  .fade-in-2 { animation-delay: 0.2s; }
+  .fade-in-3 { animation-delay: 0.3s; }
+  .fade-in-4 { animation-delay: 0.4s; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 14px 24px;
+    background: rgba(8,12,20,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(30,45,69,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-brand { font-weight: 900; font-size: 1rem; color: var(--white); }
+  .nav-brand span { color: var(--blue); }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  @media (max-width: 600px) { .nav-links { display: none; } }
+
+  /* ─── PROFILE TYPES ─── */
+  .profile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+  @media (max-width: 650px) { .profile-grid { grid-template-columns: 1fr; } }
+
+  .profile-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    text-align: center;
+  }
+  .profile-card .p-icon { font-size: 2rem; margin-bottom: 10px; }
+  .profile-card h3 { color: var(--white); font-size: 0.95rem; margin-bottom: 6px; }
+  .profile-card p { color: var(--muted); font-size: 0.78rem; }
+  .profile-difficulty {
+    margin-top: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 100px;
+    display: inline-block;
+  }
+  .diff-easy { background: rgba(0,255,136,0.1); color: var(--green); border: 1px solid rgba(0,255,136,0.2); }
+  .diff-medium { background: rgba(255,215,0,0.1); color: var(--yellow); border: 1px solid rgba(255,215,0,0.2); }
+  .diff-hard { background: rgba(255,107,53,0.1); color: var(--orange); border: 1px solid rgba(255,107,53,0.2); }
+
+  /* ─── TRUST SECTION ─── */
+  .trust-equation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 32px 0;
+    padding: 32px;
+    background: var(--surface);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+  }
+  .trust-term {
+    text-align: center;
+    padding: 16px 24px;
+    border-radius: 12px;
+  }
+  .trust-term .t-icon { font-size: 1.8rem; margin-bottom: 8px; }
+  .trust-term .t-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+  .trust-term .t-val { font-size: 0.85rem; color: var(--text); }
+  .trust-op { font-size: 2rem; color: var(--muted); font-weight: 300; }
+  .trust-result {
+    padding: 16px 28px;
+    border-radius: 12px;
+    background: rgba(0,194,255,0.08);
+    border: 1px solid rgba(0,194,255,0.25);
+  }
+  .trust-result .t-label { color: var(--blue); }
+
+  .emotional-arc {
+    margin-top: 32px;
+    padding: 24px;
+    background: var(--surface);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+  }
+  .arc-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+  .arc-steps { display: flex; align-items: center; gap: 0; overflow-x: auto; }
+  .arc-step {
+    flex: 1;
+    min-width: 110px;
+    text-align: center;
+    padding: 12px 8px;
+    position: relative;
+  }
+  .arc-step::after {
+    content: '→';
+    position: absolute;
+    right: -8px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .arc-step:last-child::after { display: none; }
+  .arc-emoji { font-size: 1.6rem; margin-bottom: 6px; }
+  .arc-text { font-size: 0.72rem; color: var(--muted); line-height: 1.4; }
+  .arc-text strong { display: block; color: var(--white); font-size: 0.78rem; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">Visa<span>Flow</span> AI</div>
+  <div class="nav-links">
+    <a href="#techniques">Techniques</a>
+    <a href="#insights">Insights</a>
+    <a href="#pipeline">Pipeline</a>
+    <a href="#bizmodel">Biz Model</a>
+    <a href="#synthesis">Synthesis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-eyebrow fade-in fade-in-1">
+      <span class="hero-badge">Brainstorm Session</span>
+      <span class="hero-date">29 June 2026 · 8 techniques · 1 product</span>
+    </div>
+    <h1 class="hero-title fade-in fade-in-2">
+      <span class="grad-blue">AI có thể thay thế</span><br>
+      bước nào trong<br>
+      quy trình visa?
+    </h1>
+    <p class="hero-sub fade-in fade-in-3">
+      Japan &amp; China · Vietnamese travellers · Startup-first · Trust as core product.<br>
+      Một buổi brainstorm cho sản phẩm visa consulting AI đầu tiên của Việt Nam.
+    </p>
+    <div class="hero-stats fade-in fade-in-4">
+      <div class="stat-item">
+        <div class="stat-num grad-blue">8</div>
+        <div class="stat-label">Techniques Used</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num grad-green">5</div>
+        <div class="stat-label">Must-Have Clusters</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num grad-fire">1</div>
+        <div class="stat-label">First Case = Everything</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" style="color:#a855f7">12</div>
+        <div class="stat-label">Authorized Japan Agencies</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue">
+    <span>scroll</span>
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M4 9l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TECHNIQUES -->
+<section id="techniques">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">Brainstorming Techniques</div>
+      <h2>8 lenses. 1 product.</h2>
+      <p>Every technique punched a different hole in the problem. Here's what came out.</p>
+    </div>
+
+    <div class="techniques-grid">
+
+      <!-- First Principles -->
+      <div class="technique-card tc-first-principles">
+        <div class="technique-icon">🔬</div>
+        <div class="technique-tag">First Principles Thinking</div>
+        <h3>Why does a visa even exist?</h3>
+        <p>Strip everything back. A visa is a promise: this person is safe, won't harm your citizens, will return home. Perfect proof = strong reason to return (job, family, property) + no legal issues. Everything else is theatre.</p>
+        <div class="idea-pills">
+          <span class="pill">safe traveller</span>
+          <span class="pill">will return</span>
+          <span class="pill">social proof</span>
+          <span class="pill">trust signal</span>
+        </div>
+      </div>
+
+      <!-- Reverse Brainstorming -->
+      <div class="technique-card tc-reverse">
+        <div class="technique-icon">🔄</div>
+        <div class="technique-tag">Reverse Brainstorming</div>
+        <h3>How to guarantee failure?</h3>
+        <p>Flip it: send wrong checklists, charge ineligible applicants, give inconsistent advice, never monitor embassy rule changes. Now reverse each failure mode into a product feature. The AI fixes every one of them.</p>
+        <div class="idea-pills">
+          <span class="pill">wrong checklist → fixed</span>
+          <span class="pill">ineligible charged → gate blocks</span>
+          <span class="pill">embassy drift → auto-monitor</span>
+        </div>
+      </div>
+
+      <!-- Assumption Reversal -->
+      <div class="technique-card tc-assumption">
+        <div class="technique-icon">💡</div>
+        <div class="technique-tag">Assumption Reversal</div>
+        <h3>Open to everyone? No — only the best.</h3>
+        <p>"We serve all applicants" → Flip: only accept high-confidence profiles. Selective, not open-to-all. This is a moat, not a limitation. When you say no, people trust your yes even more.</p>
+        <div class="idea-pills">
+          <span class="pill">selective intake</span>
+          <span class="pill">confidence filter</span>
+          <span class="pill">trust through scarcity</span>
+        </div>
+      </div>
+
+      <!-- Friction Autopsy -->
+      <div class="technique-card tc-friction">
+        <div class="technique-icon">🔪</div>
+        <div class="technique-tag">Friction Autopsy (invented)</div>
+        <h3>Where does the user actually bleed?</h3>
+        <p>Dissect every step where users drop off or suffer. Steps 1–4: price check, soft eligibility, document checklist, document review — every single one is AI-replaceable. Post-submission: total black box. That's where they bleed most.</p>
+        <div class="idea-pills">
+          <span class="pill">4 steps → AI</span>
+          <span class="pill">black box pain</span>
+          <span class="pill">status visibility</span>
+        </div>
+      </div>
+
+      <!-- Empathy Map -->
+      <div class="technique-card tc-empathy">
+        <div class="technique-icon">❤️</div>
+        <div class="technique-tag">Empathy Map</div>
+        <h3>What's in their head at 11pm?</h3>
+        <p>"Where do I start?" "My profile won't pass." "Is this agency even real?" Fear drives every decision. They don't want information — they want belief. The product's job is to make them believe they will pass.</p>
+        <div class="idea-pills">
+          <span class="pill">"Will I pass?"</span>
+          <span class="pill">fear of rejection</span>
+          <span class="pill">trust signal</span>
+          <span class="pill">belief engine</span>
+        </div>
+      </div>
+
+      <!-- Role Playing -->
+      <div class="technique-card tc-roleplaying">
+        <div class="technique-icon">🎭</div>
+        <div class="technique-tag">Role Playing</div>
+        <h3>Play the firm owner. What's their first question?</h3>
+        <p>"Can we fucking trust AI?" The firm owner needs proof — a complete conversation log and one real approved case. Not a demo. Not a pitch deck. A passport with a Japan stamp issued to a real person after AI consultation.</p>
+        <div class="idea-pills">
+          <span class="pill">owner skepticism</span>
+          <span class="pill">proof = real case</span>
+          <span class="pill">complete transcript</span>
+        </div>
+      </div>
+
+      <!-- TRIZ -->
+      <div class="technique-card tc-triz">
+        <div class="technique-icon">⚡</div>
+        <div class="technique-tag">TRIZ Contradiction</div>
+        <h3>Faster AND more accurate?</h3>
+        <p>Judgment = conditional rules by profile type. This resolves the contradiction — AI applies rules consistently at speed 1000x a human. The industry doesn't know AI scope is this large. That gap is the unfair advantage.</p>
+        <div class="idea-pills">
+          <span class="pill">conditional rules</span>
+          <span class="pill">profile-typed logic</span>
+          <span class="pill">unfair advantage</span>
+        </div>
+      </div>
+
+      <!-- Sci-Fi -->
+      <div class="technique-card tc-scifi">
+        <div class="technique-icon">🚀</div>
+        <div class="technique-tag">Sci-Fi Artifact From the Future</div>
+        <h3>The receipt from 2028.</h3>
+        <p>24/7. Never tired. Consistent quality from case 1 to case 1,000. The artifact from the future is a visa agency with zero junior staff cost, and prices 50% below any legacy agency. That future is now buildable.</p>
+        <div class="idea-pills">
+          <span class="pill">zero staff cost</span>
+          <span class="pill">50% cheaper</span>
+          <span class="pill">consistent quality</span>
+          <span class="pill">24/7</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- KEY INSIGHTS -->
+<section id="insights">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">Key Insights</div>
+      <h2>The things that matter.</h2>
+      <p>Not brainstorm outputs — these are the load-bearing ideas the whole product rests on.</p>
+    </div>
+
+    <div class="big-quote-block">
+      <blockquote>"Trust <span class="grad-green">IS</span> the product. Every feature is either building trust or it doesn't belong."</blockquote>
+      <div class="quote-attr">Core Insight — Emotional Job</div>
+    </div>
+
+    <div class="insights-grid">
+
+      <div class="insight-card featured">
+        <div class="insight-number">01</div>
+        <div class="label">Emotional Core</div>
+        <div class="insight-text">Eligibility gate IS the trust moment</div>
+        <div class="insight-sub">The screen where AI says "yes, your profile qualifies" is where the user stops being afraid. Not the approval. Not the stamp. This screen. Design it like the most important moment in the product.</div>
+      </div>
+
+      <div class="insight-card featured-green">
+        <div class="insight-number">02</div>
+        <div class="label">Go-to-Market</div>
+        <div class="insight-text">One successful case is the foundation of everything</div>
+        <div class="insight-sub">Firm owner trust, user trust, word-of-mouth, media — all of it starts when one person's Japan visa gets approved through VisaFlow AI. That case is a passport with a stamp. Ship for that.</div>
+      </div>
+
+      <div class="insight-card featured-orange">
+        <div class="insight-number">03</div>
+        <div class="label">Business Model</div>
+        <div class="insight-text">B2B2C — be MoMo, not the bank</div>
+        <div class="insight-sub">Own the consumer brand. Partner with one of the 12 authorized Japan agencies as invisible licensed backend. You are MoMo. The agency is VietcomBank. Users never need to know.</div>
+      </div>
+
+      <div class="insight-card featured-yellow">
+        <div class="insight-number">04</div>
+        <div class="label">AI Scope</div>
+        <div class="insight-text">Judgment = conditional rules</div>
+        <div class="insight-sub">The industry thinks visa judgment requires human expertise. Wrong. It's conditional rule logic keyed on profile type (student / employee / freelancer). AI scope is far larger than anyone assumes. This is the unfair advantage.</div>
+      </div>
+
+      <div class="insight-card featured-purple">
+        <div class="insight-number">05</div>
+        <div class="label">Cost Structure</div>
+        <div class="insight-text">AI replaces the biggest cost → price disruption</div>
+        <div class="insight-sub">Staff salaries are ~70% of a traditional agency's cost base. Replace staff with AI. Pass savings to users. Undercut legacy agencies while making more margin. New segment: young travellers who couldn't afford agencies before.</div>
+      </div>
+
+      <div class="insight-card featured">
+        <div class="insight-number">06</div>
+        <div class="label">Constraint</div>
+        <div class="insight-text">12 authorized agencies — partner with one</div>
+        <div class="insight-sub">Only ~12 agencies can physically submit to Japan embassy. This is not a threat — it's a moat enabler. Partner with one, and no one can replicate the B2B2C model without a partner of their own. Scarcity creates barriers to entry.</div>
+      </div>
+
+      <div class="insight-card featured-green">
+        <div class="insight-number">07</div>
+        <div class="label">AI Transparency</div>
+        <div class="insight-text">Never hide the AI — full transparency always</div>
+        <div class="insight-sub">Users know they're talking to AI from the first message. This isn't a weakness — it's positioning. Agencies pretend to be human. You own the honest brand. In a market built on fear, honesty is radical.</div>
+      </div>
+
+      <div class="insight-card featured-orange">
+        <div class="insight-number">08</div>
+        <div class="label">Out of Scope</div>
+        <div class="insight-text">Quota rejections are not your problem</div>
+        <div class="insight-sub">Two rejection types: profile-based (AI can fix) and structural (quota, policy — nobody can fix). Be clear with users: when the embassy runs out of slots, no one can help. Accepting this is a product boundary, not a failure.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- AI PIPELINE -->
+<section id="pipeline">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">AI Pipeline Flow</div>
+      <h2>Five steps. Zero junior staff.</h2>
+      <p>Every step in the old process that AI can replace — and the one moment that changes everything emotionally.</p>
+    </div>
+
+    <div class="pipeline-wrapper">
+      <div class="pipeline-track">
+
+        <!-- Step 1: Eligibility Gate -->
+        <div class="pipeline-step">
+          <div class="step-gate">Emotional Core</div>
+          <div class="step-num">Step 01</div>
+          <div class="step-icon">🚦</div>
+          <div class="step-title">Eligibility Gate</div>
+          <div class="step-desc">Before anything. Before payment. AI screens profile and declares: pass or fail. Ineligible users are turned away here — never charged.</div>
+          <span class="step-badge badge-critical">Trust Moment #1</span>
+        </div>
+
+        <div class="pipeline-arrow">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M4 10h12M12 6l4 4-4 4" stroke="#00c2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Step 2: Conditional Checklist -->
+        <div class="pipeline-step">
+          <div class="step-num">Step 02</div>
+          <div class="step-icon">📋</div>
+          <div class="step-title">Smart Doc Checklist</div>
+          <div class="step-desc">Conditional rules keyed on profile type. Student gets student rules. Employee gets employee rules. Freelancer gets the hard list. Zero generic advice.</div>
+          <span class="step-badge badge-ai">AI Judgment</span>
+        </div>
+
+        <div class="pipeline-arrow">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M4 10h12M12 6l4 4-4 4" stroke="#00c2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Step 3: Document Review -->
+        <div class="pipeline-step">
+          <div class="step-num">Step 03</div>
+          <div class="step-icon">🔍</div>
+          <div class="step-title">Document Review</div>
+          <div class="step-desc">AI reviews each uploaded document for compliance. Flags issues. Requests corrections. Haiku for chat, Sonnet for deep doc analysis.</div>
+          <span class="step-badge badge-ai">AI Review</span>
+        </div>
+
+        <div class="pipeline-arrow">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M4 10h12M12 6l4 4-4 4" stroke="#00c2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Step 4: Submission -->
+        <div class="pipeline-step">
+          <div class="step-num">Step 04</div>
+          <div class="step-icon">📨</div>
+          <div class="step-title">Partner Submission</div>
+          <div class="step-desc">Authorized agency partner receives the completed, AI-reviewed file and submits to embassy. The licensed backend — invisible to users.</div>
+          <span class="step-badge badge-key">B2B2C Handoff</span>
+        </div>
+
+        <div class="pipeline-arrow">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M4 10h12M12 6l4 4-4 4" stroke="#00c2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Step 5: Status -->
+        <div class="pipeline-step">
+          <div class="step-num">Step 05</div>
+          <div class="step-icon">📡</div>
+          <div class="step-title">Status & Monitoring</div>
+          <div class="step-desc">Kill the black box. Real-time status updates. Embassy requirement changes auto-monitored. Users know what's happening at every point.</div>
+          <span class="step-badge badge-hard">Kill the Black Box</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Profile Types -->
+    <div style="margin-top: 48px;">
+      <h3 style="color: var(--white); margin-bottom: 8px;">Conditional logic by profile type</h3>
+      <p style="color: var(--muted); font-size: 0.85rem; margin-bottom: 0;">The same rule engine. Different branches. This is what "AI judgment" actually means.</p>
+      <div class="profile-grid">
+        <div class="profile-card">
+          <div class="p-icon">👔</div>
+          <h3>Salaried Employee</h3>
+          <p>Stable income, employment letter, payslips. Clearest path. Highest approval rate.</p>
+          <span class="profile-difficulty diff-easy">Easy for AI</span>
+        </div>
+        <div class="profile-card">
+          <div class="p-icon">🎓</div>
+          <h3>Student</h3>
+          <p>Enrollment cert, bank guarantee, parental sponsorship. Set of rules is defined and learnable.</p>
+          <span class="profile-difficulty diff-medium">Manageable</span>
+        </div>
+        <div class="profile-card">
+          <div class="p-icon">💻</div>
+          <h3>Freelancer</h3>
+          <p>Variable income, contracts, portfolio, tax records. Edge case. Hard. Still in scope but flagged.</p>
+          <span class="profile-difficulty diff-hard">Hard Edge Case</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Emotional Arc -->
+    <div class="emotional-arc" style="margin-top: 32px;">
+      <div class="arc-title">User Emotional Arc Through the Pipeline</div>
+      <div class="arc-steps">
+        <div class="arc-step">
+          <div class="arc-emoji">😨</div>
+          <div class="arc-text"><strong>"Will I pass?"</strong>Fear, uncertainty. Googling at midnight.</div>
+        </div>
+        <div class="arc-step">
+          <div class="arc-emoji">🤔</div>
+          <div class="arc-text"><strong>"Is this real?"</strong>First touch with AI. Skepticism.</div>
+        </div>
+        <div class="arc-step">
+          <div class="arc-emoji">✅</div>
+          <div class="arc-text"><strong>"I qualify."</strong>Gate says yes. Fear breaks. Trust formed.</div>
+        </div>
+        <div class="arc-step">
+          <div class="arc-emoji">📁</div>
+          <div class="arc-text"><strong>"I know what to do."</strong>Checklist is clear. Action unlocked.</div>
+        </div>
+        <div class="arc-step">
+          <div class="arc-emoji">🟢</div>
+          <div class="arc-text"><strong>"It's moving."</strong>Real-time status. No black box. Calm.</div>
+        </div>
+        <div class="arc-step">
+          <div class="arc-emoji">🛂</div>
+          <div class="arc-text"><strong>"I'm going to Japan."</strong>Stamp in passport. Case #1.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BUSINESS MODEL -->
+<section id="bizmodel">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">Business Model</div>
+      <h2>B2B2C. Be MoMo.</h2>
+      <p>Own the brand. License the infrastructure. Price below the market. Win the users no one else was serving.</p>
+    </div>
+
+    <div class="b2b2c-diagram">
+      <p class="label" style="color: var(--muted); margin-bottom: 20px;">Stack Architecture</p>
+      <div class="b2b2c-layers">
+
+        <div class="b2b2c-layer layer-consumer">
+          <div class="layer-icon">👤</div>
+          <div class="layer-info">
+            <div class="layer-title">Vietnamese Traveller</div>
+            <div class="layer-desc">Young, tech-savvy, couldn't afford traditional agencies. First-time Japan/China traveller.</div>
+          </div>
+          <span class="layer-tag">End User</span>
+        </div>
+
+        <div class="b2b2c-connector">↕ interacts with</div>
+
+        <div class="b2b2c-layer layer-brand">
+          <div class="layer-icon">🤖</div>
+          <div class="layer-info">
+            <div class="layer-title">VisaFlow AI Brand</div>
+            <div class="layer-desc">Consumer-facing AI product. Full transparency. 24/7. Cheaper than any agency. You own this layer. This is your brand, your moat.</div>
+          </div>
+          <span class="layer-tag">Your Product</span>
+        </div>
+
+        <div class="b2b2c-connector">↕ routes to</div>
+
+        <div class="b2b2c-layer layer-agency">
+          <div class="layer-icon">🏢</div>
+          <div class="layer-info">
+            <div class="layer-title">Authorized Agency Partner</div>
+            <div class="layer-desc">One of ~12 licensed agencies. Submits files to Japan embassy. Invisible to users. Licensed infrastructure backend. Like VietcomBank behind MoMo.</div>
+          </div>
+          <span class="layer-tag">Invisible Backend</span>
+        </div>
+
+        <div class="b2b2c-connector">↕ submits to</div>
+
+        <div class="b2b2c-layer layer-embassy">
+          <div class="layer-icon">🏛️</div>
+          <div class="layer-info">
+            <div class="layer-title">Japan / China Embassy</div>
+            <div class="layer-desc">Final decision authority. Quota constraints real. Hard-copy submission required. Outside AI's control.</div>
+          </div>
+          <span class="layer-tag">External</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="biz-grid" style="margin-top: 24px;">
+      <div class="biz-card">
+        <div class="label" style="color: var(--green); margin-bottom: 12px;">Price Disruption</div>
+        <h3 style="color: var(--white); margin-bottom: 12px; font-size: 1.3rem;">Staff cost → AI cost<br>= 50% price drop</h3>
+        <p style="color: var(--muted); font-size: 0.85rem;">Traditional agency charges high because they employ humans. You employ AI. Pass the savings directly to users. Open a segment that was price-locked before.</p>
+      </div>
+      <div class="biz-card">
+        <div class="label" style="color: var(--blue); margin-bottom: 12px;">Target Segment</div>
+        <h3 style="color: var(--white); margin-bottom: 12px; font-size: 1.3rem;">Young. Tech-savvy.<br>First-timer.</h3>
+        <p style="color: var(--muted); font-size: 0.85rem;">They research on TikTok, pay with MoMo, and trust apps more than offices. They've never been to Japan. They want to go. And they couldn't afford the traditional route. Until now.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MOSCOW -->
+<section id="moscow" style="background: var(--bg);">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">MoSCoW Prioritisation</div>
+      <h2>What's in v1. What's not.</h2>
+      <p>Decision: all five clusters are Must Have for v1. Ship the whole thing or ship nothing.</p>
+    </div>
+
+    <div class="moscow-grid">
+
+      <div class="moscow-card moscow-must">
+        <div class="moscow-header">
+          <div class="moscow-letter">M</div>
+          <h3>Must Have — Cluster A: AI Pipeline</h3>
+        </div>
+        <ul class="moscow-list">
+          <li>Eligibility gate (screen before payment)</li>
+          <li>Conditional doc checklist by profile type</li>
+          <li>AI document review (PyMuPDF + Claude Sonnet)</li>
+          <li>Embassy requirement auto-monitoring</li>
+          <li>24/7 availability, consistent quality</li>
+        </ul>
+      </div>
+
+      <div class="moscow-card moscow-must">
+        <div class="moscow-header">
+          <div class="moscow-letter">M</div>
+          <h3>Must Have — Cluster B: Trust</h3>
+        </div>
+        <ul class="moscow-list">
+          <li>Full AI transparency — users always know</li>
+          <li>High-confidence-only filter (selective intake)</li>
+          <li>Status visibility — kill the black box</li>
+          <li>First approved case as proof artifact</li>
+          <li>Firm owner demo with complete transcript</li>
+        </ul>
+      </div>
+
+      <div class="moscow-card moscow-must">
+        <div class="moscow-header">
+          <div class="moscow-letter">M</div>
+          <h3>Must Have — Cluster C: Business Model</h3>
+        </div>
+        <ul class="moscow-list">
+          <li>B2B2C structure locked in</li>
+          <li>One authorized agency partner signed</li>
+          <li>Lower price point than any legacy agency</li>
+          <li>Young tech-savvy traveller as primary target</li>
+        </ul>
+      </div>
+
+      <div class="moscow-card moscow-must" style="border-color: rgba(255,107,53,0.3); background: rgba(255,107,53,0.03);">
+        <div class="moscow-header">
+          <div class="moscow-letter" style="background: rgba(255,107,53,0.12); color: var(--orange);">D</div>
+          <h3>Design North Star — Cluster E: Emotional Job</h3>
+        </div>
+        <ul class="moscow-list">
+          <li>Every feature reduces fear or builds belief</li>
+          <li>Eligibility gate is the emotional centrepiece</li>
+          <li>First message sets the trust tone</li>
+          <li>"I will pass" is the feeling we deliver</li>
+        </ul>
+      </div>
+
+      <div class="moscow-card moscow-wont" style="grid-column: span 1;">
+        <div class="moscow-header">
+          <div class="moscow-letter">A</div>
+          <h3>Accept as Given — Cluster D: Constraints</h3>
+        </div>
+        <ul class="moscow-list">
+          <li>Hard-copy submission required — not our problem to solve</li>
+          <li>Quota rejections — out of scope, communicate clearly</li>
+          <li>Freelancer profile — hard edge case, handle late</li>
+          <li>Only 12 agencies — accept, partner with one</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SYNTHESIS — CLIMAX -->
+<section id="synthesis">
+  <div class="container">
+    <div class="synthesis-label">
+      <div class="label">Grand Synthesis</div>
+    </div>
+    <h2 class="synthesis-headline">
+      Three problems.<br>
+      <span class="grad-fire">One job.</span>
+    </h2>
+
+    <div class="synthesis-grid">
+      <div class="synthesis-card sc-1">
+        <div class="s-icon">😨</div>
+        <h3>"I won't pass."</h3>
+        <p>The user's core fear. Drives every decision. Drives them to agencies they don't trust, paying prices they can't afford.</p>
+      </div>
+      <div class="synthesis-card sc-2">
+        <div class="s-icon">🤨</div>
+        <h3>"Is that real?"</h3>
+        <p>The firm owner's skepticism. Can AI really do this? Trust doesn't come from demos. It comes from stamps in passports.</p>
+      </div>
+      <div class="synthesis-card sc-3">
+        <div class="s-icon">🏅</div>
+        <h3>One successful case.</h3>
+        <p>The solution to both. Win the first case and show it. A real approved visa. This resolves user fear AND firm owner doubt simultaneously.</p>
+      </div>
+    </div>
+
+    <div class="synthesis-north-star">
+
+      <div class="ns-quote">
+        "Win one case. Show it.<br>
+        That's the go-to-market strategy."
+      </div>
+
+      <div class="north-star-items">
+        <span class="ns-item ns-blue">Trust IS the product</span>
+        <span class="ns-item ns-green">Eligibility gate = emotional core</span>
+        <span class="ns-item ns-yellow">First case = foundation</span>
+        <span class="ns-item ns-orange">B2B2C like MoMo</span>
+        <span class="ns-item ns-purple">Judgment = conditional rules</span>
+        <span class="ns-item ns-blue">AI transparency = honest brand</span>
+        <span class="ns-item ns-green">12 agencies → partner with 1</span>
+        <span class="ns-item ns-orange">Price disruption = new segment</span>
+      </div>
+
+      <div class="cta-block">
+        <h2>What comes next</h2>
+        <p>The brainstorm is done. The product is clear. Three actions unlock everything.</p>
+        <div class="cta-steps">
+          <div class="cta-step">
+            <div class="cta-step-n">1</div>
+            Sign one authorized agency partner
+          </div>
+          <div class="cta-step">
+            <div class="cta-step-n">2</div>
+            Build the eligibility gate first
+          </div>
+          <div class="cta-step">
+            <div class="cta-step-n">3</div>
+            Get one case approved &amp; document it
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">Visa<span>Flow</span> AI — Brainstorm</div>
+      <div class="footer-meta">29 June 2026 · Japan &amp; China · Vietnamese Travellers · Built with BMad</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Intersection Observer for subtle fade-in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.technique-card, .insight-card, .synthesis-card, .biz-card, .moscow-card, .pipeline-step, .profile-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(16px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+
+  // Pipeline step hover pulse
+  document.querySelectorAll('.pipeline-step').forEach((step, i) => {
+    step.addEventListener('mouseenter', () => {
+      step.style.boxShadow = '0 0 24px rgba(0,194,255,0.12)';
+    });
+    step.addEventListener('mouseleave', () => {
+      step.style.boxShadow = 'none';
+    });
+  });
+</script>
+</body>
+</html>

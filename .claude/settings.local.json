@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(source venv/bin/activate)",
+      "Bash(python -c \"from api.main import app; print\\(''import OK''\\)\")",
+      "Bash(curl:*)",
+      "Bash(python3 -c \":*)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(''''status:'''', d.get\\(''''status''''\\)\\); print\\(''''case_type:'''', d.get\\(''''case_type''''\\)\\); print\\(''''risk_level:'''', d.get\\(''''risk_level''''\\)\\)\")",
+      "Bash(python -c \":*)",
+      "Bash(python3 -m json.tool)",
+      "WebFetch(domain:www.vn.emb-japan.go.jp)",
+      "WebFetch(domain:www.mofa.go.jp)",
+      "WebFetch(domain:visana.vn)",
+      "WebSearch",
+      "WebFetch(domain:www.vfsglobal.com)",
+      "Bash(ls /Users/vuongnguyen/Desktop/visa-flow/*.txt)",
+      "Bash(ls /Users/vuongnguyen/Desktop/visa-flow/venv/lib/python*/site-packages/)",
+      "Bash(venv/bin/pip install:*)",
+      "Bash(venv/bin/python -c \"from api.routes.cv_jobs import router; print\\('OK'\\)\")"
+    ]
+  }
+}

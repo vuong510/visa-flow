@@ -1,0 +1,18 @@
+sprint: 1
+sprint_name: "AI Visa Consulting Flow — v1 Complete"
+sprint_goal: "Deliver end-to-end visa consulting flow for Japan/China targeting Vietnamese users"
+last_updated: "2026-06-29"
+
+development_status:
+  1-1-backend-skeleton: done
+  1-2-design-system-landing: done
+  1-3-profile-question-flow: done
+  1-4-ai-eligibility-gate: done
+  1-5-price-payment: done
+  2-1-checklist-generation: done
+  2-2-checklist-detail-upload: done
+  3-1-document-upload: done
+  3-2-ai-document-review: done
+  3-3-readiness-submit: done
+  4-1-status-timeline: done
+  4-2-result-notification: done

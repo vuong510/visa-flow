@@ -1,10 +1,12 @@
 import json
 import zipfile
 import io
-from datetime import datetime, date
+from datetime import datetime
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import Response
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from db.session import get_db
@@ -14,8 +16,31 @@ from api.form_filler import fill_visa_form, fill_schedule
 router = APIRouter()
 
 
-def _build_info(application: Application) -> dict:
-    """Map visa-flow Application data to form_filler info dict."""
+class PersonalInfo(BaseModel):
+    family_name: str = ""
+    given_name: str = ""
+    date_of_birth: str = ""
+    place_of_birth: str = ""
+    id_number: str = ""
+    passport_number: str = ""
+    passport_issue_date: str = ""
+    gender: str = "male"
+    marital_status: str = "single"
+    home_address: str = ""
+    mobile: str = ""
+    email: str = ""
+    company_name: str = ""
+    company_address: str = ""
+    accommodation: str = ""
+    accommodation_address: str = ""
+    accommodation_phone: str = ""
+
+
+class FormsRequest(BaseModel):
+    personal_info: PersonalInfo
+
+
+def _build_info(application: Application, personal: PersonalInfo) -> dict:
     profile = {}
     if application.profile_json:
         try:
@@ -33,7 +58,6 @@ def _build_info(application: Application) -> dict:
     departure = travel_dates.get("departure", "")
     return_date = travel_dates.get("return", "")
 
-    # Compute travel days
     travel_days = 7
     if departure and return_date:
         try:
@@ -53,44 +77,44 @@ def _build_info(application: Application) -> dict:
     }
     occupation = employment_map.get(profile.get("employment_type", ""), "")
 
+    def _fmt(date_str: str) -> str:
+        return date_str.replace("-", "/") if date_str else ""
+
     return {
-        # Personal — left blank for user to fill
-        "family_name": "",
-        "given_name": "",
-        "date_of_birth": "",
-        "place_of_birth": "",
-        "id_number": "",
-        "passport_number": "",
-        "passport_issue_date": "",
-        "home_address": "",
-        "phone": "",
-        "mobile": "",
-        "email": "",
-        "company_name": "",
-        "company_phone": "",
-        "company_address": "",
-        "accommodation": "",
-        "accommodation_address": "",
-        "accommodation_phone": "",
-        # Pre-filled from profile
+        # From user input
+        "family_name": personal.family_name,
+        "given_name": personal.given_name,
+        "date_of_birth": _fmt(personal.date_of_birth),
+        "place_of_birth": personal.place_of_birth,
+        "id_number": personal.id_number,
+        "passport_number": personal.passport_number,
+        "passport_issue_date": _fmt(personal.passport_issue_date),
+        "gender": personal.gender,
+        "marital_status": personal.marital_status,
+        "home_address": personal.home_address,
+        "mobile": personal.mobile,
+        "email": personal.email,
+        "company_name": personal.company_name,
+        "company_address": personal.company_address,
+        "accommodation": personal.accommodation,
+        "accommodation_address": personal.accommodation_address,
+        "accommodation_phone": personal.accommodation_phone,
+        # From profile/application
         "nationality": "vietnam",
-        "gender": "",
-        "marital_status": "single",
         "occupation": occupation,
-        "passport_expiry_date": (profile.get("passport_expiry") or "").replace("-", "/"),
+        "passport_expiry_date": _fmt(profile.get("passport_expiry") or ""),
         "purpose": "Tourism",
-        "entry_date": departure.replace("-", "/") if departure else "",
+        "entry_date": _fmt(departure),
         "travel_days": str(travel_days),
         "port_of_entry": "Narita" if application.destination == "japan" else "",
         "visa_history": "",
-        # Schedule
         "itinerary": [],
-        "hotel_city": "Tokyo" if application.destination == "japan" else "Beijing",
+        "hotel_city": personal.accommodation or ("Tokyo" if application.destination == "japan" else "Beijing"),
     }
 
 
-@router.get("/application/{application_id}/forms/download")
-def download_forms(application_id: str, db: Session = Depends(get_db)):
+@router.post("/application/{application_id}/forms/download")
+def download_forms(application_id: str, body: FormsRequest, db: Session = Depends(get_db)):
     application = db.query(Application).filter(
         Application.application_id == application_id
     ).first()
@@ -100,7 +124,7 @@ def download_forms(application_id: str, db: Session = Depends(get_db)):
     if application.destination != "japan":
         raise HTTPException(status_code=400, detail="Form generation only supported for Japan visa")
 
-    info = _build_info(application)
+    info = _build_info(application, body.personal_info)
 
     try:
         visa_bytes = fill_visa_form(info)
@@ -108,7 +132,6 @@ def download_forms(application_id: str, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"PDF generation failed: {e}")
 
-    # Bundle into zip
     zip_buf = io.BytesIO()
     with zipfile.ZipFile(zip_buf, "w", zipfile.ZIP_DEFLATED) as zf:
         zf.writestr("don_xin_visa.pdf", visa_bytes)

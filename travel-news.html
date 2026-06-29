@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Du Lịch Today — Tin Tức Du Lịch</title>
+  <style>
+    :root {
+      --bg: #f0f4f8;
+      --surface: #ffffff;
+      --surface2: #f8fafc;
+      --border: #e2e8f0;
+      --text: #1a202c;
+      --text-muted: #718096;
+      --primary: #0066cc;
+      --primary-dark: #0052a3;
+      --accent: #ff6b35;
+      --tag-bg: #ebf4ff;
+      --tag-text: #2b6cb0;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+      --radius: 12px;
+    }
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --surface: #1a1d2e;
+      --surface2: #141624;
+      --border: #2d3152;
+      --text: #e2e8f0;
+      --text-muted: #8892b0;
+      --primary: #4da6ff;
+      --primary-dark: #3d96ef;
+      --accent: #ff7f4e;
+      --tag-bg: #1a2744;
+      --tag-text: #7eb8ff;
+      --shadow: 0 1px 3px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background .25s, color .25s;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, #0052a3 0%, #0066cc 50%, #0080ff 100%);
+      color: #fff;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,100,200,.35);
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      height: 64px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .logo-icon { font-size: 28px; }
+    .logo-text { font-size: 20px; font-weight: 700; letter-spacing: -.3px; }
+    .logo-sub { font-size: 11px; opacity: .75; font-weight: 400; }
+
+    .search-wrap {
+      flex: 1;
+      max-width: 480px;
+      position: relative;
+    }
+    .search-wrap input {
+      width: 100%;
+      padding: 10px 16px 10px 40px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(255,255,255,.18);
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: background .2s;
+    }
+    .search-wrap input::placeholder { color: rgba(255,255,255,.65); }
+    .search-wrap input:focus { background: rgba(255,255,255,.28); }
+    .search-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: .7;
+      font-size: 16px;
+    }
+
+    .header-actions { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+    .btn-icon {
+      background: rgba(255,255,255,.15);
+      border: none;
+      border-radius: 50%;
+      width: 38px; height: 38px;
+      cursor: pointer;
+      font-size: 18px;
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .btn-icon:hover { background: rgba(255,255,255,.28); }
+
+    /* ── CATEGORIES ── */
+    .categories-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 64px;
+      z-index: 99;
+    }
+    .categories-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .categories-inner::-webkit-scrollbar { display: none; }
+    .cat-btn {
+      padding: 14px 18px;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      white-space: nowrap;
+      transition: color .15s, border-color .15s;
+    }
+    .cat-btn:hover { color: var(--primary); }
+    .cat-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px 24px;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .container { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+
+    /* ── FEED STATUS ── */
+    .feed-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .feed-title { font-size: 18px; font-weight: 700; }
+    .feed-count {
+      font-size: 13px;
+      color: var(--text-muted);
+      background: var(--surface2);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+    }
+
+    /* ── NEWS GRID ── */
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform .2s, box-shadow .2s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(0,0,0,.12);
+    }
+    .card-img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      background: var(--border);
+      display: block;
+    }
+    .card-img-placeholder {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: linear-gradient(135deg, #667eea22, #764ba222);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+    .card-body { padding: 14px 16px 16px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .card-source {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+    .source-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .card-title {
+      font-size: 14.5px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--text);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .card-time { font-size: 11.5px; color: var(--text-muted); }
+    .card-tag {
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    /* ── FEATURED CARD ── */
+    .card.featured {
+      grid-column: 1 / -1;
+      flex-direction: row;
+    }
+    .card.featured .card-img { width: 45%; aspect-ratio: auto; min-height: 200px; flex-shrink: 0; }
+    .card.featured .card-img-placeholder { width: 45%; flex-shrink: 0; }
+    .card.featured .card-title { font-size: 18px; -webkit-line-clamp: 4; }
+    @media (max-width: 600px) {
+      .card.featured { flex-direction: column; }
+      .card.featured .card-img, .card.featured .card-img-placeholder { width: 100%; }
+    }
+
+    /* ── SKELETON LOADER ── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--border) 25%, var(--surface2) 50%, var(--border) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .skeleton-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .skeleton-img { height: 160px; }
+    .skeleton-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+    .skeleton-line { height: 12px; }
+    .skeleton-line.short { width: 60%; }
+    .skeleton-line.medium { width: 80%; }
+
+    /* ── ERROR / EMPTY ── */
+    .status-msg {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-muted);
+      grid-column: 1/-1;
+    }
+    .status-msg .icon { font-size: 48px; margin-bottom: 12px; }
+    .status-msg p { font-size: 15px; }
+    .btn-retry {
+      margin-top: 16px;
+      padding: 10px 24px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background .2s;
+    }
+    .btn-retry:hover { background: var(--primary-dark); }
+
+    /* ── SIDEBAR ── */
+    .sidebar { display: flex; flex-direction: column; gap: 20px; }
+    .widget {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 18px;
+    }
+    .widget-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    /* sources list */
+    .source-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: color .15s;
+    }
+    .source-item:last-child { border-bottom: none; }
+    .source-item:hover .source-name { color: var(--primary); }
+    .source-name { font-size: 13.5px; font-weight: 500; }
+    .source-count {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--surface2);
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+    }
+
+    /* trending tags */
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag-pill {
+      font-size: 12.5px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .tag-pill:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    /* last updated */
+    .updated-time {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      padding-top: 12px;
+    }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a202c;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      z-index: 999;
+      transition: transform .3s;
+      pointer-events: none;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── LOAD MORE ── */
+    .load-more-wrap { text-align: center; margin-top: 24px; }
+    .btn-load-more {
+      padding: 11px 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-load-more:hover { background: var(--tag-bg); }
+
+    /* ── REFRESH BAR ── */
+    .refresh-bar {
+      height: 3px;
+      background: linear-gradient(90deg, #0066cc, #0080ff, #00b4d8);
+      width: 0;
+      transition: width .4s;
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+  <div class="refresh-bar" id="refreshBar"></div>
+
+  <header>
+    <div class="header-inner">
+      <a class="logo" href="#">
+        <span class="logo-icon">✈️</span>
+        <div>
+          <div class="logo-text">Du Lịch Today</div>
+          <div class="logo-sub">Tin tức du lịch tổng hợp</div>
+        </div>
+      </a>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Tìm kiếm tin tức, địa điểm..." />
+      </div>
+      <div class="header-actions">
+        <button class="btn-icon" id="refreshBtn" title="Làm mới">🔄</button>
+        <button class="btn-icon" id="themeBtn" title="Đổi giao diện">🌙</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="categories-bar">
+    <div class="categories-inner" id="categoriesBar">
+      <button class="cat-btn active" data-source="all">🌏 Tất cả</button>
+      <button class="cat-btn" data-source="vnexpress">VnExpress</button>
+      <button class="cat-btn" data-source="tuoitre">Tuổi Trẻ</button>
+      <button class="cat-btn" data-source="thanhnien">Thanh Niên</button>
+      <button class="cat-btn" data-source="dantri">Dân Trí</button>
+      <button class="cat-btn" data-source="baomoi">Báo Mới</button>
+      <button class="cat-btn" data-source="travelandleisure">Travel & Leisure</button>
+      <button class="cat-btn" data-source="lonelyplanet">Lonely Planet</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <main>
+      <div class="feed-header">
+        <h1 class="feed-title" id="feedTitle">Tin nổi bật hôm nay</h1>
+        <span class="feed-count" id="feedCount">Đang tải...</span>
+      </div>
+      <div class="news-grid" id="newsGrid"></div>
+      <div class="load-more-wrap" id="loadMoreWrap" style="display:none">
+        <button class="btn-load-more" id="loadMoreBtn">Xem thêm tin tức</button>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <div class="widget">
+        <div class="widget-title">📰 Nguồn tin</div>
+        <div id="sourcesList"></div>
+      </div>
+      <div class="widget">
+        <div class="widget-title">🏷️ Chủ đề nổi bật</div>
+        <div class="tag-cloud" id="tagCloud"></div>
+      </div>
+      <div class="widget">
+        <div class="widget-title">📊 Thống kê</div>
+        <div id="statsWidget" style="font-size:13px; color:var(--text-muted); line-height:2;"></div>
+        <div class="updated-time" id="updatedTime"></div>
+      </div>
+    </aside>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+  // ────────────────────────────────────────────
+  //  CONFIG
+  // ────────────────────────────────────────────
+  const SOURCES = [
+    {
+      key: 'vnexpress',
+      name: 'VnExpress Du lịch',
+      url: 'https://vnexpress.net/rss/du-lich.rss',
+      color: '#1a73e8',
+      emoji: '🗞️',
+      lang: 'vi',
+    },
+    {
+      key: 'tuoitre',
+      name: 'Tuổi Trẻ Du lịch',
+      url: 'https://tuoitre.vn/rss/du-lich.rss',
+      color: '#e63946',
+      emoji: '📰',
+      lang: 'vi',
+    },
+    {
+      key: 'thanhnien',
+      name: 'Thanh Niên Du lịch',
+      url: 'https://thanhnien.vn/du-lich.rss',
+      color: '#f4831f',
+      emoji: '📄',
+      lang: 'vi',
+    },
+    {
+      key: 'dantri',
+      name: 'Dân Trí Du lịch',
+      url: 'https://dantri.com.vn/du-lich.rss',
+      color: '#2d9e4a',
+      emoji: '📋',
+      lang: 'vi',
+    },
+    {
+      key: 'baomoi',
+      name: 'Báo Mới Du lịch',
+      url: 'https://baomoi.com/du-lich.rss',
+      color: '#6c63ff',
+      emoji: '📑',
+      lang: 'vi',
+    },
+    {
+      key: 'travelandleisure',
+      name: 'Travel & Leisure',
+      url: 'https://www.travelandleisure.com/syndication/rss',
+      color: '#d4a017',
+      emoji: '✈️',
+      lang: 'en',
+    },
+    {
+      key: 'lonelyplanet',
+      name: 'Lonely Planet',
+      url: 'https://www.lonelyplanet.com/news/feed',
+      color: '#00897b',
+      emoji: '🌍',
+      lang: 'en',
+    },
+  ];
+
+  const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
+  const PAGE_SIZE = 12;
+
+  // ────────────────────────────────────────────
+  //  STATE
+  // ────────────────────────────────────────────
+  let allArticles = [];
+  let filtered = [];
+  let page = 1;
+  let activeSource = 'all';
+  let searchQuery = '';
+  let sourceCounts = {};
+
+  // ────────────────────────────────────────────
+  //  THEME
+  // ────────────────────────────────────────────
+  const themeBtn = document.getElementById('themeBtn');
+  const saved = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  themeBtn.textContent = saved === 'dark' ? '☀️' : '🌙';
+  themeBtn.addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    themeBtn.textContent = next === 'dark' ? '☀️' : '🌙';
+  });
+
+  // ────────────────────────────────────────────
+  //  FETCH
+  // ────────────────────────────────────────────
+  async function fetchFeed(source) {
+    try {
+      const res = await fetch(RSS2JSON + encodeURIComponent(source.url) + '&count=30', { cache: 'default' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      if (data.status !== 'ok') throw new Error('Feed error');
+      return (data.items || []).map(item => ({
+        title: item.title || '',
+        description: stripHtml(item.description || item.content || ''),
+        link: item.link || item.guid || '',
+        image: extractImage(item),
+        pubDate: new Date(item.pubDate),
+        source: source.key,
+        sourceName: source.name,
+        sourceColor: source.color,
+        emoji: source.emoji,
+      }));
+    } catch (e) {
+      console.warn('Feed failed:', source.key, e.message);
+      return [];
+    }
+  }
+
+  function stripHtml(html) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return tmp.textContent.trim().replace(/\s+/g, ' ').slice(0, 200);
+  }
+
+  function extractImage(item) {
+    if (item.thumbnail && item.thumbnail.startsWith('http')) return item.thumbnail;
+    if (item.enclosure && item.enclosure.link) return item.enclosure.link;
+    const m = (item.description || item.content || '').match(/src="([^"]+\.(jpg|jpeg|png|webp))/i);
+    if (m) return m[1];
+    return null;
+  }
+
+  // ────────────────────────────────────────────
+  //  RENDER
+  // ────────────────────────────────────────────
+  function timeAgo(date) {
+    const diff = (Date.now() - date.getTime()) / 1000;
+    if (diff < 60) return 'vừa xong';
+    if (diff < 3600) return Math.floor(diff/60) + ' phút trước';
+    if (diff < 86400) return Math.floor(diff/3600) + ' giờ trước';
+    return Math.floor(diff/86400) + ' ngày trước';
+  }
+
+  function renderCard(article, featured = false) {
+    const a = document.createElement('a');
+    a.className = 'card' + (featured ? ' featured' : '');
+    a.href = article.link;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+
+    const imgHtml = article.image
+      ? `<img class="card-img" src="${article.image}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        + `<div class="card-img-placeholder" style="display:none">🏖️</div>`
+      : `<div class="card-img-placeholder">🏖️</div>`;
+
+    a.innerHTML = `
+      ${imgHtml}
+      <div class="card-body">
+        <div class="card-source">
+          <span class="source-dot" style="background:${article.sourceColor}"></span>
+          ${article.sourceName}
+          <span style="margin-left:auto">${article.emoji}</span>
+        </div>
+        <div class="card-title">${article.title}</div>
+        ${article.description ? `<div class="card-desc">${article.description}</div>` : ''}
+        <div class="card-footer">
+          <span class="card-time">🕐 ${timeAgo(article.pubDate)}</span>
+          <span class="card-tag">Du lịch</span>
+        </div>
+      </div>
+    `;
+    return a;
+  }
+
+  function renderSkeleton(n = 6) {
+    const grid = document.getElementById('newsGrid');
+    grid.innerHTML = '';
+    for (let i = 0; i < n; i++) {
+      grid.innerHTML += `
+        <div class="skeleton-card">
+          <div class="skeleton skeleton-img"></div>
+          <div class="skeleton-body">
+            <div class="skeleton skeleton-line short"></div>
+            <div class="skeleton skeleton-line medium"></div>
+            <div class="skeleton skeleton-line"></div>
+            <div class="skeleton skeleton-line short"></div>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function renderArticles() {
+    const grid = document.getElementById('newsGrid');
+    const items = filtered.slice(0, page * PAGE_SIZE);
+    grid.innerHTML = '';
+
+    if (items.length === 0) {
+      grid.innerHTML = `
+        <div class="status-msg">
+          <div class="icon">🔍</div>
+          <p>Không tìm thấy tin tức nào phù hợp.</p>
+          <button class="btn-retry" onclick="clearSearch()">Xoá bộ lọc</button>
+        </div>
+      `;
+      document.getElementById('loadMoreWrap').style.display = 'none';
+      return;
+    }
+
+    items.forEach((art, i) => {
+      grid.appendChild(renderCard(art, i === 0 && page === 1 && !searchQuery));
+    });
+
+    const hasMore = filtered.length > page * PAGE_SIZE;
+    document.getElementById('loadMoreWrap').style.display = hasMore ? 'block' : 'none';
+    document.getElementById('feedCount').textContent = `${items.length} / ${filtered.length} tin`;
+  }
+
+  // ────────────────────────────────────────────
+  //  SIDEBAR
+  // ────────────────────────────────────────────
+  function renderSidebar() {
+    // sources
+    const list = document.getElementById('sourcesList');
+    list.innerHTML = SOURCES.map(s => `
+      <div class="source-item" onclick="filterSource('${s.key}')">
+        <span class="source-dot" style="background:${s.color};width:10px;height:10px;border-radius:50%;display:inline-block"></span>
+        <span class="source-name">${s.emoji} ${s.name}</span>
+        <span class="source-count">${sourceCounts[s.key] || 0}</span>
+      </div>
+    `).join('');
+
+    // tags
+    const tags = ['Châu Âu', 'Châu Á', 'Việt Nam', 'Hội An', 'Đà Nẵng', 'Phú Quốc',
+      'Hà Nội', 'TP.HCM', 'Nha Trang', 'Thái Lan', 'Nhật Bản', 'Hàn Quốc',
+      'Maldives', 'Bali', 'Paris', 'Du lịch bụi', 'Visa', 'Khách sạn', 'Ẩm thực'];
+    document.getElementById('tagCloud').innerHTML = tags
+      .map(t => `<span class="tag-pill" onclick="searchTag('${t}')">${t}</span>`).join('');
+
+    // stats
+    document.getElementById('statsWidget').innerHTML = `
+      📰 Tổng số bài: <strong>${allArticles.length}</strong><br>
+      📡 Nguồn hoạt động: <strong>${Object.keys(sourceCounts).filter(k => sourceCounts[k] > 0).length} / ${SOURCES.length}</strong><br>
+      🌍 Bài quốc tế: <strong>${allArticles.filter(a => ['travelandleisure','lonelyplanet'].includes(a.source)).length}</strong>
+    `;
+
+    document.getElementById('updatedTime').textContent =
+      'Cập nhật: ' + new Date().toLocaleTimeString('vi-VN');
+  }
+
+  // ────────────────────────────────────────────
+  //  FILTER & SEARCH
+  // ────────────────────────────────────────────
+  function applyFilters() {
+    let arr = allArticles;
+    if (activeSource !== 'all') arr = arr.filter(a => a.source === activeSource);
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      arr = arr.filter(a =>
+        a.title.toLowerCase().includes(q) ||
+        a.description.toLowerCase().includes(q)
+      );
+    }
+    filtered = arr;
+    page = 1;
+    renderArticles();
+
+    const t = document.getElementById('feedTitle');
+    if (searchQuery) t.textContent = `Kết quả: "${searchQuery}"`;
+    else if (activeSource !== 'all') t.textContent = SOURCES.find(s => s.key === activeSource)?.name || 'Tin tức';
+    else t.textContent = 'Tin nổi bật hôm nay';
+  }
+
+  function filterSource(key) {
+    activeSource = key;
+    document.querySelectorAll('.cat-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.source === key);
+    });
+    applyFilters();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function searchTag(tag) {
+    searchQuery = tag;
+    document.getElementById('searchInput').value = tag;
+    applyFilters();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function clearSearch() {
+    searchQuery = '';
+    activeSource = 'all';
+    document.getElementById('searchInput').value = '';
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.dataset.source === 'all'));
+    applyFilters();
+  }
+
+  // ────────────────────────────────────────────
+  //  LOAD
+  // ────────────────────────────────────────────
+  async function loadAll() {
+    renderSkeleton(9);
+    document.getElementById('feedCount').textContent = 'Đang tải...';
+    setProgress(10);
+
+    const results = await Promise.allSettled(SOURCES.map(fetchFeed));
+    setProgress(80);
+
+    allArticles = [];
+    sourceCounts = {};
+    results.forEach((r, i) => {
+      const items = r.status === 'fulfilled' ? r.value : [];
+      sourceCounts[SOURCES[i].key] = items.length;
+      allArticles.push(...items);
+    });
+
+    // sort newest first
+    allArticles.sort((a, b) => b.pubDate - a.pubDate);
+
+    setProgress(100);
+    setTimeout(() => setProgress(0), 600);
+
+    filtered = allArticles;
+    applyFilters();
+    renderSidebar();
+
+    const loaded = Object.values(sourceCounts).filter(c => c > 0).length;
+    showToast(`✅ Đã tải ${allArticles.length} bài từ ${loaded} nguồn`);
+  }
+
+  function setProgress(pct) {
+    const bar = document.getElementById('refreshBar');
+    bar.style.width = pct + '%';
+    if (pct === 0) setTimeout(() => bar.style.width = '0', 100);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ────────────────────────────────────────────
+  //  EVENTS
+  // ────────────────────────────────────────────
+  document.getElementById('refreshBtn').addEventListener('click', () => {
+    loadAll();
+  });
+
+  document.getElementById('searchInput').addEventListener('input', e => {
+    searchQuery = e.target.value.trim();
+    applyFilters();
+  });
+
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => filterSource(btn.dataset.source));
+  });
+
+  document.getElementById('loadMoreBtn').addEventListener('click', () => {
+    page++;
+    renderArticles();
+    showToast('Đã tải thêm bài viết');
+  });
+
+  // ────────────────────────────────────────────
+  //  AUTO REFRESH every 10 min
+  // ────────────────────────────────────────────
+  setInterval(loadAll, 10 * 60 * 1000);
+
+  // ────────────────────────────────────────────
+  //  INIT
+  // ────────────────────────────────────────────
+  loadAll();
+  </script>
+</body>
+</html>

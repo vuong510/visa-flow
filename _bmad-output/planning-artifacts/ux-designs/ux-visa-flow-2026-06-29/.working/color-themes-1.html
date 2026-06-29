@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VisaFlow — Color Theme Explorations</title>
+<style>
+  /* ============================================================
+     DESIGN TOKENS — all hex values documented here
+     ============================================================
+
+     THEME 1: Navy Authority
+       --navy-primary:   #1A2E4A   (deep navy — government trust)
+       --navy-accent:    #2563EB   (electric blue CTA)
+       --navy-surface:   #F0F4FA   (cool tinted surface)
+       --navy-text:      #0F1C2E   (near-black)
+       --navy-border:    #C8D5E8   (cool grey border)
+       --navy-progress:  #2563EB
+
+     THEME 2: Teal Confidence
+       --teal-primary:   #0D6E6E   (dark teal — Grab-adjacent fintech)
+       --teal-accent:    #00A896   (vibrant teal CTA)
+       --teal-surface:   #F0FAF9   (teal-tinted surface)
+       --teal-text:      #0A2929   (dark teal-black)
+       --teal-border:    #B2DCD9   (muted teal border)
+       --teal-progress:  #00A896
+
+     THEME 3: Crimson Official
+       --crimson-primary:  #B91C1C   (deep crimson — Techcombank red)
+       --crimson-accent:   #DC2626   (vivid red CTA)
+       --crimson-surface:  #FEF2F2   (warm blush surface)
+       --crimson-text:     #3B0000   (deep red-black)
+       --crimson-border:   #FECACA   (blush border)
+       --crimson-progress: #DC2626
+
+     THEME 4: Charcoal Precision
+       --charcoal-primary:  #1C1C1E   (near-black — Uber minimal)
+       --charcoal-accent:   #3D3D3D   (dark grey CTA)
+       --charcoal-surface:  #F5F5F5   (neutral light surface)
+       --charcoal-text:     #111111   (pure-near-black)
+       --charcoal-border:   #D4D4D4   (neutral border)
+       --charcoal-progress: #1C1C1E
+     ============================================================ */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+    background: #EAECF0;
+    min-height: 100vh;
+    padding: 40px 24px;
+  }
+
+  /* Page header */
+  .page-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .page-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1A1A2E;
+    letter-spacing: -0.3px;
+  }
+  .page-header p {
+    font-size: 13px;
+    color: #555;
+    margin-top: 6px;
+  }
+
+  /* Grid layout */
+  .themes-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  /* ---- MOBILE CARD SHELL ---- */
+  .phone-shell {
+    width: 320px;
+    background: #fff;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.08);
+    flex-shrink: 0;
+  }
+
+  /* Header bar */
+  .theme-header {
+    padding: 20px 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .theme-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    opacity: 0.65;
+  }
+  .theme-name {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+  }
+  .theme-hex {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.7;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  }
+
+  /* App content area */
+  .app-content {
+    background: #fff;
+    padding: 20px;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    margin-bottom: 20px;
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .progress-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .progress-step {
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+  }
+  .progress-track {
+    height: 4px;
+    background: #EBEBEB;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 40%;
+    border-radius: 4px;
+  }
+
+  /* Question */
+  .question-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #AAAAAA;
+    margin-bottom: 8px;
+  }
+  .question-text {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    line-height: 1.4;
+    margin-bottom: 20px;
+    letter-spacing: -0.1px;
+  }
+
+  /* Option buttons */
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1.5px solid;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: none;
+    text-align: left;
+  }
+  .option-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  /* Selected state (first option) */
+  .option-btn.selected {
+    /* color set per theme */
+  }
+
+  /* CTA button */
+  .cta-btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    border: none;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.1px;
+    color: #fff;
+    cursor: pointer;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  /* Token chips */
+  .token-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 16px 20px;
+    border-top: 1px solid #F0F0F0;
+  }
+  .token-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px 4px 6px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    background: #F5F5F5;
+    color: #444;
+    border: 1px solid #E0E0E0;
+  }
+  .token-swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.12);
+    flex-shrink: 0;
+  }
+
+  /* ============================================================
+     THEME 1 — NAVY AUTHORITY
+     Primary: #1A2E4A  |  Accent/CTA: #2563EB
+     ============================================================ */
+  .navy .theme-header  { background: #1A2E4A; color: #fff; }
+  .navy .theme-label   { color: rgba(255,255,255,0.6); }
+  .navy .theme-name    { color: #fff; }
+  .navy .theme-hex     { color: rgba(255,255,255,0.55); }
+  .navy .progress-fill { background: #2563EB; }
+  .navy .progress-step { color: #1A2E4A; }
+  .navy .option-btn {
+    border-color: #C8D5E8;
+    background: #fff;
+    color: #0F1C2E;
+  }
+  .navy .option-btn.selected {
+    border-color: #1A2E4A;
+    background: #F0F4FA;
+    color: #1A2E4A;
+  }
+  .navy .option-btn.selected .option-icon {
+    background: #1A2E4A;
+    color: #fff;
+  }
+  .navy .option-btn:not(.selected) .option-icon {
+    background: #EEF2F8;
+    color: #1A2E4A;
+  }
+  .navy .cta-btn { background: #2563EB; }
+
+  /* ============================================================
+     THEME 2 — TEAL CONFIDENCE
+     Primary: #0D6E6E  |  Accent/CTA: #00A896
+     ============================================================ */
+  .teal .theme-header  { background: #0D6E6E; color: #fff; }
+  .teal .theme-label   { color: rgba(255,255,255,0.6); }
+  .teal .theme-name    { color: #fff; }
+  .teal .theme-hex     { color: rgba(255,255,255,0.55); }
+  .teal .app-content   { background: #fff; }
+  .teal .progress-fill { background: #00A896; }
+  .teal .progress-step { color: #0D6E6E; }
+  .teal .option-btn {
+    border-color: #B2DCD9;
+    background: #fff;
+    color: #0A2929;
+  }
+  .teal .option-btn.selected {
+    border-color: #0D6E6E;
+    background: #F0FAF9;
+    color: #0D6E6E;
+  }
+  .teal .option-btn.selected .option-icon {
+    background: #0D6E6E;
+    color: #fff;
+  }
+  .teal .option-btn:not(.selected) .option-icon {
+    background: #E6F5F4;
+    color: #0D6E6E;
+  }
+  .teal .cta-btn { background: #00A896; }
+
+  /* ============================================================
+     THEME 3 — CRIMSON OFFICIAL
+     Primary: #B91C1C  |  Accent/CTA: #DC2626
+     ============================================================ */
+  .crimson .theme-header  { background: #B91C1C; color: #fff; }
+  .crimson .theme-label   { color: rgba(255,255,255,0.6); }
+  .crimson .theme-name    { color: #fff; }
+  .crimson .theme-hex     { color: rgba(255,255,255,0.55); }
+  .crimson .app-content   { background: #fff; }
+  .crimson .progress-fill { background: #DC2626; }
+  .crimson .progress-step { color: #B91C1C; }
+  .crimson .option-btn {
+    border-color: #FECACA;
+    background: #fff;
+    color: #3B0000;
+  }
+  .crimson .option-btn.selected {
+    border-color: #B91C1C;
+    background: #FEF2F2;
+    color: #B91C1C;
+  }
+  .crimson .option-btn.selected .option-icon {
+    background: #B91C1C;
+    color: #fff;
+  }
+  .crimson .option-btn:not(.selected) .option-icon {
+    background: #FEE2E2;
+    color: #B91C1C;
+  }
+  .crimson .cta-btn { background: #DC2626; }
+
+  /* ============================================================
+     THEME 4 — CHARCOAL PRECISION
+     Primary: #1C1C1E  |  Accent/CTA: #3D3D3D
+     ============================================================ */
+  .charcoal .theme-header  { background: #1C1C1E; color: #fff; }
+  .charcoal .theme-label   { color: rgba(255,255,255,0.5); }
+  .charcoal .theme-name    { color: #fff; }
+  .charcoal .theme-hex     { color: rgba(255,255,255,0.45); }
+  .charcoal .app-content   { background: #fff; }
+  .charcoal .progress-fill { background: #1C1C1E; }
+  .charcoal .progress-step { color: #1C1C1E; }
+  .charcoal .option-btn {
+    border-color: #D4D4D4;
+    background: #fff;
+    color: #111111;
+  }
+  .charcoal .option-btn.selected {
+    border-color: #1C1C1E;
+    background: #F5F5F5;
+    color: #1C1C1E;
+  }
+  .charcoal .option-btn.selected .option-icon {
+    background: #1C1C1E;
+    color: #fff;
+  }
+  .charcoal .option-btn:not(.selected) .option-icon {
+    background: #EBEBEB;
+    color: #1C1C1E;
+  }
+  .charcoal .cta-btn { background: #1C1C1E; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>VisaFlow — Color Theme Explorations</h1>
+  <p>4 themes × MoMo mini-app form factor · 320px · Inline CSS only · 2026-06-29</p>
+</div>
+
+<div class="themes-grid">
+
+  <!-- ==================== THEME 1: NAVY AUTHORITY ==================== -->
+  <div class="phone-shell navy">
+    <div class="theme-header">
+      <span class="theme-label">Theme 01</span>
+      <span class="theme-name">Navy Authority</span>
+      <span class="theme-hex">#1A2E4A · CTA #2563EB</span>
+    </div>
+
+    <div class="app-content">
+      <!-- Progress -->
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span class="progress-label">Kiểm tra tiêu chí</span>
+          <span class="progress-step">2 / 5</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+
+      <!-- Question -->
+      <div class="question-label">Câu hỏi 2</div>
+      <div class="question-text">Bạn đang làm công việc gì?</div>
+
+      <!-- Options -->
+      <div class="options-list">
+        <div class="option-btn selected">
+          <div class="option-icon">💼</div>
+          <span>Nhân viên</span>
+        </div>
+        <div class="option-btn">
+          <div class="option-icon">🎓</div>
+          <span>Sinh viên</span>
+        </div>
+        <div class="option-btn">
+          <div class="option-icon">💻</div>
+          <span>Freelancer</span>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <button class="cta-btn">Tiếp theo →</button>
+    </div>
+
+    <!-- Token chips -->
+    <div class="token-row">
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#1A2E4A;"></div>primary
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#F0F4FA;"></div>surface
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#0F1C2E;"></div>text
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#C8D5E8;"></div>border
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#2563EB;"></div>CTA
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== THEME 2: TEAL CONFIDENCE ==================== -->
+  <div class="phone-shell teal">
+    <div class="theme-header">
+      <span class="theme-label">Theme 02</span>
+      <span class="theme-name">Teal Confidence</span>
+      <span class="theme-hex">#0D6E6E · CTA #00A896</span>
+    </div>
+
+    <div class="app-content">
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span class="progress-label">Kiểm tra tiêu chí</span>
+          <span class="progress-step">2 / 5</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="question-label">Câu hỏi 2</div>
+      <div class="question-text">Bạn đang làm công việc gì?</div>
+
+      <div class="options-list">
+        <div class="option-btn selected">
+          <div class="option-icon">💼</div>
+          <span>Nhân viên</span>
+        </div>
+        <div class="option-btn">
+          <div class="option-icon">🎓</div>
+          <span>Sinh viên</span>
+        </div>
+        <div class="option-btn">
+          <div class="option-icon">💻</div>
+          <span>Freelancer</span>
+        </div>
+      </div>
+
+      <button class="cta-btn">Tiếp theo →</button>
+    </div>
+
+    <div class="token-row">
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#0D6E6E;"></div>primary
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#F0FAF9;"></div>surface
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#0A2929;"></div>text
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#B2DCD9;"></div>border
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#00A896;"></div>CTA
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== THEME 3: CRIMSON OFFICIAL ==================== -->
+  <div class="phone-shell crimson">
+    <div class="theme-header">
+      <span class="theme-label">Theme 03</span>
+      <span class="theme-name">Crimson Official</span>
+      <span class="theme-hex">#B91C1C · CTA #DC2626</span>
+    </div>
+
+    <div class="app-content">
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span class="progress-label">Kiểm tra tiêu chí</span>
+          <span class="progress-step">2 / 5</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="question-label">Câu hỏi 2</div>
+      <div class="question-text">Bạn đang làm công việc gì?</div>
+
+      <div class="options-list">
+        <div class="option-btn selected">
+          <div class="option-icon">💼</div>
+          <span>Nhân viên</span>
+        </div>
+        <div class="option-btn">
+          <div class="option-icon">🎓</div>
+          <span>Sinh viên</span>
+        </div>
+        <div class="option-btn">
+          <div class="option-icon">💻</div>
+          <span>Freelancer</span>
+        </div>
+      </div>
+
+      <button class="cta-btn">Tiếp theo →</button>
+    </div>
+
+    <div class="token-row">
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#B91C1C;"></div>primary
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#FEF2F2;"></div>surface
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#3B0000;"></div>text
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#FECACA;"></div>border
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#DC2626;"></div>CTA
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== THEME 4: CHARCOAL PRECISION ==================== -->
+  <div class="phone-shell charcoal">
+    <div class="theme-header">
+      <span class="theme-label">Theme 04</span>
+      <span class="theme-name">Charcoal Precision</span>
+      <span class="theme-hex">#1C1C1E · CTA #3D3D3D</span>
+    </div>
+
+    <div class="app-content">
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span class="progress-label">Kiểm tra tiêu chí</span>
+          <span class="progress-step">2 / 5</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="question-label">Câu hỏi 2</div>
+      <div class="question-text">Bạn đang làm công việc gì?</div>
+
+      <div class="options-list">
+        <div class="option-btn selected">
+          <div class="option-icon">💼</div>
+          <span>Nhân viên</span>
+        </div>
+        <div class="option-btn">
+          <div class="option-icon">🎓</div>
+          <span>Sinh viên</span>
+        </div>
+        <div class="option-btn">
+          <div class="option-icon">💻</div>
+          <span>Freelancer</span>
+        </div>
+      </div>
+
+      <button class="cta-btn">Tiếp theo →</button>
+    </div>
+
+    <div class="token-row">
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#1C1C1E;"></div>primary
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#F5F5F5;"></div>surface
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#111111;"></div>text
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#D4D4D4;"></div>border
+      </div>
+      <div class="token-chip">
+        <div class="token-swatch" style="background:#3D3D3D;"></div>CTA
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.themes-grid -->
+
+</body>
+</html>
