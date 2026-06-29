@@ -133,6 +133,36 @@ def generate_checklist(profile: dict, travel_dates: dict, destination: str) -> d
     return {"items": items, "confidence_note": confidence_note}
 
 
+def chat_with_haiku(messages: list, context: dict) -> str:
+    destination = context.get("destination")
+    screen = context.get("screen", "")
+    profile = context.get("profile") or {}
+
+    dest_name = {"japan": "Nhật Bản", "china": "Trung Quốc"}.get(destination, "")
+    dest_line = f"Điểm đến: {dest_name}." if dest_name else "Điểm đến: chưa chọn."
+    emp = profile.get("employment_type", "")
+    emp_line = f"Loại việc làm: {emp}." if emp else ""
+    screen_line = f"Màn hình hiện tại: {screen}." if screen else ""
+
+    system = f"""Bạn là trợ lý tư vấn xin visa cho người dùng Việt Nam. Hãy trả lời bằng tiếng Việt, ngắn gọn và thực tế.
+
+Context người dùng: {dest_line} {emp_line} {screen_line}
+
+Nguyên tắc:
+- Trả lời dựa trên thông tin context nếu có liên quan
+- TUYỆT ĐỐI KHÔNG đề cập ngưỡng số dư tài khoản hay thu nhập cụ thể
+- Nếu không chắc, khuyên người dùng liên hệ đại sứ quán hoặc đại lý visa
+- Giữ câu trả lời dưới 200 từ"""
+
+    response = client.messages.create(
+        model=HAIKU,
+        max_tokens=512,
+        system=system,
+        messages=messages,
+    )
+    return response.content[0].text
+
+
 def review_document_image(image_bytes: bytes, media_type: str, doc_type: str, profile: dict) -> dict:
     employment_type = (profile or {}).get("employment_type", "")
     destination = (profile or {}).get("destination", "")

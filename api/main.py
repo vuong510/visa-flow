@@ -8,6 +8,7 @@ from db.session import init_db
 from api.routes import router
 from api.routes.cv_jobs import router as cv_jobs_router
 from api.routers.application import router as visa_router
+from api.routers.chat import router as chat_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -31,6 +32,7 @@ app.add_middleware(
 app.include_router(router, prefix="/api/v1")
 app.include_router(cv_jobs_router, prefix="/api/v1")
 app.include_router(visa_router, prefix="/api")
+app.include_router(chat_router, prefix="/api")
 
 FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
 
