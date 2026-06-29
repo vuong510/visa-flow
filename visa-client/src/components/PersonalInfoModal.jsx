@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import { useApp } from '../context/AppContext'
 
 const FIELDS = [
   { key: 'family_name',         label: 'Họ (chữ in hoa Latin)',       placeholder: 'VD: NGUYEN',        required: true },
@@ -50,6 +51,12 @@ const labelStyle = {
 }
 
 export default function PersonalInfoModal({ onSubmit, onClose, loading }) {
+  const { API_BASE } = useApp()
+  const cccdRef = useRef(null)
+  const passportRef = useRef(null)
+  const [extracting, setExtracting] = useState(null) // 'cccd' | 'passport' | null
+  const [extractMsg, setExtractMsg] = useState('')
+
   const [form, setForm] = useState({
     family_name: '', given_name: '', date_of_birth: '', place_of_birth: '',
     id_number: '', passport_number: '', passport_issue_date: '',
@@ -59,6 +66,31 @@ export default function PersonalInfoModal({ onSubmit, onClose, loading }) {
     accommodation: '', accommodation_address: '', accommodation_phone: '',
   })
   const [errors, setErrors] = useState({})
+
+  async function handleExtract(docType, file) {
+    if (!file) return
+    setExtracting(docType)
+    setExtractMsg('')
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('doc_type', docType)
+      const res = await fetch(`${API_BASE}/api/extract-id`, { method: 'POST', body: formData })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        setExtractMsg(err.detail || 'Không thể đọc ảnh. Thử lại.')
+        return
+      }
+      const data = await res.json()
+      // Merge extracted fields into form, skip empty values
+      setForm(f => ({ ...f, ...Object.fromEntries(Object.entries(data).filter(([, v]) => v)) }))
+      setExtractMsg(`Đã đọc được thông tin từ ${docType === 'cccd' ? 'CCCD' : 'hộ chiếu'}. Kiểm tra lại trước khi tải.`)
+    } catch {
+      setExtractMsg('Lỗi kết nối. Vui lòng thử lại.')
+    } finally {
+      setExtracting(null)
+    }
+  }
 
   function set(key, val) {
     setForm(f => ({ ...f, [key]: val }))
@@ -106,7 +138,45 @@ export default function PersonalInfoModal({ onSubmit, onClose, loading }) {
 
         {/* Body */}
         <div style={{ overflowY: 'auto', padding: '16px 20px', flex: 1 }}>
-          {/* Gender & Marital in one row */}
+          {/* Auto-fill from ID scan */}
+        <div style={{ marginBottom: 18 }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 8 }}>
+            Tự động điền từ ảnh giấy tờ
+          </p>
+          <div style={{ display: 'flex', gap: 10 }}>
+            {[
+              { type: 'cccd', label: 'CCCD', ref: cccdRef },
+              { type: 'passport', label: 'Hộ chiếu', ref: passportRef },
+            ].map(({ type, label, ref }) => (
+              <button
+                key={type}
+                onClick={() => ref.current.click()}
+                disabled={!!extracting}
+                style={{
+                  flex: 1, padding: '10px 0',
+                  border: '1.5px dashed #93c5fd',
+                  borderRadius: 10, background: '#eff6ff',
+                  color: '#1d4ed8', fontSize: 13, fontWeight: 600,
+                  cursor: extracting ? 'not-allowed' : 'pointer',
+                  opacity: extracting && extracting !== type ? 0.5 : 1,
+                }}
+              >
+                {extracting === type ? 'Đang đọc...' : `📷 ${label}`}
+              </button>
+            ))}
+          </div>
+          {extractMsg && (
+            <p style={{ fontSize: 12, marginTop: 8, color: extractMsg.startsWith('Đã') ? '#065f46' : '#b91c1c', lineHeight: 1.4 }}>
+              {extractMsg}
+            </p>
+          )}
+          <input ref={cccdRef} type="file" accept="image/*" style={{ display: 'none' }}
+            onChange={e => handleExtract('cccd', e.target.files[0])} />
+          <input ref={passportRef} type="file" accept="image/*" style={{ display: 'none' }}
+            onChange={e => handleExtract('passport', e.target.files[0])} />
+        </div>
+
+        {/* Gender & Marital in one row */}
           <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>Giới tính</label>

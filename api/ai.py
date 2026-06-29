@@ -173,6 +173,62 @@ Nguyên tắc:
     return response.content[0].text
 
 
+def extract_id_info(image_bytes: bytes, media_type: str, doc_type: str) -> dict:
+    """Extract personal info fields from a CCCD or passport image using Sonnet vision."""
+    system = """Extract personal information from the identity document image.
+Return ONLY valid JSON, no markdown, no extra text.
+
+For CCCD (Vietnamese citizen ID card), extract:
+{
+  "family_name": "HO (uppercase Latin, surname only)",
+  "given_name": "TEN DEM VA TEN (uppercase Latin, all names except surname)",
+  "date_of_birth": "YYYY-MM-DD",
+  "gender": "male" or "female",
+  "id_number": "12-digit CCCD number",
+  "place_of_birth": "province/city in English or transliterated",
+  "home_address": "full address in Latin script"
+}
+
+For passport, extract:
+{
+  "family_name": "surname as printed in MRZ/data page (uppercase)",
+  "given_name": "given names as printed (uppercase)",
+  "date_of_birth": "YYYY-MM-DD",
+  "gender": "male" or "female",
+  "passport_number": "passport number",
+  "passport_issue_date": "YYYY-MM-DD",
+  "passport_expiry_date": "YYYY-MM-DD",
+  "place_of_birth": "as printed on passport"
+}
+
+Rules:
+- Return only fields you can clearly read; omit fields that are unclear or absent
+- Dates must be YYYY-MM-DD format
+- Names must be uppercase Latin characters only (no Vietnamese diacritics)
+- gender: "male" if Nam/M, "female" if Nữ/F
+- If image is unreadable or not an ID document, return {"error": "cannot_read"}"""
+
+    user_content = [
+        {
+            "type": "image",
+            "source": {
+                "type": "base64",
+                "media_type": media_type,
+                "data": base64.standard_b64encode(image_bytes).decode("utf-8"),
+            }
+        },
+        {"type": "text", "text": f"Document type: {doc_type}. Extract all readable personal information fields."}
+    ]
+
+    response = client.messages.create(
+        model=SONNET,
+        max_tokens=512,
+        system=system,
+        messages=[{"role": "user", "content": user_content}]
+    )
+    return _parse_json(response.content[0].text)
+
+
 def review_document_image(image_bytes: bytes, media_type: str, doc_type: str, profile: dict) -> dict:
     employment_type = (profile or {}).get("employment_type", "")
     destination = (profile or {}).get("destination", "")
