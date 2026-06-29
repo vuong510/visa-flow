@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from db.session import get_db
 from db.models import Application
 from api.form_filler import fill_visa_form, fill_schedule
+from api.ai import generate_itinerary
 
 router = APIRouter()
 
@@ -127,6 +128,24 @@ def download_forms(application_id: str, body: FormsRequest, db: Session = Depend
     info = _build_info(application, body.personal_info)
 
     try:
+        _td = {}
+        if application.travel_dates:
+            try:
+                _td = json.loads(application.travel_dates)
+            except Exception:
+                pass
+
+        itinerary = generate_itinerary(
+            destination=application.destination,
+            departure=_td.get("departure", ""),
+            return_date=_td.get("return", ""),
+            hotel_name=body.personal_info.accommodation,
+            hotel_phone=body.personal_info.accommodation_phone,
+        )
+        info["itinerary"] = itinerary
+        if itinerary and body.personal_info.accommodation:
+            info["hotel_city"] = body.personal_info.accommodation
+
         visa_bytes = fill_visa_form(info)
         schedule_bytes = fill_schedule(info)
     except Exception as e:

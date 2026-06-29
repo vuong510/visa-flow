@@ -7,12 +7,13 @@ from core.config import ANTHROPIC_API_KEY, HAIKU, SONNET
 client = Anthropic(api_key=ANTHROPIC_API_KEY)
 
 
-def _parse_json(text: str) -> dict:
+def _parse_json(text: str):
     text = text.strip()
     text = re.sub(r'^```json\s*', '', text, flags=re.MULTILINE)
     text = re.sub(r'^```\s*', '', text, flags=re.MULTILINE)
     text = re.sub(r'```\s*$', '', text, flags=re.MULTILINE).strip()
-    match = re.search(r'\{.*\}', text, re.DOTALL)
+    # Try to extract JSON array first, then object
+    match = re.search(r'(\[.*\]|\{.*\})', text, re.DOTALL)
     if match:
         text = match.group(0)
     return json.loads(text)
@@ -171,6 +172,57 @@ Nguyên tắc:
         messages=messages,
     )
     return response.content[0].text
+
+
+def generate_itinerary(destination: str, departure: str, return_date: str,
+                       hotel_name: str = "", hotel_phone: str = "") -> list:
+    """Generate a day-by-day itinerary in English for MOFA schedule form."""
+    from datetime import datetime as _dt
+    try:
+        days = max(1, (_dt.strptime(return_date, "%Y-%m-%d") - _dt.strptime(departure, "%Y-%m-%d")).days + 1)
+    except Exception:
+        days = 7
+
+    dest_name = "Japan" if destination == "japan" else "China"
+    city = "Tokyo" if destination == "japan" else "Beijing"
+    airport = "Narita International Airport" if destination == "japan" else "Beijing Capital International Airport"
+    hotel = hotel_name or f"Hotel in {city}"
+
+    system = f"""Generate a {days}-day tourist itinerary for {dest_name} for a Vietnamese traveller.
+Departure: {departure}, Return: {return_date}.
+Primary city: {city}. Hotel: {hotel}.
+
+Rules:
+- ALL text MUST be in English (no Vietnamese, no Japanese/Chinese characters)
+- Activities must be real, specific tourist attractions and activities
+- Keep each activity description under 55 characters
+- Day 1 = arrival day (airport → hotel check-in)
+- Last day = departure day (check-out → airport)
+- Vary activities across days (temples, parks, shopping, food, museums, day trips)
+
+Return ONLY a JSON array, no markdown, no extra text:
+[
+  {{
+    "activities": ["activity description (max 55 chars)"],
+    "accommodation": {{"name": "hotel name", "phone": "{hotel_phone or ''}"}}
+  }},
+  ...
+]
+One object per day, exactly {days} objects."""
+
+    response = client.messages.create(
+        model=HAIKU,
+        max_tokens=1024,
+        system=system,
+        messages=[{"role": "user", "content": f"Generate the {days}-day itinerary now."}],
+    )
+    try:
+        result = _parse_json(response.content[0].text)
+        if isinstance(result, list):
+            return result
+    except Exception:
+        pass
+    return []
 
 
 def extract_id_info(image_bytes: bytes, media_type: str, doc_type: str) -> dict:
