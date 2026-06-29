@@ -7,7 +7,7 @@ __pycache__/
 visa_flow.db
 uploads/
 node_modules/
-visa-client/dist/
+# visa-client/dist/  -- committed for Railway deploy
 visa-client/.env.local
 *.egg-info/
 .DS_Store
