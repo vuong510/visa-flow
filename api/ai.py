@@ -83,6 +83,14 @@ def generate_checklist(profile: dict, travel_dates: dict, destination: str) -> d
     }
     emp_label = employment_map.get(employment_type, employment_type)
 
+    # Items bắt buộc cho mọi loại hồ sơ và mọi điểm đến
+    universal_items = [
+        {"id": "photo", "name": "Ảnh thẻ 4.5×4.5cm", "description": "Nền trắng, chụp trong vòng 6 tháng, không đeo kính, không đội mũ", "format": "Ảnh gốc (không scan)", "why": "Bắt buộc dán lên tờ khai xin visa"},
+        {"id": "itinerary", "name": "Lịch trình chuyến đi", "description": f"Lịch trình chi tiết từ {departure} đến {return_date}: địa điểm dự kiến, ngày/đêm ở từng nơi", "format": "Bản in tiếng Anh hoặc tiếng Việt", "why": "Đại sứ quán xác minh mục đích chuyến đi"},
+        {"id": "hotel_booking", "name": "Đặt phòng khách sạn", "description": "Confirmation từ khách sạn, có tên, địa chỉ, ngày nhận/trả phòng khớp lịch trình", "format": "Bản in hoặc email xác nhận", "why": "Chứng minh chỗ ở trong suốt chuyến đi"},
+        {"id": "flight_booking", "name": "Đặt vé máy bay (khứ hồi)", "description": "Vé đặt chỗ hoặc vé mua — phải có ngày đi và ngày về, không cần thanh toán trước", "format": "Bản in itinerary từ hãng bay hoặc OTA", "why": "Chứng minh có kế hoạch quay về Việt Nam"},
+    ]
+
     doc_rules = {
         "employee": [
             {"id": "passport", "name": "Hộ chiếu", "description": "Còn hạn ít nhất 6 tháng sau ngày về", "format": "Bản gốc", "why": "Tài liệu định danh chính thức bắt buộc"},
@@ -125,7 +133,7 @@ def generate_checklist(profile: dict, travel_dates: dict, destination: str) -> d
         ],
     }
 
-    items = doc_rules.get(employment_type, doc_rules["employee"])
+    items = doc_rules.get(employment_type, doc_rules["employee"]) + universal_items
     confidence_note = None
     if employment_type == "freelancer":
         confidence_note = "Hồ sơ freelancer có độ biến động cao. Nhân viên tư vấn sẽ kiểm tra lại toàn bộ tài liệu trước khi nộp."
