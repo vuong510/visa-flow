@@ -1,0 +1,274 @@
+import uuid
+import shutil
+from pathlib import Path
+from datetime import datetime
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from db.session import get_db
+from db.models import Application, Document
+
+router = APIRouter()
+
+UPLOADS_DIR = Path(__file__).parent.parent.parent / "uploads"
+UPLOADS_DIR.mkdir(exist_ok=True)
+
+IMAGE_TYPES = {"image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"}
+
+
+class DestinationUpdate(BaseModel):
+    destination: str
+
+
+class ProfileUpdate(BaseModel):
+    profile_json: dict
+    travel_dates: Optional[dict] = None
+
+
+@router.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+@router.post("/application/start")
+def start_application(db: Session = Depends(get_db)):
+    session_id = str(uuid.uuid4())
+    app = Application(session_id=session_id)
+    db.add(app)
+    db.commit()
+    db.refresh(app)
+    return {"application_id": app.id, "session_id": session_id}
+
+
+@router.patch("/application/{app_id}/destination")
+def set_destination(app_id: int, body: DestinationUpdate, db: Session = Depends(get_db)):
+    app = db.get(Application, app_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    app.destination = body.destination
+    db.commit()
+    return {"ok": True}
+
+
+@router.put("/application/{app_id}/profile")
+def update_profile(app_id: int, body: ProfileUpdate, db: Session = Depends(get_db)):
+    app = db.get(Application, app_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    app.profile_json = body.profile_json
+    if body.travel_dates:
+        app.travel_dates = body.travel_dates
+    db.commit()
+    return {"ok": True}
+
+
+@router.post("/application/{app_id}/eligibility")
+def run_eligibility(app_id: int, db: Session = Depends(get_db)):
+    from api.ai import assess_eligibility
+    app = db.get(Application, app_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    try:
+        result = assess_eligibility(
+            profile=app.profile_json or {},
+            travel_dates=app.travel_dates or {},
+            destination=app.destination or "japan",
+        )
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"AI service error: {str(e)}")
+    app.eligibility_result = result.get("result")
+    app.eligibility_data = result
+    db.commit()
+    return result
+
+
+@router.post("/application/{app_id}/payment/demo")
+def demo_payment(app_id: int, db: Session = Depends(get_db)):
+    app = db.get(Application, app_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    app.payment_status = "demo_completed"
+    app.feasibility_ok = True
+    db.commit()
+    return {"ok": True}
+
+
+@router.post("/application/{app_id}/checklist")
+def get_checklist(app_id: int, db: Session = Depends(get_db)):
+    from api.ai import generate_checklist
+    app = db.get(Application, app_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    if app.checklist_json:
+        return app.checklist_json
+    try:
+        result = generate_checklist(
+            profile=app.profile_json or {},
+            travel_dates=app.travel_dates or {},
+            destination=app.destination or "japan",
+        )
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"AI service error: {str(e)}")
+    app.checklist_json = result
+    db.commit()
+    return result
+
+
+@router.post("/application/{app_id}/documents")
+async def upload_document(
+    app_id: int,
+    file: UploadFile = File(...),
+    doc_type: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    app = db.get(Application, app_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+
+    app_dir = UPLOADS_DIR / str(app_id)
+    app_dir.mkdir(exist_ok=True)
+
+    safe_name = f"{doc_type}_{uuid.uuid4().hex[:8]}_{file.filename}"
+    file_path = app_dir / safe_name
+
+    with open(file_path, "wb") as f:
+        shutil.copyfileobj(file.file, f)
+
+    doc = Document(
+        application_id=app_id,
+        doc_type=doc_type,
+        file_path=str(file_path),
+        review_status="pending",
+    )
+    db.add(doc)
+    db.commit()
+    db.refresh(doc)
+    return {"document_id": doc.id, "doc_type": doc_type, "status": "pending"}
+
+
+@router.get("/application/{app_id}/documents")
+def list_documents(app_id: int, db: Session = Depends(get_db)):
+    docs = db.query(Document).filter(Document.application_id == app_id).all()
+    return [
+        {
+            "id": d.id,
+            "doc_type": d.doc_type,
+            "review_status": d.review_status,
+            "review_notes": d.review_notes,
+        }
+        for d in docs
+    ]
+
+
+@router.post("/application/{app_id}/documents/{doc_id}/review")
+def review_document(app_id: int, doc_id: int, db: Session = Depends(get_db)):
+    from api.ai import review_document_image
+    doc = db.get(Document, doc_id)
+    if not doc or doc.application_id != app_id:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    app = db.get(Application, app_id)
+    file_path = Path(doc.file_path) if doc.file_path else None
+
+    if file_path and file_path.exists():
+        content_type = _guess_media_type(file_path.name)
+        if content_type in IMAGE_TYPES:
+            try:
+                image_bytes = file_path.read_bytes()
+                result = review_document_image(
+                    image_bytes=image_bytes,
+                    media_type=content_type,
+                    doc_type=doc.doc_type,
+                    profile={**(app.profile_json or {}), "destination": app.destination},
+                )
+                doc.review_status = result.get("status", "pass")
+                doc.review_notes = result.get("reason")
+            except Exception:
+                doc.review_status = "pass"
+                doc.review_notes = None
+        else:
+            doc.review_status = "pass"
+            doc.review_notes = None
+    else:
+        doc.review_status = "pass"
+        doc.review_notes = None
+
+    db.commit()
+    return {"status": doc.review_status, "reason": doc.review_notes}
+
+
+@router.post("/application/{app_id}/submit")
+def submit_application(app_id: int, db: Session = Depends(get_db)):
+    app = db.get(Application, app_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    app.submission_status = "submitted"
+    app.submitted_at = datetime.utcnow()
+    db.commit()
+    return {"ok": True}
+
+
+@router.get("/application/{app_id}/status")
+def get_status(app_id: int, db: Session = Depends(get_db)):
+    app = db.get(Application, app_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+
+    status = app.submission_status or "pending"
+    submitted_at = app.submitted_at.isoformat() if app.submitted_at else None
+
+    node_states = _build_timeline(status, submitted_at)
+    return {
+        "submission_status": status,
+        "nodes": node_states,
+        "is_terminal": status in {"approved", "rejected", "quota_rejected"},
+    }
+
+
+def _build_timeline(status: str, submitted_at):
+    completed = {"agency_submitted", "processing", "approved", "rejected", "quota_rejected"}
+    nodes = [
+        {"id": "received", "label": "Tài liệu đã nhận", "sub": "Chúng tôi đã nhận hồ sơ của bạn"},
+        {"id": "embassy_submitted", "label": "Đã nộp lên Đại sứ quán", "sub": "Hồ sơ được chuyển đến ĐSQ"},
+        {"id": "processing", "label": "Đang xử lý", "sub": "ĐSQ đang xem xét hồ sơ"},
+        {"id": "result", "label": "Có kết quả", "sub": "Kết quả sẽ được thông báo ngay"},
+    ]
+    order = ["received", "embassy_submitted", "processing", "result"]
+    status_to_active = {
+        "submitted": "received",
+        "agency_submitted": "embassy_submitted",
+        "processing": "processing",
+        "approved": "result",
+        "rejected": "result",
+        "quota_rejected": "result",
+    }
+    active_id = status_to_active.get(status, "received")
+    active_idx = order.index(active_id)
+
+    result = []
+    for i, node in enumerate(nodes):
+        if i < active_idx:
+            state = "completed"
+        elif i == active_idx:
+            state = "active"
+        else:
+            state = "pending"
+        result.append({**node, "state": state})
+    return result
+
+
+def _guess_media_type(filename: str) -> str:
+    name = filename.lower()
+    if name.endswith(".jpg") or name.endswith(".jpeg"):
+        return "image/jpeg"
+    if name.endswith(".png"):
+        return "image/png"
+    if name.endswith(".webp"):
+        return "image/webp"
+    if name.endswith(".gif"):
+        return "image/gif"
+    if name.endswith(".pdf"):
+        return "application/pdf"
+    return "application/octet-stream"

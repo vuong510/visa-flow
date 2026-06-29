@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.env.local
+visa_flow.db
+uploads/
+node_modules/
+visa-client/dist/
+visa-client/.env.local
+*.egg-info/
+.DS_Store
