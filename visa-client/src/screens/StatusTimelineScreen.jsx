@@ -53,7 +53,7 @@ function TimelineNode({ node, isLast }) {
 }
 
 export default function StatusTimelineScreen() {
-  const { applicationId, API_BASE, navigate } = useApp()
+  const { applicationId, API_BASE, navigate, setResultStatus } = useApp()
   const [statusData, setStatusData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [lastRefresh, setLastRefresh] = useState(null)
@@ -74,6 +74,7 @@ export default function StatusTimelineScreen() {
       setLastRefresh(new Date())
       if (data.is_terminal) {
         clearInterval(pollRef.current)
+        setResultStatus(data.submission_status)
         navigate('result')
       }
     } catch (_) {}

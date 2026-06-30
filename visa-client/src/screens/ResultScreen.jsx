@@ -32,9 +32,16 @@ const COPY = {
 }
 
 export default function ResultScreen() {
-  const { resultStatus } = useApp()
+  const { resultStatus, navigate, setResultStatus } = useApp()
   const status = resultStatus || 'approved'
   const copy = COPY[status] || COPY.approved
+
+  function restart() {
+    localStorage.removeItem('visa_application_id')
+    localStorage.removeItem('visa_session_id')
+    setResultStatus(null)
+    navigate('landing')
+  }
 
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--color-background)' }}>
@@ -75,6 +82,13 @@ export default function ResultScreen() {
             Liên hệ đội tư vấn →
           </a>
         </div>
+
+        <button
+          onClick={restart}
+          style={{ marginTop: 16, background: 'none', border: 'none', fontSize: 13, color: 'var(--color-text-muted)', cursor: 'pointer', textDecoration: 'underline', padding: 8 }}
+        >
+          Bắt đầu hồ sơ mới
+        </button>
       </div>
     </div>
   )

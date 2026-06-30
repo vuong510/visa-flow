@@ -141,6 +141,9 @@ export default function ChecklistScreen() {
   const uploadedItems = items.filter(item => docs[item.id]?.id && !docs[item.id]?.uploading)
   const uploadedCount = uploadedItems.length
   const allPass = uploadedCount === items.length && items.length > 0 && items.every(item => docs[item.id]?.status === 'pass')
+  const hasClarification = items.some(item => docs[item.id]?.status === 'needs_clarification')
+  const canSubmit = uploadedCount === items.length && items.length > 0 &&
+    items.every(item => docs[item.id]?.status === 'pass' || docs[item.id]?.status === 'needs_clarification')
 
   async function handleDownloadForms(personalInfo) {
     setDownloading(true)
@@ -185,7 +188,7 @@ export default function ChecklistScreen() {
         <ReadinessBanner uploaded={uploadedCount} total={items.length} allPass={allPass} />
       )}
 
-      <div style={{ flex: 1, paddingBottom: allPass ? 100 : 24 }}>
+      <div style={{ flex: 1, paddingBottom: canSubmit ? 100 : 24 }}>
         {loading && <SkeletonList />}
 
         {error && (
@@ -220,6 +223,11 @@ export default function ChecklistScreen() {
                 ⚠️ {confidenceNote}
               </div>
             )}
+            {hasClarification && (
+              <div style={{ background: '#f0f9ff', border: '1px solid #7dd3fc', borderRadius: 10, padding: '10px 14px', margin: '8px 0 0', fontSize: 13, color: '#0c4a6e', lineHeight: 1.5 }}>
+                Một số tài liệu cần xem xét thêm. Bạn có thể nộp hồ sơ — đội tư vấn sẽ hỗ trợ kiểm tra trực tiếp.
+              </div>
+            )}
             {items.map(item => (
               <DocumentItem
                 key={item.id}
@@ -241,7 +249,7 @@ export default function ChecklistScreen() {
         onChange={handleFileSelected}
       />
 
-      {allPass && (
+      {canSubmit && (
         <BottomActionArea>
           <CTAButton
             label={submitting ? 'Đang nộp...' : 'Nộp hồ sơ'}

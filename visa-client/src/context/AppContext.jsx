@@ -25,12 +25,13 @@ export function AppProvider({ children }) {
   }
 
   async function updateDestination(appId, dest) {
-    setDestination(dest)
-    await fetch(`${API_BASE}/api/application/${appId}/destination`, {
+    const res = await fetch(`${API_BASE}/api/application/${appId}/destination`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ destination: dest }),
     })
+    if (!res.ok) throw new Error('Failed to save destination')
+    setDestination(dest)
   }
 
   function navigate(to) {

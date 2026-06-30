@@ -179,6 +179,16 @@ export default function ProfileQuestionsScreen() {
   function submitPassportExpiry() {
     if (!passportExpiry) { setError('Vui lòng nhập ngày hết hạn hộ chiếu'); return }
     if (passportExpiry <= today) { setError('Hộ chiếu đã hết hạn. Vui lòng gia hạn trước khi xin visa'); return }
+    if (departure) {
+      const minDate = new Date(departure)
+      minDate.setMonth(minDate.getMonth() + 6)
+      const minStr = minDate.toISOString().split('T')[0]
+      if (passportExpiry < minStr) {
+        const [y, m, d] = minStr.split('-')
+        setError(`Hộ chiếu cần còn hạn đến ít nhất ${d}/${m}/${y} (6 tháng từ ngày khởi hành)`)
+        return
+      }
+    }
     setProfile(p => ({ ...p, passport_expiry: passportExpiry }))
     advanceTo(6)
   }

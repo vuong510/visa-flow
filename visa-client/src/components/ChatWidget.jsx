@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 
 export default function ChatWidget() {
-  const { destination, screen, profile, API_BASE } = useApp()
+  const { destination, screen, profile, applicationId, API_BASE } = useApp()
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
   const [history, setHistory] = useState([])
@@ -32,7 +32,7 @@ export default function ChatWidget() {
         body: JSON.stringify({
           message: text,
           history,
-          context: { destination, screen, profile },
+          context: { destination, screen, profile, applicationId },
         }),
       })
       const data = await res.json()
