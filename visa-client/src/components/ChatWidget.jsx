@@ -177,7 +177,7 @@ export default function ChatWidget() {
         aria-label={open ? 'Đóng chat' : 'Mở chat'}
         style={{
           position: 'fixed',
-          bottom: '24px',
+          bottom: '90px',
           right: '20px',
           width: '56px',
           height: '56px',
