@@ -1,8 +1,16 @@
 import json
 import re
 import base64
+from pathlib import Path
 from anthropic import Anthropic
 from core.config import ANTHROPIC_API_KEY, HAIKU, SONNET
+
+_CHECKLIST_DIR = Path(__file__).parent.parent / "static" / "checklists"
+
+def _load_checklist(destination: str) -> dict:
+    path = _CHECKLIST_DIR / f"{destination}.json"
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 client = Anthropic(api_key=ANTHROPIC_API_KEY)
 
@@ -70,74 +78,25 @@ TUYỆT ĐỐI KHÔNG đề cập đến ngưỡng số dư tài khoản hay thu
 
 def generate_checklist(profile: dict, travel_dates: dict, destination: str) -> dict:
     employment_type = (profile or {}).get("employment_type", "employee")
-    dest_name = "Nhật Bản" if destination == "japan" else "Trung Quốc"
     departure = (travel_dates or {}).get("departure", "")
     return_date = (travel_dates or {}).get("return", "")
 
-    employment_map = {
-        "employee": "nhân viên công ty",
-        "student": "sinh viên",
-        "business_owner": "chủ doanh nghiệp",
-        "freelancer": "freelancer/tự do",
-        "homemaker": "nội trợ",
-        "retired": "đã nghỉ hưu",
-    }
-    emp_label = employment_map.get(employment_type, employment_type)
+    data = _load_checklist(destination)
 
-    # Items bắt buộc cho mọi loại hồ sơ và mọi điểm đến
-    universal_items = [
-        {"id": "photo", "name": "Ảnh thẻ 4.5×4.5cm", "description": "Nền trắng, chụp trong vòng 6 tháng, không đeo kính, không đội mũ", "format": "Ảnh gốc (không scan)", "why": "Bắt buộc dán lên tờ khai xin visa"},
-        {"id": "itinerary", "name": "Lịch trình chuyến đi", "description": f"Lịch trình chi tiết từ {departure} đến {return_date}: địa điểm dự kiến, ngày/đêm ở từng nơi", "format": "Bản in tiếng Anh hoặc tiếng Việt", "why": "Đại sứ quán xác minh mục đích chuyến đi"},
-        {"id": "hotel_booking", "name": "Đặt phòng khách sạn", "description": "Confirmation từ khách sạn, có tên, địa chỉ, ngày nhận/trả phòng khớp lịch trình", "format": "Bản in hoặc email xác nhận", "why": "Chứng minh chỗ ở trong suốt chuyến đi"},
-        {"id": "flight_booking", "name": "Đặt vé máy bay (khứ hồi)", "description": "Vé đặt chỗ hoặc vé mua — phải có ngày đi và ngày về, không cần thanh toán trước", "format": "Bản in itinerary từ hãng bay hoặc OTA", "why": "Chứng minh có kế hoạch quay về Việt Nam"},
-    ]
+    by_emp = data.get("by_employment", {})
+    emp_items = by_emp.get(employment_type, by_emp.get("employee", []))
 
-    doc_rules = {
-        "employee": [
-            {"id": "passport", "name": "Hộ chiếu", "description": "Còn hạn ít nhất 6 tháng sau ngày về", "format": "Bản gốc", "why": "Tài liệu định danh chính thức bắt buộc"},
-            {"id": "employment_certificate", "name": "Xác nhận công tác", "description": "Do công ty cấp, có đóng dấu và chữ ký giám đốc", "format": "Bản gốc", "why": "Xác nhận bạn đang có việc làm ổn định"},
-            {"id": "leave_approval", "name": "Đơn xin nghỉ phép được duyệt", "description": f"Phép nghỉ phải khớp đúng với ngày đi {departure} và ngày về {return_date}", "format": "Bản gốc có chữ ký trưởng bộ phận", "why": "Đảm bảo ngày đi/về nhất quán với hồ sơ"},
-            {"id": "payslips", "name": "Bảng lương 3 tháng gần nhất", "description": "Lương tháng gần đây nhất, có dấu công ty", "format": "Bản gốc hoặc bản sao công chứng", "why": "Chứng minh thu nhập ổn định"},
-            {"id": "bank_statements", "name": "Sao kê ngân hàng 3 tháng", "description": "Tài khoản thanh toán chính, sao kê từ ngân hàng", "format": "Bản có dấu ngân hàng", "why": "Chứng minh khả năng tài chính cho chuyến đi"},
-        ],
-        "student": [
-            {"id": "passport", "name": "Hộ chiếu", "description": "Còn hạn ít nhất 6 tháng sau ngày về", "format": "Bản gốc", "why": "Tài liệu định danh chính thức bắt buộc"},
-            {"id": "student_id", "name": "Thẻ sinh viên / Xác nhận đang học", "description": "Còn hiệu lực, do trường cấp", "format": "Bản gốc", "why": "Chứng minh tình trạng học tập"},
-            {"id": "parent_guarantee", "name": "Thư bảo lãnh của phụ huynh", "description": "Phụ huynh cam kết bảo lãnh chi phí và đón về", "format": "Bản gốc có công chứng", "why": "Bảo lãnh tài chính cho sinh viên"},
-            {"id": "parent_employment", "name": "Xác nhận công tác của phụ huynh", "description": "Do công ty phụ huynh cấp", "format": "Bản gốc", "why": "Chứng minh nguồn thu nhập của người bảo lãnh"},
-            {"id": "parent_bank_statements", "name": "Sao kê ngân hàng phụ huynh 3 tháng", "description": "Tài khoản của người bảo lãnh", "format": "Bản có dấu ngân hàng", "why": "Chứng minh khả năng tài chính của người bảo lãnh"},
-        ],
-        "business_owner": [
-            {"id": "passport", "name": "Hộ chiếu", "description": "Còn hạn ít nhất 6 tháng sau ngày về", "format": "Bản gốc", "why": "Tài liệu định danh chính thức bắt buộc"},
-            {"id": "business_license", "name": "Giấy phép kinh doanh", "description": "Còn hiệu lực, có tên bạn là chủ sở hữu", "format": "Bản sao công chứng", "why": "Chứng minh hoạt động kinh doanh hợp pháp"},
-            {"id": "company_financials", "name": "Báo cáo tài chính doanh nghiệp", "description": "Kỳ gần nhất, có chữ ký kế toán", "format": "Bản gốc hoặc sao y", "why": "Chứng minh hoạt động kinh doanh có doanh thu"},
-            {"id": "bank_statements", "name": "Sao kê ngân hàng cá nhân 3 tháng", "description": "Tài khoản cá nhân của chủ doanh nghiệp", "format": "Bản có dấu ngân hàng", "why": "Chứng minh tài chính cá nhân"},
-        ],
-        "freelancer": [
-            {"id": "passport", "name": "Hộ chiếu", "description": "Còn hạn ít nhất 6 tháng sau ngày về", "format": "Bản gốc", "why": "Tài liệu định danh chính thức bắt buộc"},
-            {"id": "freelance_contracts", "name": "Hợp đồng dịch vụ / Bằng chứng thu nhập", "description": "Hợp đồng với khách hàng, hóa đơn, hoặc biên lai thanh toán gần nhất", "format": "Bản gốc hoặc bản sao", "why": "Chứng minh nguồn thu nhập từ công việc tự do"},
-            {"id": "bank_statements", "name": "Sao kê ngân hàng 3 tháng", "description": "Thể hiện các khoản tiền vào từ công việc freelance", "format": "Bản có dấu ngân hàng", "why": "Chứng minh dòng tiền ổn định"},
-            {"id": "tax_declaration", "name": "Tờ khai thuế TNCN", "description": "Nếu có đăng ký mã số thuế cá nhân", "format": "Bản sao có xác nhận cơ quan thuế", "why": "Bổ sung chứng minh hoạt động thu nhập hợp pháp"},
-        ],
-        "homemaker": [
-            {"id": "passport", "name": "Hộ chiếu", "description": "Còn hạn ít nhất 6 tháng sau ngày về", "format": "Bản gốc", "why": "Tài liệu định danh chính thức bắt buộc"},
-            {"id": "spouse_employment", "name": "Xác nhận công tác của vợ/chồng", "description": "Do công ty vợ/chồng cấp, có đóng dấu", "format": "Bản gốc", "why": "Chứng minh nguồn thu nhập của gia đình"},
-            {"id": "marriage_certificate", "name": "Giấy đăng ký kết hôn", "description": "Bản có dấu đỏ của UBND", "format": "Bản sao công chứng", "why": "Chứng minh mối quan hệ hôn nhân với người bảo lãnh"},
-            {"id": "household_registration", "name": "Sổ hộ khẩu / Giấy xác nhận thường trú", "description": "Bản mới nhất", "format": "Bản sao công chứng", "why": "Xác nhận địa chỉ cư trú hợp pháp"},
-            {"id": "bank_statements", "name": "Sao kê ngân hàng gia đình 3 tháng", "description": "Tài khoản chung hoặc của vợ/chồng", "format": "Bản có dấu ngân hàng", "why": "Chứng minh khả năng tài chính"},
-        ],
-        "retired": [
-            {"id": "passport", "name": "Hộ chiếu", "description": "Còn hạn ít nhất 6 tháng sau ngày về", "format": "Bản gốc", "why": "Tài liệu định danh chính thức bắt buộc"},
-            {"id": "retirement_certificate", "name": "Quyết định nghỉ hưu", "description": "Do cơ quan/tổ chức nơi công tác cấp", "format": "Bản sao công chứng", "why": "Xác nhận tình trạng đã nghỉ hưu"},
-            {"id": "pension_statement", "name": "Quyết định hưởng lương hưu", "description": "Do BHXH cấp, thể hiện mức lương hưu hàng tháng", "format": "Bản gốc hoặc sao y", "why": "Chứng minh nguồn thu nhập ổn định"},
-            {"id": "bank_statements", "name": "Sao kê ngân hàng 3 tháng", "description": "Thể hiện tiền lương hưu chuyển vào hàng tháng", "format": "Bản có dấu ngân hàng", "why": "Chứng minh tài chính thực tế"},
-        ],
-    }
+    # Inject travel dates into description fields that reference them
+    universal_raw = data.get("universal", [])
+    universal_items = []
+    for item in universal_raw:
+        item = dict(item)
+        if "{departure}" in item.get("description", "") or "{return_date}" in item.get("description", ""):
+            item["description"] = item["description"].replace("{departure}", departure).replace("{return_date}", return_date)
+        universal_items.append(item)
 
-    items = doc_rules.get(employment_type, doc_rules["employee"]) + universal_items
-    confidence_note = None
-    if employment_type == "freelancer":
-        confidence_note = "Hồ sơ freelancer có độ biến động cao. Nhân viên tư vấn sẽ kiểm tra lại toàn bộ tài liệu trước khi nộp."
+    items = emp_items + universal_items
+    confidence_note = data.get("confidence_notes", {}).get(employment_type)
 
     return {"items": items, "confidence_note": confidence_note}
 

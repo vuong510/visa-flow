@@ -1,0 +1,300 @@
+{
+  "meta": {
+    "destination": "china",
+    "last_verified": "2026-06-29",
+    "source_urls": [
+      "https://www.visaforchina.cn/HAN3_EN/",
+      "http://vn.china-embassy.gov.cn/lsfw/qzfw/"
+    ],
+    "notes": "Dựa trên trang Tổng lãnh sự quán Trung Quốc tại TP.HCM và Đại sứ quán tại Hà Nội. Cập nhật khi có thông báo thay đổi."
+  },
+  "universal": [
+    {
+      "id": "photo",
+      "name": "Ảnh thẻ 35×45mm hoặc 33×48mm",
+      "description": "Nền trắng, chụp trong vòng 6 tháng, không đeo kính, không đội mũ, mặt chiếm 70-80% khung ảnh",
+      "format": "Ảnh gốc (không scan)",
+      "why": "Bắt buộc dán lên tờ khai xin visa",
+      "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+      "last_verified": "2026-06-29"
+    },
+    {
+      "id": "hotel_booking",
+      "name": "Đặt phòng khách sạn",
+      "description": "Confirmation từ khách sạn, có tên, địa chỉ, ngày nhận/trả phòng",
+      "format": "Bản in hoặc email xác nhận",
+      "why": "Chứng minh chỗ ở trong suốt chuyến đi",
+      "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+      "last_verified": "2026-06-29"
+    },
+    {
+      "id": "flight_booking",
+      "name": "Đặt vé máy bay (khứ hồi)",
+      "description": "Vé đặt chỗ hoặc vé mua — phải có ngày đi và ngày về",
+      "format": "Bản in itinerary từ hãng bay hoặc OTA",
+      "why": "Chứng minh có kế hoạch quay về Việt Nam",
+      "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+      "last_verified": "2026-06-29"
+    }
+  ],
+  "by_employment": {
+    "employee": [
+      {
+        "id": "passport",
+        "name": "Hộ chiếu",
+        "description": "Còn hạn ít nhất 6 tháng sau ngày về, có ít nhất 1 trang trống",
+        "format": "Bản gốc + photocopy trang thông tin",
+        "why": "Tài liệu định danh chính thức bắt buộc",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "visa_application_form",
+        "name": "Tờ khai xin visa (Form V.2013)",
+        "description": "Điền đầy đủ, ký tên. Tải tại visaforchina.cn",
+        "format": "Bản in có chữ ký",
+        "why": "Mẫu đơn chính thức của Trung Quốc",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "employment_certificate",
+        "name": "Xác nhận công tác",
+        "description": "Do công ty cấp, có đóng dấu và chữ ký giám đốc, ghi rõ chức vụ và lương",
+        "format": "Bản gốc",
+        "why": "Xác nhận bạn đang có việc làm ổn định",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "bank_statements",
+        "name": "Sao kê ngân hàng 3 tháng",
+        "description": "Tài khoản thanh toán chính, sao kê từ ngân hàng",
+        "format": "Bản có dấu ngân hàng",
+        "why": "Chứng minh khả năng tài chính cho chuyến đi",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      }
+    ],
+    "student": [
+      {
+        "id": "passport",
+        "name": "Hộ chiếu",
+        "description": "Còn hạn ít nhất 6 tháng sau ngày về, có ít nhất 1 trang trống",
+        "format": "Bản gốc + photocopy trang thông tin",
+        "why": "Tài liệu định danh chính thức bắt buộc",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "visa_application_form",
+        "name": "Tờ khai xin visa (Form V.2013)",
+        "description": "Điền đầy đủ, ký tên. Tải tại visaforchina.cn",
+        "format": "Bản in có chữ ký",
+        "why": "Mẫu đơn chính thức của Trung Quốc",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "student_id",
+        "name": "Thẻ sinh viên / Xác nhận đang học",
+        "description": "Còn hiệu lực, do trường cấp",
+        "format": "Bản gốc",
+        "why": "Chứng minh tình trạng học tập",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "parent_guarantee",
+        "name": "Thư bảo lãnh của phụ huynh",
+        "description": "Phụ huynh cam kết bảo lãnh chi phí và đón về",
+        "format": "Bản gốc có công chứng",
+        "why": "Bảo lãnh tài chính cho sinh viên",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "parent_bank_statements",
+        "name": "Sao kê ngân hàng phụ huynh 3 tháng",
+        "description": "Tài khoản của người bảo lãnh",
+        "format": "Bản có dấu ngân hàng",
+        "why": "Chứng minh khả năng tài chính của người bảo lãnh",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      }
+    ],
+    "business_owner": [
+      {
+        "id": "passport",
+        "name": "Hộ chiếu",
+        "description": "Còn hạn ít nhất 6 tháng sau ngày về, có ít nhất 1 trang trống",
+        "format": "Bản gốc + photocopy trang thông tin",
+        "why": "Tài liệu định danh chính thức bắt buộc",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "visa_application_form",
+        "name": "Tờ khai xin visa (Form V.2013)",
+        "description": "Điền đầy đủ, ký tên. Tải tại visaforchina.cn",
+        "format": "Bản in có chữ ký",
+        "why": "Mẫu đơn chính thức của Trung Quốc",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "business_license",
+        "name": "Giấy phép kinh doanh",
+        "description": "Còn hiệu lực, có tên bạn là chủ sở hữu",
+        "format": "Bản sao công chứng",
+        "why": "Chứng minh hoạt động kinh doanh hợp pháp",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "bank_statements",
+        "name": "Sao kê ngân hàng cá nhân 3 tháng",
+        "description": "Tài khoản cá nhân của chủ doanh nghiệp",
+        "format": "Bản có dấu ngân hàng",
+        "why": "Chứng minh tài chính cá nhân",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      }
+    ],
+    "freelancer": [
+      {
+        "id": "passport",
+        "name": "Hộ chiếu",
+        "description": "Còn hạn ít nhất 6 tháng sau ngày về, có ít nhất 1 trang trống",
+        "format": "Bản gốc + photocopy trang thông tin",
+        "why": "Tài liệu định danh chính thức bắt buộc",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "visa_application_form",
+        "name": "Tờ khai xin visa (Form V.2013)",
+        "description": "Điền đầy đủ, ký tên. Tải tại visaforchina.cn",
+        "format": "Bản in có chữ ký",
+        "why": "Mẫu đơn chính thức của Trung Quốc",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "freelance_contracts",
+        "name": "Hợp đồng dịch vụ / Bằng chứng thu nhập",
+        "description": "Hợp đồng với khách hàng, hóa đơn, hoặc biên lai thanh toán gần nhất",
+        "format": "Bản gốc hoặc bản sao",
+        "why": "Chứng minh nguồn thu nhập từ công việc tự do",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "bank_statements",
+        "name": "Sao kê ngân hàng 3 tháng",
+        "description": "Thể hiện các khoản tiền vào từ công việc freelance",
+        "format": "Bản có dấu ngân hàng",
+        "why": "Chứng minh dòng tiền ổn định",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      }
+    ],
+    "homemaker": [
+      {
+        "id": "passport",
+        "name": "Hộ chiếu",
+        "description": "Còn hạn ít nhất 6 tháng sau ngày về, có ít nhất 1 trang trống",
+        "format": "Bản gốc + photocopy trang thông tin",
+        "why": "Tài liệu định danh chính thức bắt buộc",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "visa_application_form",
+        "name": "Tờ khai xin visa (Form V.2013)",
+        "description": "Điền đầy đủ, ký tên. Tải tại visaforchina.cn",
+        "format": "Bản in có chữ ký",
+        "why": "Mẫu đơn chính thức của Trung Quốc",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "spouse_employment",
+        "name": "Xác nhận công tác của vợ/chồng",
+        "description": "Do công ty vợ/chồng cấp, có đóng dấu",
+        "format": "Bản gốc",
+        "why": "Chứng minh nguồn thu nhập của gia đình",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "marriage_certificate",
+        "name": "Giấy đăng ký kết hôn",
+        "description": "Bản có dấu đỏ của UBND",
+        "format": "Bản sao công chứng",
+        "why": "Chứng minh mối quan hệ hôn nhân với người bảo lãnh",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "bank_statements",
+        "name": "Sao kê ngân hàng gia đình 3 tháng",
+        "description": "Tài khoản chung hoặc của vợ/chồng",
+        "format": "Bản có dấu ngân hàng",
+        "why": "Chứng minh khả năng tài chính",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      }
+    ],
+    "retired": [
+      {
+        "id": "passport",
+        "name": "Hộ chiếu",
+        "description": "Còn hạn ít nhất 6 tháng sau ngày về, có ít nhất 1 trang trống",
+        "format": "Bản gốc + photocopy trang thông tin",
+        "why": "Tài liệu định danh chính thức bắt buộc",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "visa_application_form",
+        "name": "Tờ khai xin visa (Form V.2013)",
+        "description": "Điền đầy đủ, ký tên. Tải tại visaforchina.cn",
+        "format": "Bản in có chữ ký",
+        "why": "Mẫu đơn chính thức của Trung Quốc",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "retirement_certificate",
+        "name": "Quyết định nghỉ hưu",
+        "description": "Do cơ quan/tổ chức nơi công tác cấp",
+        "format": "Bản sao công chứng",
+        "why": "Xác nhận tình trạng đã nghỉ hưu",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "pension_statement",
+        "name": "Quyết định hưởng lương hưu",
+        "description": "Do BHXH cấp, thể hiện mức lương hưu hàng tháng",
+        "format": "Bản gốc hoặc sao y",
+        "why": "Chứng minh nguồn thu nhập ổn định",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      },
+      {
+        "id": "bank_statements",
+        "name": "Sao kê ngân hàng 3 tháng",
+        "description": "Thể hiện tiền lương hưu chuyển vào hàng tháng",
+        "format": "Bản có dấu ngân hàng",
+        "why": "Chứng minh tài chính thực tế",
+        "source_url": "https://www.visaforchina.cn/HAN3_EN/",
+        "last_verified": "2026-06-29"
+      }
+    ]
+  },
+  "confidence_notes": {
+    "freelancer": "Hồ sơ freelancer có độ biến động cao. Nhân viên tư vấn sẽ kiểm tra lại toàn bộ tài liệu trước khi nộp."
+  }
+}
