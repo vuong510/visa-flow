@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext'
 
 export default function ChatWidget() {
   const { destination, screen, profile, applicationId, API_BASE } = useApp()
+  if (screen === 'price') return null
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
   const [history, setHistory] = useState([])
@@ -89,7 +90,7 @@ export default function ChatWidget() {
           }}>
             {history.length === 0 && (
               <div style={{ color: '#888', fontSize: '13px', textAlign: 'center', marginTop: '24px' }}>
-                Hỏi tôi bất cứ điều gì về visa nhé!
+                Hỏi gì về visa cũng được
               </div>
             )}
             {history.map((msg, i) => (

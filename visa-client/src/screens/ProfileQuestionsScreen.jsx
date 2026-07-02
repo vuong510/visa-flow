@@ -221,9 +221,9 @@ export default function ProfileQuestionsScreen() {
   function renderQ1() {
     return (
       <div style={cardStyle}>
-        <h2 style={h2Style}>Loại hình công việc của bạn là gì</h2>
+        <h2 style={h2Style}>Bạn đang làm nghề gì?</h2>
         <p style={captionStyle}>
-          Câu trả lời này ảnh hưởng đến đánh giá hồ sơ của bạn.
+          Ảnh hưởng đến loại tài liệu cần chuẩn bị.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {EMPLOYMENT_OPTIONS.map(opt => (
@@ -242,9 +242,9 @@ export default function ProfileQuestionsScreen() {
   function renderQ2() {
     return (
       <div style={cardStyle}>
-        <h2 style={h2Style}>Bạn đã từng đến Nhật Bản hoặc Trung Quốc chưa</h2>
+        <h2 style={h2Style}>Hộ chiếu có dấu nhập cảnh Nhật/Trung chưa?</h2>
         <p style={{ ...captionStyle, marginBottom: 20 }}>
-          Hộ chiếu có dấu nhập cảnh trước đây là tín hiệu tích cực cho hồ sơ.
+          Dấu nhập cảnh cũ là tín hiệu tốt, giúp hồ sơ được đánh giá cao hơn.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <OptionButton
@@ -265,9 +265,9 @@ export default function ProfileQuestionsScreen() {
   function renderQ3() {
     return (
       <div style={cardStyle}>
-        <h2 style={h2Style}>Bạn dự định đi khi nào</h2>
+        <h2 style={h2Style}>Chuyến đi của bạn khi nào?</h2>
         <p style={captionStyle}>
-          Chúng tôi sẽ kiểm tra tính khả thi về thời gian chuẩn bị hồ sơ.
+          Dùng để kiểm tra thời gian chuẩn bị hồ sơ và hạn hộ chiếu.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div>
@@ -303,9 +303,9 @@ export default function ProfileQuestionsScreen() {
 
     return (
       <div style={cardStyle}>
-        <h2 style={h2Style}>Bạn đã từng bị từ chối visa không</h2>
+        <h2 style={h2Style}>Từng bị từ chối visa chưa?</h2>
         <p style={captionStyle}>
-          Câu trả lời này ảnh hưởng đến đánh giá hồ sơ của bạn.
+          Cần biết để đánh giá chính xác — không ảnh hưởng xấu nếu bạn khai thật.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <OptionButton
@@ -385,7 +385,7 @@ export default function ProfileQuestionsScreen() {
   function renderQ6() {
     return (
       <div style={cardStyle}>
-        <h2 style={h2Style}>Thu nhập hàng tháng của bạn khoảng bao nhiêu</h2>
+        <h2 style={h2Style}>Thu nhập hàng tháng của bạn?</h2>
         <p style={{
           fontSize: 13,
           lineHeight: 1.55,

@@ -122,7 +122,7 @@ export default function EligibilityScreen() {
         {loading && showSkeleton && <SkeletonCard />}
         {loading && !showSkeleton && (
           <p style={{ textAlign: 'center', color: 'var(--color-text-muted)', marginTop: 40 }}>
-            Đang phân tích hồ sơ...
+            AI đang đọc hồ sơ...
           </p>
         )}
 
@@ -155,7 +155,7 @@ export default function EligibilityScreen() {
 
       {canContinue && (
         <BottomActionArea>
-          <CTAButton label="Tiếp tục" onClick={() => navigate('price')} />
+          <CTAButton label="Xem chi phí dịch vụ" onClick={() => navigate('price')} />
         </BottomActionArea>
       )}
     </div>

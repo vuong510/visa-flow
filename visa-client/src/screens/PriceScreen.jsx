@@ -14,14 +14,19 @@ const TOTAL = '1.540.000 ₫'
 export default function PriceScreen() {
   const { applicationId, API_BASE, navigate } = useApp()
   const [paying, setPaying] = useState(false)
-  const [overlay, setOverlay] = useState(null) // null | 'loading' | 'success'
+  const [overlay, setOverlay] = useState(null) // null | 'loading' | 'success' | 'error'
 
   async function handlePay() {
     setOverlay('loading')
     setPaying(true)
     try {
-      await fetch(`${API_BASE}/api/application/${applicationId}/payment/demo`, { method: 'POST' })
-    } catch (_) {}
+      const res = await fetch(`${API_BASE}/api/application/${applicationId}/payment/demo`, { method: 'POST' })
+      if (!res.ok) throw new Error()
+    } catch {
+      setOverlay('error')
+      setPaying(false)
+      return
+    }
     setTimeout(() => {
       setOverlay('success')
       setTimeout(() => navigate('checklist'), 1000)
@@ -96,6 +101,18 @@ export default function PriceScreen() {
             <>
               <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
               <p style={{ fontSize: 16, fontWeight: 700, color: '#065f46' }}>Thanh toán thành công!</p>
+            </>
+          )}
+          {overlay === 'error' && (
+            <>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>⚠️</div>
+              <p style={{ fontSize: 15, fontWeight: 600, color: '#92400e', marginBottom: 16 }}>Lỗi xử lý thanh toán</p>
+              <button
+                onClick={() => setOverlay(null)}
+                style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+              >
+                Thử lại
+              </button>
             </>
           )}
         </div>

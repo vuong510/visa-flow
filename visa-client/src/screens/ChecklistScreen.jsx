@@ -30,7 +30,7 @@ function ReadinessBanner({ uploaded, total, allPass }) {
     <div style={{ background: bg, padding: '12px 20px', borderBottom: '1px solid var(--color-border)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
         <span style={{ fontSize: 13, fontWeight: 600, color }}>
-          {allPass ? '✅ Hồ sơ sẵn sàng nộp!' : `Đã tải lên ${uploaded}/${total} tài liệu`}
+          {allPass ? '✅ Đủ tài liệu — sẵn sàng nộp' : `${uploaded}/${total} tài liệu đã tải lên`}
         </span>
         <span style={{ fontSize: 12, color, fontWeight: 600 }}>{pct}%</span>
       </div>
@@ -181,7 +181,7 @@ export default function ChecklistScreen() {
 
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--color-background)' }}>
-      <NavHeader title="Tài liệu cần chuẩn bị" showBack={false} />
+      <NavHeader title="Chuẩn bị hồ sơ" showBack={false} />
       <ProgressBar current={9} total={10} />
 
       {!loading && items.length > 0 && (
