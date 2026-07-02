@@ -270,6 +270,12 @@ export default function ChecklistScreen() {
       {detailItem && (
         <BottomSheet open={true} title={detailItem.name} onClose={() => setDetailItem(null)}>
           <div style={{ padding: '0 0 8px' }}>
+            {detailItem.how_to_get && (
+              <div style={{ marginBottom: 16, background: '#f0f9ff', borderRadius: 10, padding: '12px 14px' }}>
+                <p style={{ fontSize: 12, fontWeight: 600, color: '#0369a1', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Cách lấy</p>
+                <p style={{ fontSize: 14, lineHeight: 1.65, color: '#0c4a6e' }}>{detailItem.how_to_get}</p>
+              </div>
+            )}
             <div style={{ marginBottom: 14 }}>
               <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Yêu cầu</p>
               <p style={{ fontSize: 14, lineHeight: 1.6 }}>{detailItem.description}</p>

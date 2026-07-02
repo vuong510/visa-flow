@@ -15,6 +15,7 @@
       "description": "Nền trắng, chụp trong vòng 6 tháng, không đeo kính, không đội mũ",
       "format": "Ảnh gốc (không scan)",
       "why": "Bắt buộc dán lên tờ khai xin visa",
+      "how_to_get": "Chụp tại tiệm ảnh gần nhà. Nói rõ 'ảnh visa Nhật, nền trắng, kích thước 4.5×4.5cm'. Chi phí khoảng 50–100k.",
       "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
       "last_verified": "2026-06-29"
     },
@@ -24,6 +25,7 @@
       "description": "Lịch trình chi tiết: địa điểm dự kiến, ngày/đêm ở từng nơi",
       "format": "Bản in tiếng Anh hoặc tiếng Việt",
       "why": "Đại sứ quán xác minh mục đích chuyến đi",
+      "how_to_get": "Dùng nút 'Tải xuống' ở đầu trang — AI đã tạo lịch trình sẵn cho bạn dựa trên ngày đi và khách sạn đã nhập. In ra là dùng được.",
       "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
       "last_verified": "2026-06-29"
     },
@@ -33,6 +35,7 @@
       "description": "Confirmation từ khách sạn, có tên, địa chỉ, ngày nhận/trả phòng khớp lịch trình",
       "format": "Bản in hoặc email xác nhận",
       "why": "Chứng minh chỗ ở trong suốt chuyến đi",
+      "how_to_get": "Đặt phòng trên Booking.com, Agoda, hoặc liên hệ trực tiếp khách sạn. In email xác nhận — chưa cần thanh toán hoàn toàn, chỉ cần có confirmation.",
       "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
       "last_verified": "2026-06-29"
     },
@@ -42,6 +45,7 @@
       "description": "Vé đặt chỗ hoặc vé mua — phải có ngày đi và ngày về",
       "format": "Bản in itinerary từ hãng bay hoặc OTA",
       "why": "Chứng minh có kế hoạch quay về Việt Nam",
+      "how_to_get": "Đặt vé trên website hãng bay (Vietnam Airlines, VietJet, Bamboo) hoặc OTA (Traveloka, Klook). In itinerary — chưa cần thanh toán toàn bộ.",
       "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
       "last_verified": "2026-06-29"
     }
@@ -54,6 +58,7 @@
         "description": "Còn hạn ít nhất 6 tháng sau ngày về",
         "format": "Bản gốc",
         "why": "Tài liệu định danh chính thức bắt buộc",
+        "how_to_get": "Nộp đơn tại Phòng Quản lý Xuất nhập cảnh Công an tỉnh/thành phố nơi đăng ký hộ khẩu. Mang theo CCCD và ảnh thẻ. Nếu hộ chiếu sắp hết hạn, làm gia hạn trước khi nộp hồ sơ visa.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -63,6 +68,7 @@
         "description": "Do công ty cấp, có đóng dấu và chữ ký giám đốc",
         "format": "Bản gốc",
         "why": "Xác nhận bạn đang có việc làm ổn định",
+        "how_to_get": "Liên hệ phòng Nhân sự hoặc kế toán công ty, yêu cầu cấp giấy xác nhận công tác có đóng dấu đỏ và chữ ký giám đốc. Thường mất 1–2 ngày làm việc.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -72,6 +78,7 @@
         "description": "Phép nghỉ phải khớp đúng với ngày đi và ngày về",
         "format": "Bản gốc có chữ ký trưởng bộ phận",
         "why": "Đảm bảo ngày đi/về nhất quán với hồ sơ",
+        "how_to_get": "Điền form đơn xin nghỉ phép của công ty (nhờ HR cung cấp nếu chưa có), ghi đúng ngày đi và ngày về như trong vé máy bay, xin ký duyệt từ trưởng phòng hoặc giám đốc.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -81,6 +88,7 @@
         "description": "Lương tháng gần đây nhất, có dấu công ty",
         "format": "Bản gốc hoặc bản sao công chứng",
         "why": "Chứng minh thu nhập ổn định",
+        "how_to_get": "Liên hệ phòng Nhân sự hoặc kế toán để xin bảng lương 3 tháng gần nhất. Nếu công ty gửi qua email thì in ra và đóng dấu xác nhận của công ty.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -90,6 +98,7 @@
         "description": "Tài khoản thanh toán chính, sao kê từ ngân hàng",
         "format": "Bản có dấu ngân hàng",
         "why": "Chứng minh khả năng tài chính cho chuyến đi",
+        "how_to_get": "Liên hệ ngân hàng nơi bạn có tài khoản chính — yêu cầu in sao kê 3 tháng gần nhất có dấu ngân hàng. Một số ngân hàng hỗ trợ in qua app nhưng vẫn cần ra chi nhánh đóng dấu xác nhận.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       }
@@ -101,6 +110,7 @@
         "description": "Còn hạn ít nhất 6 tháng sau ngày về",
         "format": "Bản gốc",
         "why": "Tài liệu định danh chính thức bắt buộc",
+        "how_to_get": "Nộp đơn tại Phòng Quản lý Xuất nhập cảnh Công an tỉnh/thành phố nơi đăng ký hộ khẩu. Mang theo CCCD và ảnh thẻ.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -110,6 +120,7 @@
         "description": "Còn hiệu lực, do trường cấp",
         "format": "Bản gốc",
         "why": "Chứng minh tình trạng học tập",
+        "how_to_get": "Liên hệ phòng Đào tạo hoặc Công tác sinh viên của trường để xin giấy xác nhận đang học. Một số trường hỗ trợ làm online qua cổng sinh viên.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -119,6 +130,7 @@
         "description": "Phụ huynh cam kết bảo lãnh chi phí và đón về",
         "format": "Bản gốc có công chứng",
         "why": "Bảo lãnh tài chính cho sinh viên",
+        "how_to_get": "Phụ huynh viết thư bảo lãnh (hỏi tư vấn viên để được cung cấp mẫu), sau đó mang đến UBND phường/xã để công chứng.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -128,6 +140,7 @@
         "description": "Do công ty phụ huynh cấp",
         "format": "Bản gốc",
         "why": "Chứng minh nguồn thu nhập của người bảo lãnh",
+        "how_to_get": "Phụ huynh liên hệ phòng HR nơi làm việc để xin giấy xác nhận công tác có đóng dấu và chữ ký giám đốc.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -137,6 +150,7 @@
         "description": "Tài khoản của người bảo lãnh",
         "format": "Bản có dấu ngân hàng",
         "why": "Chứng minh khả năng tài chính của người bảo lãnh",
+        "how_to_get": "Phụ huynh liên hệ ngân hàng nơi có tài khoản chính, yêu cầu in sao kê 3 tháng gần nhất có dấu ngân hàng.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       }
@@ -148,6 +162,7 @@
         "description": "Còn hạn ít nhất 6 tháng sau ngày về",
         "format": "Bản gốc",
         "why": "Tài liệu định danh chính thức bắt buộc",
+        "how_to_get": "Nộp đơn tại Phòng Quản lý Xuất nhập cảnh Công an tỉnh/thành phố nơi đăng ký hộ khẩu. Mang theo CCCD và ảnh thẻ.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -157,6 +172,7 @@
         "description": "Còn hiệu lực, có tên bạn là chủ sở hữu",
         "format": "Bản sao công chứng",
         "why": "Chứng minh hoạt động kinh doanh hợp pháp",
+        "how_to_get": "Lấy bản sao giấy phép kinh doanh tại Sở Kế hoạch Đầu tư hoặc cơ quan đăng ký kinh doanh địa phương, sau đó đến văn phòng công chứng để công chứng bản sao.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -166,6 +182,7 @@
         "description": "Kỳ gần nhất, có chữ ký kế toán",
         "format": "Bản gốc hoặc sao y",
         "why": "Chứng minh hoạt động kinh doanh có doanh thu",
+        "how_to_get": "Yêu cầu kế toán công ty chuẩn bị báo cáo tài chính kỳ gần nhất, có chữ ký kế toán trưởng và dấu công ty.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -175,6 +192,7 @@
         "description": "Tài khoản cá nhân của chủ doanh nghiệp",
         "format": "Bản có dấu ngân hàng",
         "why": "Chứng minh tài chính cá nhân",
+        "how_to_get": "Liên hệ ngân hàng nơi bạn có tài khoản cá nhân chính, yêu cầu in sao kê 3 tháng gần nhất có dấu ngân hàng.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       }
@@ -186,6 +204,7 @@
         "description": "Còn hạn ít nhất 6 tháng sau ngày về",
         "format": "Bản gốc",
         "why": "Tài liệu định danh chính thức bắt buộc",
+        "how_to_get": "Nộp đơn tại Phòng Quản lý Xuất nhập cảnh Công an tỉnh/thành phố nơi đăng ký hộ khẩu. Mang theo CCCD và ảnh thẻ.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -195,6 +214,7 @@
         "description": "Hợp đồng với khách hàng, hóa đơn, hoặc biên lai thanh toán gần nhất",
         "format": "Bản gốc hoặc bản sao",
         "why": "Chứng minh nguồn thu nhập từ công việc tự do",
+        "how_to_get": "Tổng hợp hợp đồng, hóa đơn, hoặc biên lai thanh toán từ khách hàng trong 3–6 tháng gần nhất. Nếu làm việc qua nền tảng online (Upwork, Fiverr...) thì xuất lịch sử thanh toán.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -204,6 +224,7 @@
         "description": "Thể hiện các khoản tiền vào từ công việc freelance",
         "format": "Bản có dấu ngân hàng",
         "why": "Chứng minh dòng tiền ổn định",
+        "how_to_get": "Liên hệ ngân hàng nơi bạn nhận tiền công việc, yêu cầu in sao kê 3 tháng gần nhất có dấu ngân hàng.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -213,6 +234,7 @@
         "description": "Nếu có đăng ký mã số thuế cá nhân",
         "format": "Bản sao có xác nhận cơ quan thuế",
         "why": "Bổ sung chứng minh hoạt động thu nhập hợp pháp",
+        "how_to_get": "Liên hệ Chi cục Thuế địa phương hoặc đại lý thuế để xin bản sao tờ khai thuế TNCN đã nộp, có xác nhận của cơ quan thuế. Nếu chưa có mã số thuế thì bỏ qua mục này.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       }
@@ -224,6 +246,7 @@
         "description": "Còn hạn ít nhất 6 tháng sau ngày về",
         "format": "Bản gốc",
         "why": "Tài liệu định danh chính thức bắt buộc",
+        "how_to_get": "Nộp đơn tại Phòng Quản lý Xuất nhập cảnh Công an tỉnh/thành phố nơi đăng ký hộ khẩu. Mang theo CCCD và ảnh thẻ.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -233,6 +256,7 @@
         "description": "Do công ty vợ/chồng cấp, có đóng dấu",
         "format": "Bản gốc",
         "why": "Chứng minh nguồn thu nhập của gia đình",
+        "how_to_get": "Vợ/chồng liên hệ phòng HR nơi làm việc để xin giấy xác nhận công tác có đóng dấu và chữ ký giám đốc. Thường mất 1–2 ngày làm việc.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -242,6 +266,7 @@
         "description": "Bản có dấu đỏ của UBND",
         "format": "Bản sao công chứng",
         "why": "Chứng minh mối quan hệ hôn nhân với người bảo lãnh",
+        "how_to_get": "Lấy tại UBND phường/xã nơi đã đăng ký kết hôn, sau đó đến văn phòng công chứng để công chứng bản sao.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -251,6 +276,7 @@
         "description": "Bản mới nhất",
         "format": "Bản sao công chứng",
         "why": "Xác nhận địa chỉ cư trú hợp pháp",
+        "how_to_get": "Lấy tại UBND phường/xã hoặc Công an khu vực nơi đăng ký thường trú. Một số địa phương hỗ trợ đăng ký online qua Cổng dịch vụ công quốc gia.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -260,6 +286,7 @@
         "description": "Tài khoản chung hoặc của vợ/chồng",
         "format": "Bản có dấu ngân hàng",
         "why": "Chứng minh khả năng tài chính",
+        "how_to_get": "Liên hệ ngân hàng nơi có tài khoản chung hoặc tài khoản của vợ/chồng, yêu cầu in sao kê 3 tháng gần nhất có dấu ngân hàng.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       }
@@ -271,6 +298,7 @@
         "description": "Còn hạn ít nhất 6 tháng sau ngày về",
         "format": "Bản gốc",
         "why": "Tài liệu định danh chính thức bắt buộc",
+        "how_to_get": "Nộp đơn tại Phòng Quản lý Xuất nhập cảnh Công an tỉnh/thành phố nơi đăng ký hộ khẩu. Mang theo CCCD và ảnh thẻ.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -280,6 +308,7 @@
         "description": "Do cơ quan/tổ chức nơi công tác cấp",
         "format": "Bản sao công chứng",
         "why": "Xác nhận tình trạng đã nghỉ hưu",
+        "how_to_get": "Liên hệ cơ quan hoặc tổ chức nơi bạn đã công tác trước khi nghỉ hưu để xin cấp lại hoặc sao y quyết định nghỉ hưu, sau đó công chứng.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -289,6 +318,7 @@
         "description": "Do BHXH cấp, thể hiện mức lương hưu hàng tháng",
         "format": "Bản gốc hoặc sao y",
         "why": "Chứng minh nguồn thu nhập ổn định",
+        "how_to_get": "Liên hệ Bảo hiểm xã hội tỉnh/thành phố nơi bạn đang hưởng lương hưu để xin bản sao quyết định hưởng lương hưu.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       },
@@ -298,6 +328,7 @@
         "description": "Thể hiện tiền lương hưu chuyển vào hàng tháng",
         "format": "Bản có dấu ngân hàng",
         "why": "Chứng minh tài chính thực tế",
+        "how_to_get": "Liên hệ ngân hàng nơi nhận lương hưu, yêu cầu in sao kê 3 tháng gần nhất có dấu ngân hàng.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
         "last_verified": "2026-06-29"
       }

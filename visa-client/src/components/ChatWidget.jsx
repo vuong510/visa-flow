@@ -89,8 +89,19 @@ export default function ChatWidget() {
             minHeight: 0,
           }}>
             {history.length === 0 && (
-              <div style={{ color: '#888', fontSize: '13px', textAlign: 'center', marginTop: '24px' }}>
-                Hỏi gì về visa cũng được
+              <div style={{ padding: '16px 4px' }}>
+                <p style={{ fontSize: 13, color: '#888', textAlign: 'center', marginBottom: 16 }}>Hỏi gì về visa cũng được</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {['Tôi đang mang thai, có xin được visa không?', 'Sao kê ngân hàng cần bao nhiêu tháng?', 'Tôi làm nghề tự do, hồ sơ khác gì người đi làm?'].map(q => (
+                    <button
+                      key={q}
+                      onClick={() => { setInput(q) }}
+                      style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: 10, padding: '8px 12px', fontSize: 12, color: '#374151', cursor: 'pointer', textAlign: 'left', lineHeight: 1.4 }}
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
             {history.map((msg, i) => (

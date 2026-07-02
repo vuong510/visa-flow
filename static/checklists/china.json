@@ -15,6 +15,7 @@
       "description": "Nền trắng, chụp trong vòng 6 tháng, không đeo kính, không đội mũ, mặt chiếm 70-80% khung ảnh",
       "format": "Ảnh gốc (không scan)",
       "why": "Bắt buộc dán lên tờ khai xin visa",
+      "how_to_get": "Chụp tại tiệm ảnh gần nhà. Nói rõ 'ảnh visa Trung Quốc, nền trắng, kích thước 35×45mm'. Chi phí khoảng 50–100k.",
       "source_url": "https://www.visaforchina.cn/HAN3_EN/",
       "last_verified": "2026-06-29"
     },
@@ -24,6 +25,7 @@
       "description": "Confirmation từ khách sạn, có tên, địa chỉ, ngày nhận/trả phòng",
       "format": "Bản in hoặc email xác nhận",
       "why": "Chứng minh chỗ ở trong suốt chuyến đi",
+      "how_to_get": "Đặt phòng trên Booking.com, Agoda, Trip.com, hoặc liên hệ trực tiếp khách sạn. In email xác nhận — chưa cần thanh toán hoàn toàn.",
       "source_url": "https://www.visaforchina.cn/HAN3_EN/",
       "last_verified": "2026-06-29"
     },
@@ -33,6 +35,7 @@
       "description": "Vé đặt chỗ hoặc vé mua — phải có ngày đi và ngày về",
       "format": "Bản in itinerary từ hãng bay hoặc OTA",
       "why": "Chứng minh có kế hoạch quay về Việt Nam",
+      "how_to_get": "Đặt vé trên website hãng bay (Vietnam Airlines, VietJet, Bamboo, China Southern) hoặc OTA (Traveloka, Klook). In itinerary — chưa cần thanh toán toàn bộ.",
       "source_url": "https://www.visaforchina.cn/HAN3_EN/",
       "last_verified": "2026-06-29"
     }
@@ -45,6 +48,7 @@
         "description": "Còn hạn ít nhất 6 tháng sau ngày về, có ít nhất 1 trang trống",
         "format": "Bản gốc + photocopy trang thông tin",
         "why": "Tài liệu định danh chính thức bắt buộc",
+        "how_to_get": "Nộp đơn tại Phòng Quản lý Xuất nhập cảnh Công an tỉnh/thành phố nơi đăng ký hộ khẩu. Mang theo CCCD và ảnh thẻ. Photocopy trang thông tin cá nhân để nộp kèm.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -54,6 +58,7 @@
         "description": "Điền đầy đủ, ký tên. Tải tại visaforchina.cn",
         "format": "Bản in có chữ ký",
         "why": "Mẫu đơn chính thức của Trung Quốc",
+        "how_to_get": "Truy cập visaforchina.cn, chọn 'Visa Application Form', điền thông tin online rồi in ra. Ký tên vào chỗ quy định trước khi nộp.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -63,6 +68,7 @@
         "description": "Do công ty cấp, có đóng dấu và chữ ký giám đốc, ghi rõ chức vụ và lương",
         "format": "Bản gốc",
         "why": "Xác nhận bạn đang có việc làm ổn định",
+        "how_to_get": "Liên hệ phòng Nhân sự hoặc kế toán công ty, yêu cầu cấp giấy xác nhận công tác có đóng dấu đỏ, chữ ký giám đốc, ghi rõ chức vụ và mức lương. Thường mất 1–2 ngày làm việc.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -72,6 +78,7 @@
         "description": "Tài khoản thanh toán chính, sao kê từ ngân hàng",
         "format": "Bản có dấu ngân hàng",
         "why": "Chứng minh khả năng tài chính cho chuyến đi",
+        "how_to_get": "Liên hệ ngân hàng nơi bạn có tài khoản chính, yêu cầu in sao kê 3 tháng gần nhất có dấu ngân hàng. Một số ngân hàng yêu cầu ra chi nhánh để đóng dấu xác nhận.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       }
@@ -83,6 +90,7 @@
         "description": "Còn hạn ít nhất 6 tháng sau ngày về, có ít nhất 1 trang trống",
         "format": "Bản gốc + photocopy trang thông tin",
         "why": "Tài liệu định danh chính thức bắt buộc",
+        "how_to_get": "Nộp đơn tại Phòng Quản lý Xuất nhập cảnh Công an tỉnh/thành phố nơi đăng ký hộ khẩu. Mang theo CCCD và ảnh thẻ.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -92,6 +100,7 @@
         "description": "Điền đầy đủ, ký tên. Tải tại visaforchina.cn",
         "format": "Bản in có chữ ký",
         "why": "Mẫu đơn chính thức của Trung Quốc",
+        "how_to_get": "Truy cập visaforchina.cn, chọn 'Visa Application Form', điền thông tin online rồi in ra và ký tên.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -101,6 +110,7 @@
         "description": "Còn hiệu lực, do trường cấp",
         "format": "Bản gốc",
         "why": "Chứng minh tình trạng học tập",
+        "how_to_get": "Liên hệ phòng Đào tạo hoặc Công tác sinh viên của trường để xin giấy xác nhận đang học. Một số trường hỗ trợ làm online qua cổng sinh viên.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -110,6 +120,7 @@
         "description": "Phụ huynh cam kết bảo lãnh chi phí và đón về",
         "format": "Bản gốc có công chứng",
         "why": "Bảo lãnh tài chính cho sinh viên",
+        "how_to_get": "Phụ huynh viết thư bảo lãnh (hỏi tư vấn viên để được cung cấp mẫu), sau đó mang đến UBND phường/xã để công chứng.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -119,6 +130,7 @@
         "description": "Tài khoản của người bảo lãnh",
         "format": "Bản có dấu ngân hàng",
         "why": "Chứng minh khả năng tài chính của người bảo lãnh",
+        "how_to_get": "Phụ huynh liên hệ ngân hàng nơi có tài khoản chính, yêu cầu in sao kê 3 tháng gần nhất có dấu ngân hàng.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       }
@@ -130,6 +142,7 @@
         "description": "Còn hạn ít nhất 6 tháng sau ngày về, có ít nhất 1 trang trống",
         "format": "Bản gốc + photocopy trang thông tin",
         "why": "Tài liệu định danh chính thức bắt buộc",
+        "how_to_get": "Nộp đơn tại Phòng Quản lý Xuất nhập cảnh Công an tỉnh/thành phố nơi đăng ký hộ khẩu. Mang theo CCCD và ảnh thẻ.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -139,6 +152,7 @@
         "description": "Điền đầy đủ, ký tên. Tải tại visaforchina.cn",
         "format": "Bản in có chữ ký",
         "why": "Mẫu đơn chính thức của Trung Quốc",
+        "how_to_get": "Truy cập visaforchina.cn, chọn 'Visa Application Form', điền thông tin online rồi in ra và ký tên.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -148,6 +162,7 @@
         "description": "Còn hiệu lực, có tên bạn là chủ sở hữu",
         "format": "Bản sao công chứng",
         "why": "Chứng minh hoạt động kinh doanh hợp pháp",
+        "how_to_get": "Lấy bản sao tại Sở Kế hoạch Đầu tư hoặc cơ quan đăng ký kinh doanh địa phương, sau đó đến văn phòng công chứng để công chứng bản sao.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -157,6 +172,7 @@
         "description": "Tài khoản cá nhân của chủ doanh nghiệp",
         "format": "Bản có dấu ngân hàng",
         "why": "Chứng minh tài chính cá nhân",
+        "how_to_get": "Liên hệ ngân hàng nơi bạn có tài khoản cá nhân chính, yêu cầu in sao kê 3 tháng gần nhất có dấu ngân hàng.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       }
@@ -168,6 +184,7 @@
         "description": "Còn hạn ít nhất 6 tháng sau ngày về, có ít nhất 1 trang trống",
         "format": "Bản gốc + photocopy trang thông tin",
         "why": "Tài liệu định danh chính thức bắt buộc",
+        "how_to_get": "Nộp đơn tại Phòng Quản lý Xuất nhập cảnh Công an tỉnh/thành phố nơi đăng ký hộ khẩu. Mang theo CCCD và ảnh thẻ.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -177,6 +194,7 @@
         "description": "Điền đầy đủ, ký tên. Tải tại visaforchina.cn",
         "format": "Bản in có chữ ký",
         "why": "Mẫu đơn chính thức của Trung Quốc",
+        "how_to_get": "Truy cập visaforchina.cn, chọn 'Visa Application Form', điền thông tin online rồi in ra và ký tên.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -186,6 +204,7 @@
         "description": "Hợp đồng với khách hàng, hóa đơn, hoặc biên lai thanh toán gần nhất",
         "format": "Bản gốc hoặc bản sao",
         "why": "Chứng minh nguồn thu nhập từ công việc tự do",
+        "how_to_get": "Tổng hợp hợp đồng, hóa đơn, hoặc biên lai thanh toán từ khách hàng trong 3–6 tháng gần nhất. Nếu làm qua nền tảng online thì xuất lịch sử thanh toán.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -195,6 +214,7 @@
         "description": "Thể hiện các khoản tiền vào từ công việc freelance",
         "format": "Bản có dấu ngân hàng",
         "why": "Chứng minh dòng tiền ổn định",
+        "how_to_get": "Liên hệ ngân hàng nơi bạn nhận tiền công việc, yêu cầu in sao kê 3 tháng gần nhất có dấu ngân hàng.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       }
@@ -206,6 +226,7 @@
         "description": "Còn hạn ít nhất 6 tháng sau ngày về, có ít nhất 1 trang trống",
         "format": "Bản gốc + photocopy trang thông tin",
         "why": "Tài liệu định danh chính thức bắt buộc",
+        "how_to_get": "Nộp đơn tại Phòng Quản lý Xuất nhập cảnh Công an tỉnh/thành phố nơi đăng ký hộ khẩu. Mang theo CCCD và ảnh thẻ.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -215,6 +236,7 @@
         "description": "Điền đầy đủ, ký tên. Tải tại visaforchina.cn",
         "format": "Bản in có chữ ký",
         "why": "Mẫu đơn chính thức của Trung Quốc",
+        "how_to_get": "Truy cập visaforchina.cn, chọn 'Visa Application Form', điền thông tin online rồi in ra và ký tên.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -224,6 +246,7 @@
         "description": "Do công ty vợ/chồng cấp, có đóng dấu",
         "format": "Bản gốc",
         "why": "Chứng minh nguồn thu nhập của gia đình",
+        "how_to_get": "Vợ/chồng liên hệ phòng HR nơi làm việc để xin giấy xác nhận công tác có đóng dấu và chữ ký giám đốc.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -233,6 +256,7 @@
         "description": "Bản có dấu đỏ của UBND",
         "format": "Bản sao công chứng",
         "why": "Chứng minh mối quan hệ hôn nhân với người bảo lãnh",
+        "how_to_get": "Lấy tại UBND phường/xã nơi đã đăng ký kết hôn, sau đó đến văn phòng công chứng để công chứng bản sao.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -242,6 +266,7 @@
         "description": "Tài khoản chung hoặc của vợ/chồng",
         "format": "Bản có dấu ngân hàng",
         "why": "Chứng minh khả năng tài chính",
+        "how_to_get": "Liên hệ ngân hàng nơi có tài khoản chung hoặc tài khoản của vợ/chồng, yêu cầu in sao kê 3 tháng gần nhất có dấu ngân hàng.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       }
@@ -253,6 +278,7 @@
         "description": "Còn hạn ít nhất 6 tháng sau ngày về, có ít nhất 1 trang trống",
         "format": "Bản gốc + photocopy trang thông tin",
         "why": "Tài liệu định danh chính thức bắt buộc",
+        "how_to_get": "Nộp đơn tại Phòng Quản lý Xuất nhập cảnh Công an tỉnh/thành phố nơi đăng ký hộ khẩu. Mang theo CCCD và ảnh thẻ.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -262,6 +288,7 @@
         "description": "Điền đầy đủ, ký tên. Tải tại visaforchina.cn",
         "format": "Bản in có chữ ký",
         "why": "Mẫu đơn chính thức của Trung Quốc",
+        "how_to_get": "Truy cập visaforchina.cn, chọn 'Visa Application Form', điền thông tin online rồi in ra và ký tên.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -271,6 +298,7 @@
         "description": "Do cơ quan/tổ chức nơi công tác cấp",
         "format": "Bản sao công chứng",
         "why": "Xác nhận tình trạng đã nghỉ hưu",
+        "how_to_get": "Liên hệ cơ quan hoặc tổ chức nơi bạn đã công tác trước khi nghỉ hưu để xin cấp lại hoặc sao y quyết định, sau đó công chứng.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -280,6 +308,7 @@
         "description": "Do BHXH cấp, thể hiện mức lương hưu hàng tháng",
         "format": "Bản gốc hoặc sao y",
         "why": "Chứng minh nguồn thu nhập ổn định",
+        "how_to_get": "Liên hệ Bảo hiểm xã hội tỉnh/thành phố nơi bạn đang hưởng lương hưu để xin bản sao quyết định hưởng lương hưu.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       },
@@ -289,6 +318,7 @@
         "description": "Thể hiện tiền lương hưu chuyển vào hàng tháng",
         "format": "Bản có dấu ngân hàng",
         "why": "Chứng minh tài chính thực tế",
+        "how_to_get": "Liên hệ ngân hàng nơi nhận lương hưu, yêu cầu in sao kê 3 tháng gần nhất có dấu ngân hàng.",
         "source_url": "https://www.visaforchina.cn/HAN3_EN/",
         "last_verified": "2026-06-29"
       }
