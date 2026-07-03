@@ -14,7 +14,7 @@ const FIELDS = [
   { key: 'email',               label: 'Email',                        placeholder: 'abc@gmail.com',      required: false, type: 'email' },
   { key: 'company_name',        label: 'Tên công ty (tiếng Anh)',      placeholder: 'VD: ABC Company Ltd', required: false },
   { key: 'company_address',     label: 'Địa chỉ công ty (tiếng Anh)', placeholder: '',                   required: false },
-  { key: 'accommodation',       label: 'Tên khách sạn tại Nhật',       placeholder: 'VD: APA Hotel Shinjuku', required: false },
+  { key: 'accommodation',       label: 'Tên khách sạn / nơi lưu trú', placeholder: 'VD: APA Hotel Shinjuku', required: false },
   { key: 'accommodation_address', label: 'Địa chỉ khách sạn',         placeholder: 'VD: 1-2-3 Shinjuku, Tokyo', required: false },
   { key: 'accommodation_phone', label: 'SĐT khách sạn',               placeholder: 'VD: +81-3-1234-5678', required: false },
 ]
@@ -134,7 +134,7 @@ export default function PersonalInfoModal({ onSubmit, onClose, loading, initialV
         <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <p style={{ fontWeight: 700, fontSize: 16 }}>Thông tin cá nhân</p>
-            <p style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>Điền để điền sẵn vào form MOFA</p>
+            <p style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>Dùng để điền sẵn form xin visa của bạn</p>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#6b7280', padding: 4 }}>✕</button>
         </div>

@@ -118,7 +118,7 @@ export default function EligibilityScreen() {
       <NavHeader title="Đánh giá hồ sơ" showBack={false} />
       <ProgressBar current={7} total={10} />
 
-      <div style={{ flex: 1, padding: '24px 20px', paddingBottom: canContinue ? 100 : 24 }}>
+      <div style={{ flex: 1, padding: '24px 20px', paddingBottom: canContinue ? 'calc(100px + env(safe-area-inset-bottom))' : 24 }}>
         {loading && showSkeleton && <SkeletonCard />}
         {loading && !showSkeleton && (
           <p style={{ textAlign: 'center', color: 'var(--color-text-muted)', marginTop: 40 }}>
