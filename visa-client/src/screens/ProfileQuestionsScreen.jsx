@@ -223,7 +223,7 @@ export default function ProfileQuestionsScreen() {
       <div style={cardStyle}>
         <h2 style={h2Style}>Bạn đang làm nghề gì?</h2>
         <p style={captionStyle}>
-          Ảnh hưởng đến loại tài liệu cần chuẩn bị.
+          Giúp chúng tôi tạo danh sách tài liệu phù hợp với bạn.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {EMPLOYMENT_OPTIONS.map(opt => (
@@ -242,9 +242,9 @@ export default function ProfileQuestionsScreen() {
   function renderQ2() {
     return (
       <div style={cardStyle}>
-        <h2 style={h2Style}>Hộ chiếu có dấu nhập cảnh Nhật/Trung chưa?</h2>
+        <h2 style={h2Style}>Bạn đã từng đến Nhật hoặc Trung Quốc chưa?</h2>
         <p style={{ ...captionStyle, marginBottom: 20 }}>
-          Dấu nhập cảnh cũ là tín hiệu tốt, giúp hồ sơ được đánh giá cao hơn.
+          Lịch sử đến Nhật/Trung giúp hồ sơ được đánh giá cao hơn.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <OptionButton
@@ -362,7 +362,7 @@ export default function ProfileQuestionsScreen() {
   function renderQ5() {
     return (
       <div style={cardStyle}>
-        <h2 style={h2Style}>Hộ chiếu của bạn hết hạn khi nào</h2>
+        <h2 style={h2Style}>Hộ chiếu của bạn hết hạn khi nào?</h2>
         <p style={captionStyle}>
           Hộ chiếu cần còn hạn ít nhất 6 tháng tính từ ngày khởi hành.
         </p>
@@ -440,7 +440,7 @@ export default function ProfileQuestionsScreen() {
 
       <div style={{
         flex: 1,
-        padding: `24px 20px ${needsBottomCTA ? '120px' : '24px'}`,
+        padding: `24px 20px ${needsBottomCTA ? 'calc(120px + env(safe-area-inset-bottom))' : '24px'}`,
       }}>
         {questionContent[currentQ]}
       </div>

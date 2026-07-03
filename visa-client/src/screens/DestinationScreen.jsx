@@ -33,7 +33,7 @@ export default function DestinationScreen() {
           boxShadow: 'var(--shadow-card)',
         }}>
           <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 8, lineHeight: 1.35 }}>
-            Bạn muốn xin visa đi đâu
+            Bạn muốn xin visa đi đâu?
           </h2>
           <p style={{ fontSize: 14, color: 'var(--color-text-muted)', marginBottom: 20 }}>
             Chúng tôi hỗ trợ Nhật Bản và Trung Quốc cho công dân Việt Nam
