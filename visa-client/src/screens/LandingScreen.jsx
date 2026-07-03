@@ -62,7 +62,7 @@ export default function LandingScreen() {
           marginTop: 16, fontSize: 13, color: 'var(--color-text-muted)',
           lineHeight: 1.5, textAlign: 'center',
         }}>
-          Dịch vụ sử dụng AI. Kết quả không phải bảo đảm phê duyệt.
+          Dịch vụ sử dụng AI. Kết quả là tham khảo, không đảm bảo được cấp visa.
         </p>
       </div>
 

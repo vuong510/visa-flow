@@ -56,9 +56,9 @@ export default function PriceScreen() {
         <div style={{ background: 'var(--color-surface)', borderRadius: 12, padding: 16, fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
           <p style={{ fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 6 }}>Bao gồm trong gói dịch vụ:</p>
           <ul style={{ paddingLeft: 16, margin: 0 }}>
-            <li>Tư vấn hồ sơ bởi chuyên viên visa</li>
-            <li>Kiểm tra tài liệu bằng AI trước khi nộp</li>
-            <li>Theo dõi trạng thái đơn trực tiếp</li>
+            <li>Tư vấn hồ sơ từ chuyên viên visa</li>
+            <li>AI kiểm tra tài liệu và cảnh báo sớm trước khi nộp đại sứ quán</li>
+            <li>Theo dõi tiến trình hồ sơ trực tiếp</li>
             <li>Hỗ trợ 1-1 qua chat/gọi điện</li>
           </ul>
         </div>

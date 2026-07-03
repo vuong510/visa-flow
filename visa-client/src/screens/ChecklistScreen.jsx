@@ -30,7 +30,7 @@ function ReadinessBanner({ uploaded, total, allPass }) {
     <div style={{ background: bg, padding: '12px 20px', borderBottom: '1px solid var(--color-border)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
         <span style={{ fontSize: 13, fontWeight: 600, color }}>
-          {allPass ? '✅ Đủ tài liệu — sẵn sàng nộp' : `${uploaded}/${total} tài liệu đã tải lên`}
+          {allPass ? '✅ Đủ tài liệu — sẵn sàng gửi' : `AI đã kiểm tra ${uploaded}/${total} tài liệu`}
         </span>
         <span style={{ fontSize: 12, color, fontWeight: 600 }}>{pct}%</span>
       </div>
@@ -197,7 +197,7 @@ export default function ChecklistScreen() {
         <ReadinessBanner uploaded={uploadedCount} total={totalCount} allPass={allPass} />
       )}
 
-      <div style={{ flex: 1, paddingBottom: canSubmit ? 100 : 24 }}>
+      <div style={{ flex: 1, paddingBottom: canSubmit ? 'calc(100px + env(safe-area-inset-bottom))' : 24 }}>
         {loading && <SkeletonList />}
 
         {error && (
@@ -207,12 +207,20 @@ export default function ChecklistScreen() {
           </div>
         )}
 
+        {!loading && !error && items.length > 0 && (
+          <div style={{ padding: '12px 20px 0' }}>
+            <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#0c4a6e', lineHeight: 1.55 }}>
+              AI sẽ kiểm tra từng tài liệu và cảnh báo nếu có vấn đề — giúp bạn chuẩn bị bản giấy đúng trước khi nộp đại sứ quán.
+            </div>
+          </div>
+        )}
+
         {!loading && !error && destination === 'japan' && (
           <div style={{ padding: '16px 20px 0' }}>
             <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
               <div>
                 <p style={{ fontWeight: 600, fontSize: 14, color: '#1e40af', marginBottom: 2 }}>Đơn xin visa + Lịch trình</p>
-                <p style={{ fontSize: 12, color: '#3b82f6' }}>Tải form MOFA đã điền sẵn thông tin</p>
+                <p style={{ fontSize: 12, color: '#3b82f6' }}>Form xin visa đã điền sẵn thông tin của bạn</p>
               </div>
               <button
                 onClick={() => setShowFormModal(true)}
@@ -284,7 +292,7 @@ export default function ChecklistScreen() {
       {canSubmit && (
         <BottomActionArea>
           <CTAButton
-            label={submitting ? 'Đang nộp...' : 'Nộp hồ sơ'}
+            label={submitting ? 'Đang gửi...' : 'Gửi hồ sơ cho tư vấn viên'}
             onClick={handleSubmit}
             disabled={submitting}
           />

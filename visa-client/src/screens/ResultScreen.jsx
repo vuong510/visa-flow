@@ -22,8 +22,8 @@ const COPY = {
   },
   quota_rejected: {
     icon: '📋',
-    headline: 'Hết quota xét duyệt kỳ này',
-    sub: 'Đại sứ quán đã xử lý đủ số lượng hồ sơ trong kỳ xét duyệt này.',
+    headline: 'Đại sứ quán tạm dừng nhận hồ sơ kỳ này',
+    sub: 'Đại sứ quán đã đủ số lượng hồ sơ trong đợt này, không phải lỗi từ hồ sơ của bạn.',
     color: '#92400e',
     bg: '#fef3c7',
     border: '#fbbf24',

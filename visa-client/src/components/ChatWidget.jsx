@@ -88,13 +88,13 @@ export default function ChatWidget() {
           bottom: '88px',
           right: '20px',
           width: '320px',
-          maxHeight: '480px',
+          maxHeight: 'calc(100dvh - 180px)',
           background: 'var(--color-surface, #fff)',
           borderRadius: 'var(--radius-card, 16px)',
           boxShadow: 'var(--shadow-modal, 0 8px 32px rgba(0,0,0,0.18))',
           display: 'flex',
           flexDirection: 'column',
-          zIndex: 20,
+          zIndex: 30,
           overflow: 'hidden',
           border: '1px solid rgba(0,0,0,0.08)',
         }}>
@@ -247,7 +247,7 @@ export default function ChatWidget() {
           alignItems: 'center',
           justifyContent: 'center',
           boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-          zIndex: 20,
+          zIndex: 30,
           transition: 'transform 0.15s',
         }}
       >
