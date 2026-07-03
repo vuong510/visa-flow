@@ -63,7 +63,7 @@ export default function NavHeader({ title, onBack, showBack = true, rightAction 
 
       <BottomSheet open={showAI} onClose={() => setShowAI(false)} title="Về dịch vụ AI">
         <p style={{ fontSize: 15, lineHeight: 1.6, color: 'var(--color-text-secondary)' }}>
-          Dịch vụ này sử dụng AI để đánh giá hồ sơ của bạn. Kết quả được giải thích rõ ràng và không phải là bảo đảm phê duyệt.
+          Dịch vụ này sử dụng AI để đánh giá hồ sơ của bạn. Kết quả là tham khảo và không đảm bảo được cấp visa.
         </p>
       </BottomSheet>
     </>
