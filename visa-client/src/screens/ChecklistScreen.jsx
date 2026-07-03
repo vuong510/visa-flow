@@ -288,6 +288,14 @@ export default function ChecklistScreen() {
               <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Tại sao cần?</p>
               <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--color-text-secondary)' }}>{detailItem.why}</p>
             </div>
+            {detailItem.id === 'itinerary' && (
+              <button
+                onClick={() => { setDetailItem(null); window.__openChatWithMessage?.('Gợi ý lịch trình cho chuyến đi của tôi') }}
+                style={{ width: '100%', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 10, padding: '12px 16px', fontSize: 14, fontWeight: 600, color: '#1d4ed8', cursor: 'pointer', marginBottom: 10 }}
+              >
+                Nhờ AI gợi ý lịch trình
+              </button>
+            )}
             <CTAButton
               label="Tải lên tài liệu này"
               onClick={() => { setDetailItem(null); triggerUpload(detailItem.id) }}

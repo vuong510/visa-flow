@@ -96,6 +96,7 @@ class Application(Base):
     checklist_json     = Column(JSON)                # cached checklist from Haiku
     submission_status  = Column(String(30), default="pending")      # "pending" | "submitted" | "agency_submitted" | "processing" | "approved" | "rejected" | "quota_rejected"
     submitted_at       = Column(DateTime)
+    itinerary_json     = Column(JSON)                # user-confirmed AI-generated itinerary
     created_at         = Column(DateTime, default=datetime.utcnow)
 
 

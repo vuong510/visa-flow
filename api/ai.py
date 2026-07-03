@@ -184,6 +184,41 @@ One object per day, exactly {days} objects."""
     return []
 
 
+def suggest_itinerary_chat(destination: str, departure: str, return_date: str) -> dict:
+    """Generate Vietnamese itinerary suggestion for chat + English structured data for MOFA form."""
+    from datetime import datetime as _dt
+    try:
+        days = max(1, (_dt.strptime(return_date, "%Y-%m-%d") - _dt.strptime(departure, "%Y-%m-%d")).days + 1)
+    except Exception:
+        days = 7
+
+    dest_vn = "Nhật Bản" if destination == "japan" else "Trung Quốc"
+    city_vn = "Tokyo" if destination == "japan" else "Bắc Kinh"
+
+    vn_system = f"""Bạn là trợ lý tư vấn visa. Tạo gợi ý lịch trình {days} ngày ở {dest_vn} bằng tiếng Việt.
+Chuyến đi: {departure} đến {return_date}. Thành phố chính: {city_vn}.
+Yêu cầu:
+- Bắt đầu bằng "Đây là gợi ý lịch trình {days} ngày cho bạn:"
+- Liệt kê từng ngày ngắn gọn: "Ngày 1 (DD/MM): ..."
+- Tối đa 180 từ. Không dùng markdown, không dùng emoji."""
+
+    vn_resp = client.messages.create(
+        model=HAIKU,
+        max_tokens=512,
+        system=vn_system,
+        messages=[{"role": "user", "content": f"Gợi ý lịch trình {days} ngày ở {dest_vn}."}],
+    )
+    reply_text = vn_resp.content[0].text
+
+    itinerary_data = generate_itinerary(
+        destination=destination,
+        departure=departure,
+        return_date=return_date,
+    )
+
+    return {"reply": reply_text, "itinerary_data": itinerary_data}
+
+
 def extract_id_info(image_bytes: bytes, media_type: str, doc_type: str) -> dict:
     """Extract personal info fields from a CCCD or passport image using Sonnet vision."""
     system = """Extract personal information from the identity document image.

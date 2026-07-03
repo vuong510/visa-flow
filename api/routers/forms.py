@@ -135,13 +135,16 @@ def download_forms(application_id: str, body: FormsRequest, db: Session = Depend
             except Exception:
                 pass
 
-        itinerary = generate_itinerary(
-            destination=application.destination,
-            departure=_td.get("departure", ""),
-            return_date=_td.get("return", ""),
-            hotel_name=body.personal_info.accommodation,
-            hotel_phone=body.personal_info.accommodation_phone,
-        )
+        if application.itinerary_json:
+            itinerary = application.itinerary_json
+        else:
+            itinerary = generate_itinerary(
+                destination=application.destination,
+                departure=_td.get("departure", ""),
+                return_date=_td.get("return", ""),
+                hotel_name=body.personal_info.accommodation,
+                hotel_phone=body.personal_info.accommodation_phone,
+            )
         info["itinerary"] = itinerary
         if itinerary and body.personal_info.accommodation:
             info["hotel_city"] = body.personal_info.accommodation

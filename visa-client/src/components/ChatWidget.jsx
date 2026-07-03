@@ -8,13 +8,23 @@ export default function ChatWidget() {
   const [input, setInput] = useState('')
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(false)
+  const [pendingItinerary, setPendingItinerary] = useState(null) // itinerary waiting for user confirm
+  const [savedItinerary, setSavedItinerary] = useState(false)
   const bottomRef = useRef(null)
+
+  useEffect(() => {
+    window.__openChatWithMessage = (msg) => {
+      setOpen(true)
+      setInput(msg)
+    }
+    return () => { delete window.__openChatWithMessage }
+  }, [])
 
   useEffect(() => {
     if (open && bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: 'smooth' })
     }
-  }, [history, open])
+  }, [history, open, pendingItinerary])
 
   async function send() {
     const text = input.trim()
@@ -38,11 +48,28 @@ export default function ChatWidget() {
       })
       const data = await res.json()
       setHistory([...nextHistory, { role: 'assistant', content: data.reply }])
+      if (data.itinerary && data.itinerary.length > 0) {
+        setPendingItinerary(data.itinerary)
+        setSavedItinerary(false)
+      }
     } catch {
       setHistory([...nextHistory, { role: 'assistant', content: 'Có lỗi xảy ra, thử lại nhé.' }])
     } finally {
       setLoading(false)
     }
+  }
+
+  async function saveItinerary() {
+    if (!pendingItinerary || !applicationId) return
+    try {
+      await fetch(`${API_BASE}/api/application/${applicationId}/itinerary`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itinerary: pendingItinerary }),
+      })
+      setSavedItinerary(true)
+      setPendingItinerary(null)
+    } catch (_) {}
   }
 
   function handleKey(e) {
@@ -137,6 +164,22 @@ export default function ChatWidget() {
                 }}>
                   Đang trả lời...
                 </div>
+              </div>
+            )}
+            {pendingItinerary && (
+              <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 10, padding: '10px 12px' }}>
+                <p style={{ fontSize: 12, color: '#1d4ed8', fontWeight: 600, marginBottom: 6 }}>Lịch trình này sẽ được dùng khi tải form visa</p>
+                <button
+                  onClick={saveItinerary}
+                  style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer', width: '100%' }}
+                >
+                  Dùng lịch trình này
+                </button>
+              </div>
+            )}
+            {savedItinerary && (
+              <div style={{ background: '#d1fae5', border: '1px solid #6ee7b7', borderRadius: 10, padding: '10px 12px', fontSize: 13, color: '#065f46', fontWeight: 600, textAlign: 'center' }}>
+                Đã lưu — lịch trình sẽ tự điền vào form tải xuống
               </div>
             )}
             <div ref={bottomRef} />

@@ -27,6 +27,10 @@ class ProfileUpdate(BaseModel):
     travel_dates: Optional[dict] = None
 
 
+class ItineraryUpdate(BaseModel):
+    itinerary: list
+
+
 @router.get("/health")
 def health():
     return {"status": "ok"}
@@ -197,6 +201,16 @@ def review_document(app_id: int, doc_id: int, db: Session = Depends(get_db)):
 
     db.commit()
     return {"status": doc.review_status, "reason": doc.review_notes}
+
+
+@router.patch("/application/{app_id}/itinerary")
+def save_itinerary(app_id: int, body: ItineraryUpdate, db: Session = Depends(get_db)):
+    app = db.get(Application, app_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    app.itinerary_json = body.itinerary
+    db.commit()
+    return {"ok": True}
 
 
 @router.post("/application/{app_id}/submit")
