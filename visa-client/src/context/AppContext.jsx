@@ -12,6 +12,8 @@ export function AppProvider({ children }) {
   const [eligibilityResult, setEligibilityResult] = useState(null)
   const [resultStatus, setResultStatus] = useState(null)
   const [checklist, setChecklist] = useState([])
+  const [itineraryJson, setItineraryJson] = useState(null)
+  const [extractedInfo, setExtractedInfo] = useState({})
   const [screen, setScreen] = useState('landing')
 
   async function startApplication() {
@@ -45,6 +47,8 @@ export function AppProvider({ children }) {
       eligibilityResult, setEligibilityResult,
       resultStatus, setResultStatus,
       checklist, setChecklist,
+      itineraryJson, setItineraryJson,
+      extractedInfo, setExtractedInfo,
       screen, navigate, startApplication,
       updateDestination, API_BASE,
     }}>

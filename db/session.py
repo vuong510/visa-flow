@@ -9,13 +9,17 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def init_db():
     Base.metadata.create_all(bind=engine)
-    # Add itinerary_json column if not exists (safe migration for existing DBs)
-    try:
-        with engine.connect() as conn:
-            conn.execute(text("ALTER TABLE applications ADD COLUMN itinerary_json JSON"))
-            conn.commit()
-    except Exception:
-        pass
+    # Safe migrations for existing DBs
+    for col_sql in [
+        "ALTER TABLE applications ADD COLUMN itinerary_json JSON",
+        "ALTER TABLE applications ADD COLUMN extracted_info_json JSON",
+    ]:
+        try:
+            with engine.connect() as conn:
+                conn.execute(text(col_sql))
+                conn.commit()
+        except Exception:
+            pass
 
 def get_db():
     db = SessionLocal()

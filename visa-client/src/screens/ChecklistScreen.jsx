@@ -42,7 +42,7 @@ function ReadinessBanner({ uploaded, total, allPass }) {
 }
 
 export default function ChecklistScreen() {
-  const { applicationId, API_BASE, navigate, destination, checklist: ctxChecklist, setChecklist: setCtxChecklist } = useApp()
+  const { applicationId, API_BASE, navigate, destination, checklist: ctxChecklist, setChecklist: setCtxChecklist, itineraryJson, extractedInfo, setExtractedInfo } = useApp()
   const [downloading, setDownloading] = useState(false)
   const [showFormModal, setShowFormModal] = useState(false)
   const [items, setItems] = useState([])
@@ -133,17 +133,26 @@ export default function ChecklistScreen() {
       if (!res.ok) throw new Error()
       const data = await res.json()
       setDocs(d => ({ ...d, [docId]: { id: documentId, status: data.status, notes: data.reason, reviewing: false } }))
+      if (docId === 'passport' && (data.status === 'pass' || data.status === 'needs_clarification')) {
+        fetch(`${API_BASE}/api/application/${applicationId}/extracted-info`)
+          .then(r => r.json()).then(info => { if (info && !info.error) setExtractedInfo(info) }).catch(() => {})
+      }
     } catch {
       setDocs(d => ({ ...d, [docId]: { ...d[docId], reviewing: false, status: 'needs_clarification', notes: 'Không thể tự động kiểm tra. Nhân viên sẽ xem xét tài liệu này.' } }))
     }
   }
 
-  const uploadedItems = items.filter(item => docs[item.id]?.id && !docs[item.id]?.uploading)
-  const uploadedCount = uploadedItems.length
-  const allPass = uploadedCount === items.length && items.length > 0 && items.every(item => docs[item.id]?.status === 'pass')
-  const hasClarification = items.some(item => docs[item.id]?.status === 'needs_clarification')
-  const canSubmit = uploadedCount === items.length && items.length > 0 &&
-    items.every(item => docs[item.id]?.status === 'pass' || docs[item.id]?.status === 'needs_clarification')
+  const nonItineraryItems = items.filter(item => item.id !== 'itinerary')
+  const uploadedItems = nonItineraryItems.filter(item => docs[item.id]?.id && !docs[item.id]?.uploading)
+  const uploadedCount = uploadedItems.length + (itineraryJson || docs['itinerary']?.id ? 1 : 0)
+  const totalCount = items.length
+  const allPass = uploadedCount === totalCount && totalCount > 0 &&
+    nonItineraryItems.every(item => docs[item.id]?.status === 'pass') && (!!itineraryJson || docs['itinerary']?.status === 'pass')
+  const hasClarification = nonItineraryItems.some(item => docs[item.id]?.status === 'needs_clarification')
+  const itineraryDone = !!itineraryJson || docs['itinerary']?.status === 'pass' || docs['itinerary']?.status === 'needs_clarification'
+  const canSubmit = uploadedItems.length === nonItineraryItems.length && nonItineraryItems.length > 0 &&
+    nonItineraryItems.every(item => docs[item.id]?.status === 'pass' || docs[item.id]?.status === 'needs_clarification') &&
+    itineraryDone
 
   async function handleDownloadForms(personalInfo) {
     setDownloading(true)
@@ -185,7 +194,7 @@ export default function ChecklistScreen() {
       <ProgressBar current={9} total={10} />
 
       {!loading && items.length > 0 && (
-        <ReadinessBanner uploaded={uploadedCount} total={items.length} allPass={allPass} />
+        <ReadinessBanner uploaded={uploadedCount} total={totalCount} allPass={allPass} />
       )}
 
       <div style={{ flex: 1, paddingBottom: canSubmit ? 100 : 24 }}>
@@ -228,15 +237,38 @@ export default function ChecklistScreen() {
                 Một số tài liệu cần xem xét thêm. Bạn có thể nộp hồ sơ — đội tư vấn sẽ hỗ trợ kiểm tra trực tiếp.
               </div>
             )}
-            {items.map(item => (
-              <DocumentItem
-                key={item.id}
-                item={item}
-                docState={docs[item.id]}
-                onUpload={triggerUpload}
-                onDetail={setDetailItem}
-              />
-            ))}
+            {items.map(item => {
+              if (item.id === 'itinerary') {
+                const done = !!itineraryJson || docs['itinerary']?.status === 'pass' || docs['itinerary']?.status === 'needs_clarification'
+                return (
+                  <div key="itinerary" style={{ paddingTop: 14, paddingBottom: 14, borderBottom: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontWeight: 600, fontSize: 15, marginBottom: 2 }}>{item.name}</p>
+                      <p style={{ fontSize: 12, color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.description}</p>
+                    </div>
+                    {done ? (
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#065f46', background: '#d1fae5', borderRadius: 8, padding: '6px 12px', whiteSpace: 'nowrap' }}>✓ Đã tạo</span>
+                    ) : (
+                      <button
+                        onClick={() => { window.__openChatWithMessage?.('Gợi ý lịch trình cho chuyến đi của tôi') }}
+                        style={{ fontSize: 13, fontWeight: 600, color: '#1d4ed8', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                      >
+                        AI tạo
+                      </button>
+                    )}
+                  </div>
+                )
+              }
+              return (
+                <DocumentItem
+                  key={item.id}
+                  item={item}
+                  docState={docs[item.id]}
+                  onUpload={triggerUpload}
+                  onDetail={setDetailItem}
+                />
+              )
+            })}
           </div>
         )}
       </div>
@@ -264,6 +296,7 @@ export default function ChecklistScreen() {
           loading={downloading}
           onClose={() => setShowFormModal(false)}
           onSubmit={handleDownloadForms}
+          initialValues={extractedInfo}
         />
       )}
 

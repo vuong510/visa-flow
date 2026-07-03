@@ -199,8 +199,29 @@ def review_document(app_id: int, doc_id: int, db: Session = Depends(get_db)):
         doc.review_status = "pass"
         doc.review_notes = None
 
+    # For passport images: also extract personal info for form pre-fill
+    if doc.doc_type == "passport" and file_path and file_path.exists():
+        ct = _guess_media_type(file_path.name)
+        if ct in IMAGE_TYPES:
+            try:
+                from api.ai import extract_id_info
+                extracted = extract_id_info(file_path.read_bytes(), ct, "passport")
+                if extracted and not extracted.get("error"):
+                    existing = app.extracted_info_json or {}
+                    app.extracted_info_json = {**existing, **{k: v for k, v in extracted.items() if v}}
+            except Exception:
+                pass
+
     db.commit()
     return {"status": doc.review_status, "reason": doc.review_notes}
+
+
+@router.get("/application/{app_id}/extracted-info")
+def get_extracted_info(app_id: int, db: Session = Depends(get_db)):
+    app = db.get(Application, app_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    return app.extracted_info_json or {}
 
 
 @router.patch("/application/{app_id}/itinerary")

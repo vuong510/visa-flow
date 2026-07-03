@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 
 export default function ChatWidget() {
-  const { destination, screen, profile, applicationId, API_BASE } = useApp()
+  const { destination, screen, profile, applicationId, API_BASE, setItineraryJson } = useApp()
   if (screen === 'price') return null
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
@@ -69,6 +69,7 @@ export default function ChatWidget() {
       })
       setSavedItinerary(true)
       setPendingItinerary(null)
+      setItineraryJson(pendingItinerary)
     } catch (_) {}
   }
 

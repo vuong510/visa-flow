@@ -50,12 +50,14 @@ const labelStyle = {
   display: 'block',
 }
 
-export default function PersonalInfoModal({ onSubmit, onClose, loading }) {
+export default function PersonalInfoModal({ onSubmit, onClose, loading, initialValues = {} }) {
   const { API_BASE } = useApp()
   const cccdRef = useRef(null)
   const passportRef = useRef(null)
   const [extracting, setExtracting] = useState(null) // 'cccd' | 'passport' | null
-  const [extractMsg, setExtractMsg] = useState('')
+  const [extractMsg, setExtractMsg] = useState(
+    Object.keys(initialValues).length > 0 ? 'Đã điền sẵn từ hộ chiếu đã tải lên. Kiểm tra lại trước khi tải.' : ''
+  )
 
   const [form, setForm] = useState({
     family_name: '', given_name: '', date_of_birth: '', place_of_birth: '',
@@ -64,6 +66,7 @@ export default function PersonalInfoModal({ onSubmit, onClose, loading }) {
     home_address: '', mobile: '', email: '',
     company_name: '', company_address: '',
     accommodation: '', accommodation_address: '', accommodation_phone: '',
+    ...initialValues,
   })
   const [errors, setErrors] = useState({})
 
@@ -166,7 +169,7 @@ export default function PersonalInfoModal({ onSubmit, onClose, loading }) {
             ))}
           </div>
           {extractMsg && (
-            <p style={{ fontSize: 12, marginTop: 8, color: extractMsg.startsWith('Đã') ? '#065f46' : '#b91c1c', lineHeight: 1.4 }}>
+            <p style={{ fontSize: 12, marginTop: 8, color: extractMsg.startsWith('Đã') ? '#065f46' : '#b91c1c', lineHeight: 1.4, background: extractMsg.startsWith('Đã') ? '#d1fae5' : '#fee2e2', borderRadius: 8, padding: '8px 10px' }}>
               {extractMsg}
             </p>
           )}
