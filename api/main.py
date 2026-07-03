@@ -40,9 +40,9 @@ app.include_router(forms_router, prefix="/api")
 app.include_router(extract_router, prefix="/api")
 app.include_router(admin_router, prefix="/api")
 
-FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
+FRONTEND_DIR = Path(__file__).parent.parent / "visa-client" / "dist"
+LEGACY_DIR = Path(__file__).parent.parent / "frontend"
 
-app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIR / "assets")), name="react-assets")
 
 @app.get("/health")
@@ -51,7 +51,7 @@ def health():
 
 @app.get("/cv-jobs")
 def cv_jobs_page():
-    return FileResponse(FRONTEND_DIR / "cv-jobs.html")
+    return FileResponse(LEGACY_DIR / "cv-jobs.html")
 
 @app.get("/")
 def root():
