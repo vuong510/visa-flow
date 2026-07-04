@@ -5,6 +5,7 @@ import DestinationScreen from './screens/DestinationScreen'
 import ProfileQuestionsScreen from './screens/ProfileQuestionsScreen'
 import EligibilityScreen from './screens/EligibilityScreen'
 import PriceScreen from './screens/PriceScreen'
+import FormFillingScreen from './screens/FormFillingScreen'
 import ChecklistScreen from './screens/ChecklistScreen'
 import StatusTimelineScreen from './screens/StatusTimelineScreen'
 import ResultScreen from './screens/ResultScreen'
@@ -18,6 +19,7 @@ function Router() {
     case 'profile-questions':  return <ProfileQuestionsScreen />
     case 'eligibility-loading': return <EligibilityScreen />
     case 'price':              return <PriceScreen />
+    case 'form-filling':       return <FormFillingScreen />
     case 'checklist':          return <ChecklistScreen />
     case 'status-timeline':    return <StatusTimelineScreen />
     case 'result':             return <ResultScreen />

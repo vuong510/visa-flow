@@ -6,7 +6,6 @@ import CTAButton from '../components/CTAButton'
 import BottomSheet from '../components/BottomSheet'
 import DocumentItem from '../components/DocumentItem'
 import { useApp } from '../context/AppContext'
-import PersonalInfoModal from '../components/PersonalInfoModal'
 
 function SkeletonList() {
   return (
@@ -42,9 +41,7 @@ function ReadinessBanner({ uploaded, total, allPass }) {
 }
 
 export default function ChecklistScreen() {
-  const { applicationId, API_BASE, navigate, destination, checklist: ctxChecklist, setChecklist: setCtxChecklist, itineraryJson, extractedInfo, setExtractedInfo } = useApp()
-  const [downloading, setDownloading] = useState(false)
-  const [showFormModal, setShowFormModal] = useState(false)
+  const { applicationId, API_BASE, navigate, checklist: ctxChecklist, setChecklist: setCtxChecklist } = useApp()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -133,10 +130,6 @@ export default function ChecklistScreen() {
       if (!res.ok) throw new Error()
       const data = await res.json()
       setDocs(d => ({ ...d, [docId]: { id: documentId, status: data.status, notes: data.reason, reviewing: false } }))
-      if (docId === 'passport' && (data.status === 'pass' || data.status === 'needs_clarification')) {
-        fetch(`${API_BASE}/api/application/${applicationId}/extracted-info`)
-          .then(r => r.json()).then(info => { if (info && !info.error) setExtractedInfo(info) }).catch(() => {})
-      }
     } catch {
       setDocs(d => ({ ...d, [docId]: { ...d[docId], reviewing: false, status: 'needs_clarification', notes: 'Không thể tự động kiểm tra. Đội tư vấn sẽ xem xét tài liệu này.' } }))
     }
@@ -144,39 +137,13 @@ export default function ChecklistScreen() {
 
   const nonItineraryItems = items.filter(item => item.id !== 'itinerary')
   const uploadedItems = nonItineraryItems.filter(item => docs[item.id]?.id && !docs[item.id]?.uploading)
-  const uploadedCount = uploadedItems.length + (itineraryJson || docs['itinerary']?.id ? 1 : 0)
-  const totalCount = items.length
+  const uploadedCount = uploadedItems.length
+  const totalCount = nonItineraryItems.length
   const allPass = uploadedCount === totalCount && totalCount > 0 &&
-    nonItineraryItems.every(item => docs[item.id]?.status === 'pass') && (!!itineraryJson || docs['itinerary']?.status === 'pass')
+    nonItineraryItems.every(item => docs[item.id]?.status === 'pass')
   const hasClarification = nonItineraryItems.some(item => docs[item.id]?.status === 'needs_clarification')
-  const itineraryDone = !!itineraryJson || docs['itinerary']?.status === 'pass' || docs['itinerary']?.status === 'needs_clarification'
   const canSubmit = uploadedItems.length === nonItineraryItems.length && nonItineraryItems.length > 0 &&
-    nonItineraryItems.every(item => docs[item.id]?.status === 'pass' || docs[item.id]?.status === 'needs_clarification') &&
-    itineraryDone
-
-  async function handleDownloadForms(personalInfo) {
-    setDownloading(true)
-    try {
-      const res = await fetch(`${API_BASE}/api/application/${applicationId}/forms/download`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ personal_info: personalInfo }),
-      })
-      if (!res.ok) throw new Error()
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'visa-forms.zip'
-      a.click()
-      URL.revokeObjectURL(url)
-      setShowFormModal(false)
-    } catch {
-      alert('Không thể tạo đơn. Vui lòng thử lại.')
-    } finally {
-      setDownloading(false)
-    }
-  }
+    nonItineraryItems.every(item => docs[item.id]?.status === 'pass' || docs[item.id]?.status === 'needs_clarification')
 
   async function handleSubmit() {
     setSubmitting(true)
@@ -191,7 +158,7 @@ export default function ChecklistScreen() {
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--color-background)' }}>
       <NavHeader title="Chuẩn bị hồ sơ" showBack={false} />
-      <ProgressBar current={9} total={10} />
+      <ProgressBar current={10} total={11} />
 
       {!loading && items.length > 0 && (
         <ReadinessBanner uploaded={uploadedCount} total={totalCount} allPass={allPass} />
@@ -215,24 +182,6 @@ export default function ChecklistScreen() {
           </div>
         )}
 
-        {!loading && !error && destination === 'japan' && (
-          <div style={{ padding: '16px 20px 0' }}>
-            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-              <div>
-                <p style={{ fontWeight: 600, fontSize: 14, color: '#1e40af', marginBottom: 2 }}>Đơn xin visa + Lịch trình</p>
-                <p style={{ fontSize: 12, color: '#3b82f6' }}>Đơn xin visa đã điền sẵn thông tin của bạn</p>
-              </div>
-              <button
-                onClick={() => setShowFormModal(true)}
-                disabled={downloading}
-                style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 14px', fontSize: 13, fontWeight: 600, cursor: downloading ? 'not-allowed' : 'pointer', opacity: downloading ? 0.6 : 1, whiteSpace: 'nowrap' }}
-              >
-                {downloading ? 'Đang tải...' : '⬇ Tải xuống'}
-              </button>
-            </div>
-          </div>
-        )}
-
         {!loading && !error && items.length > 0 && (
           <div style={{ padding: '0 20px' }}>
             {confidenceNote && (
@@ -246,27 +195,7 @@ export default function ChecklistScreen() {
               </div>
             )}
             {items.map(item => {
-              if (item.id === 'itinerary') {
-                const done = !!itineraryJson || docs['itinerary']?.status === 'pass' || docs['itinerary']?.status === 'needs_clarification'
-                return (
-                  <div key="itinerary" style={{ paddingTop: 14, paddingBottom: 14, borderBottom: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontWeight: 600, fontSize: 15, marginBottom: 2 }}>{item.name}</p>
-                      <p style={{ fontSize: 12, color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.description}</p>
-                    </div>
-                    {done ? (
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#065f46', background: '#d1fae5', borderRadius: 8, padding: '6px 12px', whiteSpace: 'nowrap' }}>✓ Đã tạo</span>
-                    ) : (
-                      <button
-                        onClick={() => { window.__openChatWithMessage?.('Gợi ý lịch trình cho chuyến đi của tôi') }}
-                        style={{ fontSize: 13, fontWeight: 600, color: '#1d4ed8', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', whiteSpace: 'nowrap' }}
-                      >
-                        Tạo bằng AI
-                      </button>
-                    )}
-                  </div>
-                )
-              }
+              if (item.id === 'itinerary') return null
               return (
                 <DocumentItem
                   key={item.id}
@@ -299,15 +228,6 @@ export default function ChecklistScreen() {
         </BottomActionArea>
       )}
 
-      {showFormModal && (
-        <PersonalInfoModal
-          loading={downloading}
-          onClose={() => setShowFormModal(false)}
-          onSubmit={handleDownloadForms}
-          initialValues={extractedInfo}
-        />
-      )}
-
       {detailItem && (
         <BottomSheet open={true} title={detailItem.name} onClose={() => setDetailItem(null)}>
           <div style={{ padding: '0 0 8px' }}>
@@ -329,14 +249,6 @@ export default function ChecklistScreen() {
               <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Tại sao cần?</p>
               <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--color-text-secondary)' }}>{detailItem.why}</p>
             </div>
-            {detailItem.id === 'itinerary' && (
-              <button
-                onClick={() => { setDetailItem(null); window.__openChatWithMessage?.('Gợi ý lịch trình cho chuyến đi của tôi') }}
-                style={{ width: '100%', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 10, padding: '12px 16px', fontSize: 14, fontWeight: 600, color: '#1d4ed8', cursor: 'pointer', marginBottom: 10 }}
-              >
-                Để AI tạo lịch trình
-              </button>
-            )}
             <CTAButton
               label="Tải lên tài liệu này"
               onClick={() => { setDetailItem(null); triggerUpload(detailItem.id) }}

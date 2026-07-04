@@ -116,7 +116,7 @@ export default function EligibilityScreen() {
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--color-background)' }}>
       <NavHeader title="Đánh giá hồ sơ" showBack={false} />
-      <ProgressBar current={7} total={10} />
+      <ProgressBar current={7} total={11} />
 
       <div style={{ flex: 1, padding: '24px 20px', paddingBottom: canContinue ? 'calc(100px + env(safe-area-inset-bottom))' : 24 }}>
         {loading && showSkeleton && <SkeletonCard />}

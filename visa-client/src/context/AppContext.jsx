@@ -14,6 +14,7 @@ export function AppProvider({ children }) {
   const [checklist, setChecklist] = useState([])
   const [itineraryJson, setItineraryJson] = useState(null)
   const [extractedInfo, setExtractedInfo] = useState({})
+  const [tripFormData, setTripFormData] = useState({})
   const [screen, setScreen] = useState('landing')
 
   async function startApplication() {
@@ -49,6 +50,7 @@ export function AppProvider({ children }) {
       checklist, setChecklist,
       itineraryJson, setItineraryJson,
       extractedInfo, setExtractedInfo,
+      tripFormData, setTripFormData,
       screen, navigate, startApplication,
       updateDestination, API_BASE,
     }}>

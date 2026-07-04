@@ -29,14 +29,14 @@ export default function PriceScreen() {
     }
     setTimeout(() => {
       setOverlay('success')
-      setTimeout(() => navigate('checklist'), 1000)
+      setTimeout(() => navigate('form-filling'), 1000)
     }, 1500)
   }
 
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--color-background)', position: 'relative' }}>
       <NavHeader title="Chi phí dịch vụ" showBack={!paying} onBack={() => navigate('eligibility-loading')} />
-      <ProgressBar current={8} total={10} />
+      <ProgressBar current={8} total={11} />
 
       <div style={{ flex: 1, padding: '24px 20px', paddingBottom: 100 }}>
         <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-card)', padding: 20, boxShadow: 'var(--shadow-card)', marginBottom: 16 }}>
