@@ -35,7 +35,7 @@ export default function LandingScreen() {
             DỊCH VỤ XIN VISA AI
           </p>
           <h1 style={{ fontSize: 24, fontWeight: 700, lineHeight: 1.3, marginBottom: 12 }}>
-            Biết trước khi trả tiền
+            Biết kết quả trước khi thanh toán
           </h1>
           <p style={{ fontSize: 15, lineHeight: 1.6, opacity: 0.85 }}>
             AI đánh giá hồ sơ của bạn miễn phí trước khi thanh toán. Nếu hồ sơ không đủ điều kiện, bạn không mất đồng nào.
@@ -50,9 +50,9 @@ export default function LandingScreen() {
           boxShadow: 'var(--shadow-card)',
           display: 'flex', flexDirection: 'column', gap: 16,
         }}>
-          <ValueRow icon="💰" title="Rẻ hơn đại lý" desc="Không có chi phí nhân sự, bạn tiết kiệm được phần đó" />
+          <ValueRow icon="💰" title="Rẻ hơn đại lý" desc="Không có chi phí nhân sự, bạn giữ lại phần chênh lệch đó" />
           <div style={{ height: 1, background: 'var(--color-border)' }} />
-          <ValueRow icon="🕐" title="Sẵn sàng 24/7" desc="Không chờ 9–5. Nộp hồ sơ lúc nửa đêm cũng được" />
+          <ValueRow icon="🕐" title="Sẵn sàng 24/7" desc="Không chờ giờ hành chính. Nộp hồ sơ lúc nửa đêm cũng được" />
           <div style={{ height: 1, background: 'var(--color-border)' }} />
           <ValueRow icon="🤖" title="AI minh bạch" desc="Mọi quyết định đều được giải thích rõ ràng, không hộp đen" />
         </div>

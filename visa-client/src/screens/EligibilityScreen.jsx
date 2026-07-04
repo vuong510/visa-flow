@@ -122,7 +122,7 @@ export default function EligibilityScreen() {
         {loading && showSkeleton && <SkeletonCard />}
         {loading && !showSkeleton && (
           <p style={{ textAlign: 'center', color: 'var(--color-text-muted)', marginTop: 40 }}>
-            AI đang đọc hồ sơ...
+            AI đang đánh giá hồ sơ của bạn...
           </p>
         )}
 

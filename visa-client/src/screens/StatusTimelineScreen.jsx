@@ -86,7 +86,7 @@ export default function StatusTimelineScreen() {
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--color-background)' }}>
       <NavHeader
-        title="Trạng thái hồ sơ"
+        title="Tiến trình hồ sơ"
         showBack={false}
         rightAction={
           <button
@@ -116,7 +116,7 @@ export default function StatusTimelineScreen() {
 
         {statusData && (
           <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-card)', padding: 24, boxShadow: 'var(--shadow-card)' }}>
-            <h2 style={{ fontSize: 17, fontWeight: 700, marginBottom: 24 }}>Tiến trình xử lý hồ sơ</h2>
+            <h2 style={{ fontSize: 17, fontWeight: 700, marginBottom: 24 }}>Tiến trình hồ sơ</h2>
             {statusData.nodes.map((node, i) => (
               <TimelineNode
                 key={node.id}

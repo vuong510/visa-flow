@@ -27,7 +27,7 @@ const COPY = {
     color: '#92400e',
     bg: '#fef3c7',
     border: '#fbbf24',
-    details: 'Đây không phải lỗi hồ sơ của bạn. Hồ sơ sẽ được tự động chuyển sang kỳ xét duyệt tiếp theo mà không cần nộp lại.',
+    details: 'Hồ sơ sẽ được tự động chuyển sang kỳ xét duyệt tiếp theo mà không cần nộp lại.',
   },
 }
 

@@ -138,7 +138,7 @@ export default function ChecklistScreen() {
           .then(r => r.json()).then(info => { if (info && !info.error) setExtractedInfo(info) }).catch(() => {})
       }
     } catch {
-      setDocs(d => ({ ...d, [docId]: { ...d[docId], reviewing: false, status: 'needs_clarification', notes: 'Không thể tự động kiểm tra. Nhân viên sẽ xem xét tài liệu này.' } }))
+      setDocs(d => ({ ...d, [docId]: { ...d[docId], reviewing: false, status: 'needs_clarification', notes: 'Không thể tự động kiểm tra. Đội tư vấn sẽ xem xét tài liệu này.' } }))
     }
   }
 
@@ -172,7 +172,7 @@ export default function ChecklistScreen() {
       URL.revokeObjectURL(url)
       setShowFormModal(false)
     } catch {
-      alert('Không thể tạo form. Vui lòng thử lại.')
+      alert('Không thể tạo đơn. Vui lòng thử lại.')
     } finally {
       setDownloading(false)
     }
@@ -210,7 +210,7 @@ export default function ChecklistScreen() {
         {!loading && !error && items.length > 0 && (
           <div style={{ padding: '12px 20px 0' }}>
             <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#0c4a6e', lineHeight: 1.55 }}>
-              AI sẽ kiểm tra từng tài liệu và cảnh báo nếu có vấn đề — giúp bạn chuẩn bị bản giấy đúng trước khi nộp đại sứ quán.
+              AI sẽ kiểm tra từng tài liệu và cảnh báo nếu có vấn đề — giúp bạn hoàn thiện hồ sơ giấy đúng chuẩn trước khi nộp đại sứ quán.
             </div>
           </div>
         )}
@@ -220,7 +220,7 @@ export default function ChecklistScreen() {
             <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
               <div>
                 <p style={{ fontWeight: 600, fontSize: 14, color: '#1e40af', marginBottom: 2 }}>Đơn xin visa + Lịch trình</p>
-                <p style={{ fontSize: 12, color: '#3b82f6' }}>Form xin visa đã điền sẵn thông tin của bạn</p>
+                <p style={{ fontSize: 12, color: '#3b82f6' }}>Đơn xin visa đã điền sẵn thông tin của bạn</p>
               </div>
               <button
                 onClick={() => setShowFormModal(true)}
@@ -261,7 +261,7 @@ export default function ChecklistScreen() {
                         onClick={() => { window.__openChatWithMessage?.('Gợi ý lịch trình cho chuyến đi của tôi') }}
                         style={{ fontSize: 13, fontWeight: 600, color: '#1d4ed8', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', whiteSpace: 'nowrap' }}
                       >
-                        AI tạo
+                        Tạo bằng AI
                       </button>
                     )}
                   </div>
@@ -334,7 +334,7 @@ export default function ChecklistScreen() {
                 onClick={() => { setDetailItem(null); window.__openChatWithMessage?.('Gợi ý lịch trình cho chuyến đi của tôi') }}
                 style={{ width: '100%', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 10, padding: '12px 16px', fontSize: 14, fontWeight: 600, color: '#1d4ed8', cursor: 'pointer', marginBottom: 10 }}
               >
-                Nhờ AI gợi ý lịch trình
+                Để AI tạo lịch trình
               </button>
             )}
             <CTAButton

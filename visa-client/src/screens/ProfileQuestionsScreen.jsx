@@ -223,7 +223,7 @@ export default function ProfileQuestionsScreen() {
       <div style={cardStyle}>
         <h2 style={h2Style}>Bạn đang làm nghề gì?</h2>
         <p style={captionStyle}>
-          Giúp chúng tôi tạo danh sách tài liệu phù hợp với bạn.
+          Để chúng tôi tạo danh sách tài liệu đúng với hồ sơ của bạn.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {EMPLOYMENT_OPTIONS.map(opt => (
@@ -244,7 +244,7 @@ export default function ProfileQuestionsScreen() {
       <div style={cardStyle}>
         <h2 style={h2Style}>Bạn đã từng đến Nhật hoặc Trung Quốc chưa?</h2>
         <p style={{ ...captionStyle, marginBottom: 20 }}>
-          Lịch sử đến Nhật/Trung giúp hồ sơ được đánh giá cao hơn.
+          Lịch sử đến Nhật Bản hoặc Trung Quốc giúp hồ sơ được đánh giá cao hơn.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <OptionButton
@@ -305,7 +305,7 @@ export default function ProfileQuestionsScreen() {
       <div style={cardStyle}>
         <h2 style={h2Style}>Từng bị từ chối visa chưa?</h2>
         <p style={captionStyle}>
-          Cần biết để đánh giá chính xác — không ảnh hưởng xấu nếu bạn khai thật.
+          Cần biết để đánh giá chính xác — không ảnh hưởng xấu nếu bạn trả lời thật.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <OptionButton
