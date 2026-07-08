@@ -1,13 +1,17 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import NavHeader from '../components/NavHeader'
 import CTAButton from '../components/CTAButton'
 import BottomActionArea from '../components/BottomActionArea'
 import { useApp } from '../context/AppContext'
 
 export default function LandingScreen() {
-  const { startApplication, navigate } = useApp()
+  const { startApplication, navigate, API_BASE } = useApp()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/health`).catch(() => {})
+  }, [])
 
   async function handleStart() {
     setLoading(true)
