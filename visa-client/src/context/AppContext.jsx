@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react'
 
 const AppContext = createContext(null)
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000'
+const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8000'
 
 export function AppProvider({ children }) {
   const [applicationId, setApplicationId] = useState(() => localStorage.getItem('visa_application_id'))
