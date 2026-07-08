@@ -7,12 +7,16 @@ import { useApp } from '../context/AppContext'
 export default function LandingScreen() {
   const { startApplication, navigate } = useApp()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   async function handleStart() {
     setLoading(true)
+    setError('')
     try {
       await startApplication()
       navigate('destination')
+    } catch {
+      setError('Không thể kết nối. Vui lòng thử lại.')
     } finally {
       setLoading(false)
     }
@@ -67,6 +71,9 @@ export default function LandingScreen() {
       </div>
 
       <BottomActionArea>
+        {error && (
+          <p style={{ textAlign: 'center', fontSize: 13, color: '#b91c1c', marginBottom: 10 }}>{error}</p>
+        )}
         <CTAButton label="Bắt đầu →" onClick={handleStart} loading={loading} />
       </BottomActionArea>
     </div>

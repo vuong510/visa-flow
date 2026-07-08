@@ -19,6 +19,7 @@ export function AppProvider({ children }) {
 
   async function startApplication() {
     const res = await fetch(`${API_BASE}/api/application/start`, { method: 'POST' })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const data = await res.json()
     setApplicationId(data.application_id)
     setSessionId(data.session_id)
