@@ -11,13 +11,13 @@
   "universal": [
     {
       "id": "photo",
-      "name": "Ảnh thẻ 4.5×4.5cm",
+      "name": "Ảnh thẻ 4.5×3.5cm",
       "description": "Nền trắng, chụp trong vòng 6 tháng, không đeo kính, không đội mũ",
       "format": "Ảnh gốc (không scan)",
       "why": "Bắt buộc dán lên tờ khai xin visa",
-      "how_to_get": "Chụp tại tiệm ảnh gần nhà. Nói rõ 'ảnh visa Nhật, nền trắng, kích thước 4.5×4.5cm'. Chi phí khoảng 50–100k.",
+      "how_to_get": "Chụp tại tiệm ảnh gần nhà. Nói rõ 'ảnh visa Nhật, nền trắng, kích thước 4.5×3.5cm'. Chi phí khoảng 50–100k.",
       "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
-      "last_verified": "2026-06-29"
+      "last_verified": "2026-07-09"
     },
     {
       "id": "itinerary",
@@ -36,18 +36,30 @@
       "format": "Bản in hoặc email xác nhận",
       "why": "Chứng minh chỗ ở trong suốt chuyến đi",
       "how_to_get": "Đặt phòng trên Booking.com, Agoda, hoặc liên hệ trực tiếp khách sạn. In email xác nhận — chưa cần thanh toán hoàn toàn, chỉ cần có confirmation.",
+      "optional": true,
       "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
-      "last_verified": "2026-06-29"
+      "last_verified": "2026-07-09"
     },
     {
       "id": "flight_booking",
-      "name": "Đặt vé máy bay (khứ hồi)",
-      "description": "Vé đặt chỗ hoặc vé mua — phải có ngày đi và ngày về",
+      "name": "Hành trình bay",
+      "description": "Không cần mua vé trước — chỉ cần đặt giữ chỗ hoặc screenshot thông tin chuyến bay dự kiến có ngày đi và ngày về",
       "format": "Bản in itinerary từ hãng bay hoặc OTA",
       "why": "Chứng minh có kế hoạch quay về Việt Nam",
-      "how_to_get": "Đặt vé trên website hãng bay (Vietnam Airlines, VietJet, Bamboo) hoặc OTA (Traveloka, Klook). In itinerary — chưa cần thanh toán toàn bộ.",
+      "how_to_get": "Vào website hãng bay (Vietnam Airlines, VietJet, Bamboo) hoặc OTA (Traveloka, Klook), chọn chuyến bay dự kiến, chụp màn hình hoặc in thông tin. Chưa cần thanh toán toàn bộ.",
       "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
-      "last_verified": "2026-06-29"
+      "last_verified": "2026-07-09"
+    },
+    {
+      "id": "residency_proof",
+      "name": "Giấy tờ tạm trú (nếu sinh ở miền Bắc, đang sống ở miền Nam)",
+      "description": "Bắt buộc nếu nơi sinh từ Bình Định trở ra Bắc nhưng đang sinh sống tại miền Nam. Cần 1 trong 3: CCCD ghi địa chỉ miền Nam, Giấy xác nhận tạm trú CT07/CT08 cấp trong 6 tháng, hoặc tài khoản VNEID có địa chỉ tạm trú miền Nam.",
+      "format": "Bản gốc hoặc công chứng",
+      "why": "Xác minh nơi nộp hồ sơ đúng lãnh sự quán",
+      "how_to_get": "CCCD: dùng bản sẵn có nếu đã cập nhật địa chỉ miền Nam. CT07/CT08: xin tại công an phường/xã nơi tạm trú, thường cấp trong 1–3 ngày làm việc.",
+      "optional": true,
+      "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
+      "last_verified": "2026-07-09"
     }
   ],
   "by_employment": {
@@ -75,32 +87,33 @@
       {
         "id": "leave_approval",
         "name": "Đơn xin nghỉ phép được duyệt",
-        "description": "Phép nghỉ phải khớp đúng với ngày đi và ngày về",
+        "description": "LSQ không bắt buộc, nhưng nên có nếu cần nghỉ phép đúng thời gian đi. Phép nghỉ khớp đúng ngày đi và ngày về.",
         "format": "Bản gốc có chữ ký trưởng bộ phận",
         "why": "Đảm bảo ngày đi/về nhất quán với hồ sơ",
         "how_to_get": "Điền form đơn xin nghỉ phép của công ty (nhờ HR cung cấp nếu chưa có), ghi đúng ngày đi và ngày về như trong vé máy bay, xin ký duyệt từ trưởng phòng hoặc giám đốc.",
+        "optional": true,
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
-        "last_verified": "2026-06-29"
+        "last_verified": "2026-07-09"
       },
       {
         "id": "payslips",
-        "name": "Bảng lương 3 tháng gần nhất",
-        "description": "Lương tháng gần đây nhất, có dấu công ty",
+        "name": "Bảng lương 6 tháng gần nhất",
+        "description": "6 tháng gần nhất, có dấu công ty. Nếu mới đi làm hoặc chỉ có 3 tháng thì nộp 3 tháng kèm giải thích.",
         "format": "Bản gốc hoặc bản sao công chứng",
         "why": "Chứng minh thu nhập ổn định",
-        "how_to_get": "Liên hệ phòng Nhân sự hoặc kế toán để xin bảng lương 3 tháng gần nhất. Nếu công ty gửi qua email thì in ra và đóng dấu xác nhận của công ty.",
+        "how_to_get": "Liên hệ phòng Nhân sự hoặc kế toán để xin bảng lương 6 tháng gần nhất. Nếu công ty gửi qua email thì in ra và đóng dấu xác nhận của công ty.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
-        "last_verified": "2026-06-29"
+        "last_verified": "2026-07-09"
       },
       {
         "id": "bank_statements",
-        "name": "Sao kê ngân hàng 3 tháng",
-        "description": "Tài khoản thanh toán chính, sao kê từ ngân hàng",
+        "name": "Sao kê ngân hàng 6 tháng",
+        "description": "Tài khoản thanh toán chính, sao kê 6 tháng gần nhất từ ngân hàng",
         "format": "Bản có dấu ngân hàng",
         "why": "Chứng minh khả năng tài chính cho chuyến đi",
-        "how_to_get": "Liên hệ ngân hàng nơi bạn có tài khoản chính — yêu cầu in sao kê 3 tháng gần nhất có dấu ngân hàng. Một số ngân hàng hỗ trợ in qua app nhưng vẫn cần ra chi nhánh đóng dấu xác nhận.",
+        "how_to_get": "Liên hệ ngân hàng nơi bạn có tài khoản chính — yêu cầu in sao kê 6 tháng gần nhất có dấu ngân hàng. Một số ngân hàng hỗ trợ in qua app nhưng vẫn cần ra chi nhánh đóng dấu xác nhận.",
         "source_url": "https://www.vn.emb-japan.go.jp/itpr_vi/necessary_documents.html",
-        "last_verified": "2026-06-29"
+        "last_verified": "2026-07-09"
       }
     ],
     "student": [

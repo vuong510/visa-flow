@@ -50,6 +50,7 @@ export default function ChecklistScreen() {
   const [activeUploadId, setActiveUploadId] = useState(null)
   const [submitting, setSubmitting] = useState(false)
   const [confidenceNote, setConfidenceNote] = useState(null)
+  const [skipped, setSkipped] = useState({})
   const fileInputRef = useRef(null)
 
   useEffect(() => {
@@ -99,6 +100,14 @@ export default function ChecklistScreen() {
   async function handleFileSelected(e) {
     const file = e.target.files[0]
     if (!file || !activeUploadId) return
+
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf']
+    if (!allowed.includes(file.type)) {
+      setDocs(d => ({ ...d, [activeUploadId]: { error: true, status: 'fail', notes: 'Chỉ chấp nhận ảnh (JPG, PNG) hoặc PDF. Vui lòng chọn lại tệp.' } }))
+      setActiveUploadId(null)
+      return
+    }
+
     const docId = activeUploadId
     setActiveUploadId(null)
 
@@ -138,14 +147,24 @@ export default function ChecklistScreen() {
   const nonItineraryItems = items.filter(item => item.id !== 'itinerary')
   const uploadedItems = nonItineraryItems.filter(item => docs[item.id]?.id && !docs[item.id]?.uploading)
   const uploadedCount = uploadedItems.length
+  const skippedCount = nonItineraryItems.filter(item => skipped[item.id] && !docs[item.id]?.id).length
   const totalCount = nonItineraryItems.length
   const allPass = uploadedCount === totalCount && totalCount > 0 &&
     nonItineraryItems.every(item => docs[item.id]?.status === 'pass')
   const hasClarification = nonItineraryItems.some(item => docs[item.id]?.status === 'needs_clarification')
-  const canSubmit = uploadedItems.length === nonItineraryItems.length && nonItineraryItems.length > 0 &&
-    nonItineraryItems.every(item => docs[item.id]?.status === 'pass' || docs[item.id]?.status === 'needs_clarification')
+  const canSubmit = (uploadedCount + skippedCount) === totalCount && totalCount > 0 &&
+    nonItineraryItems.every(item =>
+      skipped[item.id] && !docs[item.id]?.id ||
+      docs[item.id]?.status === 'pass' ||
+      docs[item.id]?.status === 'needs_clarification'
+    )
 
   async function handleSubmit() {
+    const skippedRequired = nonItineraryItems.some(item => !item.optional && skipped[item.id] && !docs[item.id]?.id)
+    if (skippedRequired) {
+      const ok = window.confirm('Bạn chưa tải lên một số tài liệu bắt buộc. Vẫn gửi hồ sơ?')
+      if (!ok) return
+    }
     setSubmitting(true)
     try {
       await fetch(`${API_BASE}/api/application/${applicationId}/submit`, { method: 'POST' })
@@ -161,7 +180,7 @@ export default function ChecklistScreen() {
       <ProgressBar current={10} total={11} />
 
       {!loading && items.length > 0 && (
-        <ReadinessBanner uploaded={uploadedCount} total={totalCount} allPass={allPass} />
+        <ReadinessBanner uploaded={uploadedCount + skippedCount} total={totalCount} allPass={allPass} />
       )}
 
       <div style={{ flex: 1, paddingBottom: canSubmit ? 'calc(100px + env(safe-area-inset-bottom))' : 24 }}>
@@ -196,14 +215,56 @@ export default function ChecklistScreen() {
             )}
             {items.map(item => {
               if (item.id === 'itinerary') return null
+              const docState = docs[item.id]
+              const isUploaded = !!(docState?.id && !docState?.uploading)
+              const isSkipped = !!skipped[item.id] && !isUploaded
+
+              if (isSkipped) {
+                return (
+                  <div key={item.id} style={{ borderBottom: '1px solid var(--color-border)', padding: '12px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: '#9ca3af', marginBottom: 1 }}>{item.name}</p>
+                      {item.optional && <span style={{ fontSize: 11, color: '#d1d5db' }}>Không bắt buộc</span>}
+                    </div>
+                    <span style={{ fontSize: 12, color: '#9ca3af', flexShrink: 0 }}>Bỏ qua</span>
+                    <button
+                      onClick={() => triggerUpload(item.id)}
+                      style={{ flexShrink: 0, padding: '5px 10px', border: '1.5px solid var(--color-cta)', borderRadius: 6, background: 'transparent', color: 'var(--color-cta)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+                    >
+                      Tải lên
+                    </button>
+                    <button
+                      onClick={() => setSkipped(s => ({ ...s, [item.id]: false }))}
+                      style={{ flexShrink: 0, padding: '5px 8px', border: '1px solid #d1d5db', borderRadius: 6, background: 'transparent', fontSize: 12, color: '#6b7280', cursor: 'pointer' }}
+                    >
+                      Hoàn tác
+                    </button>
+                  </div>
+                )
+              }
+
               return (
-                <DocumentItem
-                  key={item.id}
-                  item={item}
-                  docState={docs[item.id]}
-                  onUpload={triggerUpload}
-                  onDetail={setDetailItem}
-                />
+                <div key={item.id}>
+                  {item.optional && (
+                    <div style={{ paddingTop: 10, paddingBottom: 2 }}>
+                      <span style={{ fontSize: 11, color: '#6b7280', fontWeight: 500, background: '#f3f4f6', padding: '2px 7px', borderRadius: 4 }}>Không bắt buộc</span>
+                    </div>
+                  )}
+                  <DocumentItem
+                    item={item}
+                    docState={docState}
+                    onUpload={triggerUpload}
+                    onDetail={setDetailItem}
+                  />
+                  {!isUploaded && item.id !== 'passport' && (
+                    <button
+                      onClick={() => setSkipped(s => ({ ...s, [item.id]: true }))}
+                      style={{ display: 'block', width: '100%', textAlign: 'center', padding: '5px', background: 'none', border: 'none', fontSize: 12, color: '#9ca3af', cursor: 'pointer', marginBottom: 2 }}
+                    >
+                      Tôi chưa có tài liệu này
+                    </button>
+                  )}
+                </div>
               )
             })}
           </div>
@@ -213,7 +274,7 @@ export default function ChecklistScreen() {
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*,.pdf,.doc,.docx"
+        accept="image/jpeg,image/png,image/webp,application/pdf"
         style={{ display: 'none' }}
         onChange={handleFileSelected}
       />

@@ -103,8 +103,18 @@ export default function ChatWidget() {
             borderBottom: '1px solid rgba(0,0,0,0.08)',
             fontWeight: 600,
             fontSize: '15px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}>
             Hỏi về visa
+            <button
+              onClick={() => setOpen(false)}
+              aria-label="Đóng chat"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: '#6b7280', lineHeight: 1, padding: '0 0 0 8px' }}
+            >
+              ✕
+            </button>
           </div>
 
           <div style={{
@@ -234,7 +244,7 @@ export default function ChatWidget() {
         aria-label={open ? 'Đóng chat' : 'Mở chat'}
         style={{
           position: 'fixed',
-          bottom: '90px',
+          bottom: '20px',
           right: '20px',
           width: '56px',
           height: '56px',
