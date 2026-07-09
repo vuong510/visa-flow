@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 
 export default function ChatWidget() {
-  const { destination, screen, profile, applicationId, API_BASE, setItineraryJson } = useApp()
+  const { destination, screen, profile, applicationId, API_BASE, setItineraryJson, tripFormData } = useApp()
   if (screen === 'price') return null
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
@@ -43,7 +43,7 @@ export default function ChatWidget() {
         body: JSON.stringify({
           message: text,
           history,
-          context: { destination, screen, profile, applicationId },
+          context: { destination, screen, profile, applicationId, visit_purpose: tripFormData?.visit_purpose },
         }),
       })
       const data = await res.json()
@@ -230,6 +230,7 @@ export default function ChatWidget() {
 
       <button
         onClick={() => setOpen(o => !o)}
+        onKeyDown={e => e.key === 'Enter' && e.preventDefault()}
         aria-label={open ? 'Đóng chat' : 'Mở chat'}
         style={{
           position: 'fixed',

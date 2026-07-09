@@ -42,19 +42,19 @@ class FormsRequest(BaseModel):
 
 
 def _build_info(application: Application, personal: PersonalInfo) -> dict:
-    profile = {}
-    if application.profile_json:
+    profile = application.profile_json or {}
+    if isinstance(profile, str):
         try:
-            profile = json.loads(application.profile_json)
+            profile = json.loads(profile)
         except Exception:
-            pass
+            profile = {}
 
-    travel_dates = {}
-    if application.travel_dates:
+    travel_dates = application.travel_dates or {}
+    if isinstance(travel_dates, str):
         try:
-            travel_dates = json.loads(application.travel_dates)
+            travel_dates = json.loads(travel_dates)
         except Exception:
-            pass
+            travel_dates = {}
 
     departure = travel_dates.get("departure", "")
     return_date = travel_dates.get("return", "")
@@ -115,10 +115,8 @@ def _build_info(application: Application, personal: PersonalInfo) -> dict:
 
 
 @router.post("/application/{application_id}/forms/download")
-def download_forms(application_id: str, body: FormsRequest, db: Session = Depends(get_db)):
-    application = db.query(Application).filter(
-        Application.application_id == application_id
-    ).first()
+def download_forms(application_id: int, body: FormsRequest, db: Session = Depends(get_db)):
+    application = db.get(Application, application_id)
     if not application:
         raise HTTPException(status_code=404, detail="Application not found")
 

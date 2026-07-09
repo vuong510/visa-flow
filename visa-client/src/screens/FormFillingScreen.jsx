@@ -39,7 +39,7 @@ const PERSONAL_FIELDS = [
   { key: 'family_name',          label: 'Họ (chữ in hoa Latin)',          placeholder: 'VD: NGUYEN',            required: true },
   { key: 'given_name',           label: 'Tên (chữ in hoa Latin)',          placeholder: 'VD: VAN A',             required: true },
   { key: 'middle_name',          label: 'Tên đệm',                         placeholder: '',                      required: false },
-  { key: 'date_of_birth',        label: 'Ngày sinh',                       placeholder: 'YYYY-MM-DD',            required: true, type: 'date' },
+  { key: 'date_of_birth',        label: 'Ngày sinh',                       placeholder: 'DD/MM/YYYY',            required: true },
   { key: 'gender',               label: 'Giới tính',                       placeholder: '',                      required: false, isSelect: true,
     options: [{ value: '', label: '— Chọn —' }, { value: 'male', label: 'Nam' }, { value: 'female', label: 'Nữ' }] },
   { key: 'marital_status',       label: 'Tình trạng hôn nhân',             placeholder: '',                      required: false, isSelect: true,
@@ -50,14 +50,21 @@ const PERSONAL_FIELDS = [
   { key: 'occupation',           label: 'Nghề nghiệp',                    placeholder: 'VD: Software Engineer', required: false },
   { key: 'company_name',         label: 'Tên công ty (tiếng Anh)',         placeholder: 'VD: ABC Company Ltd',   required: false },
   { key: 'passport_number',      label: 'Số hộ chiếu',                    placeholder: 'VD: B1234567',          required: true },
-  { key: 'passport_issue_date',  label: 'Ngày cấp hộ chiếu',              placeholder: 'YYYY-MM-DD',            required: false, type: 'date' },
-  { key: 'passport_expiry_date', label: 'Ngày hết hạn hộ chiếu',         placeholder: 'YYYY-MM-DD',            required: false, type: 'date' },
+  { key: 'passport_issue_date',  label: 'Ngày cấp hộ chiếu',              placeholder: 'DD/MM/YYYY',            required: false },
+  { key: 'passport_expiry_date', label: 'Ngày hết hạn hộ chiếu',         placeholder: 'DD/MM/YYYY',            required: false },
   { key: 'accommodation_name',   label: 'Tên khách sạn / nơi lưu trú',   placeholder: 'VD: APA Hotel Shinjuku', required: false },
   { key: 'accommodation_address', label: 'Địa chỉ khách sạn',             placeholder: 'VD: 1-2-3 Shinjuku, Tokyo', required: false },
   { key: 'contact_in_japan',     label: 'Liên hệ tại điểm đến',           placeholder: 'Tên + SĐT',             required: false },
 ]
 
 const REQUIRED_KEYS = PERSONAL_FIELDS.filter(f => f.required).map(f => f.key)
+
+// Convert YYYY-MM-DD → DD/MM/YYYY for display (pass-through if already in other format)
+function fmtDate(v) {
+  if (!v) return v
+  const m = v.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : v
+}
 
 function emptyPersonal() {
   return Object.fromEntries(PERSONAL_FIELDS.map(f => [f.key, '']))
@@ -213,9 +220,9 @@ function Step1({ onNext }) {
               ✓ Đã đọc thông tin từ hộ chiếu
             </div>
             <SummaryRow label="Họ tên" value={[fields.family_name, fields.given_name].filter(Boolean).join(' ')} />
-            <SummaryRow label="Ngày sinh" value={fields.date_of_birth} />
+            <SummaryRow label="Ngày sinh" value={fmtDate(fields.date_of_birth)} />
             <SummaryRow label="Số hộ chiếu" value={fields.passport_number} />
-            <SummaryRow label="Hết hạn" value={fields.passport_expiry_date} />
+            <SummaryRow label="Hết hạn" value={fmtDate(fields.passport_expiry_date)} />
             <SummaryRow label="Quốc tịch" value={fields.nationality} />
             <button
               onClick={() => setMode('edit')}
