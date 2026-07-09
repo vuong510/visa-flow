@@ -41,7 +41,7 @@ function ReadinessBanner({ uploaded, total, allPass }) {
 }
 
 export default function ChecklistScreen() {
-  const { applicationId, API_BASE, navigate, checklist: ctxChecklist, setChecklist: setCtxChecklist } = useApp()
+  const { applicationId, API_BASE, navigate, checklist: ctxChecklist, setChecklist: setCtxChecklist, itineraryJson } = useApp()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -214,7 +214,25 @@ export default function ChecklistScreen() {
               </div>
             )}
             {items.map(item => {
-              if (item.id === 'itinerary') return null
+              if (item.id === 'itinerary') {
+                return (
+                  <div key="itinerary" style={{ borderBottom: '1px solid var(--color-border)', padding: '14px 0', display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 2 }}>Lịch trình chuyến đi</p>
+                      <p style={{ fontSize: 12, color: 'var(--color-text-muted)', lineHeight: 1.4 }}>
+                        {itineraryJson
+                          ? 'Đã tạo — sẽ tự điền vào form tải xuống'
+                          : 'AI sẽ tự tạo khi bạn tải form visa. Hoặc hỏi AI chat để tùy chỉnh trước.'}
+                      </p>
+                    </div>
+                    {itineraryJson
+                      ? <span style={{ fontSize: 18, flexShrink: 0 }}>✓</span>
+                      : <span style={{ fontSize: 12, color: '#6b7280', background: '#f3f4f6', padding: '4px 8px', borderRadius: 6, flexShrink: 0, whiteSpace: 'nowrap' }}>Tự động tạo</span>
+                    }
+                  </div>
+                )
+              }
+
               const docState = docs[item.id]
               const isUploaded = !!(docState?.id && !docState?.uploading)
               const isSkipped = !!skipped[item.id] && !isUploaded
