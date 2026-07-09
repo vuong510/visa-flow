@@ -20,21 +20,37 @@ function SkeletonList() {
   )
 }
 
-function ReadinessBanner({ uploaded, total, allPass }) {
-  const pct = total > 0 ? Math.round((uploaded / total) * 100) : 0
-  const color = allPass ? '#065f46' : pct > 0 ? '#1d4ed8' : 'var(--color-text-muted)'
-  const bg = allPass ? '#d1fae5' : pct > 0 ? '#eff6ff' : '#f9fafb'
+function ReadinessBanner({ uploaded, skipped, total, allPass, readyToSubmit }) {
+  const processed = uploaded + skipped
+  const pct = total > 0 ? Math.round((processed / total) * 100) : 0
+
+  let color, bg, label, barColor
+  if (allPass) {
+    color = '#065f46'; bg = '#d1fae5'; barColor = '#10b981'
+    label = '✅ Đủ tài liệu — sẵn sàng gửi'
+  } else if (readyToSubmit) {
+    color = '#1e40af'; bg = '#eff6ff'; barColor = 'var(--color-cta)'
+    label = skipped > 0 ? `✓ Sẵn sàng gửi (${skipped} tài liệu bỏ qua)` : '✓ Sẵn sàng gửi'
+  } else if (skipped > 0 && uploaded === 0) {
+    color = '#6b7280'; bg = '#f9fafb'; barColor = '#d1d5db'
+    label = `Bỏ qua ${skipped}/${total} — chưa tải lên tài liệu nào`
+  } else {
+    color = processed > 0 ? '#1d4ed8' : 'var(--color-text-muted)'
+    bg = processed > 0 ? '#eff6ff' : '#f9fafb'
+    barColor = 'var(--color-cta)'
+    label = skipped > 0
+      ? `${uploaded} AI đã kiểm tra · ${skipped} bỏ qua · ${total - processed} còn lại`
+      : `AI đã kiểm tra ${uploaded}/${total} tài liệu`
+  }
 
   return (
     <div style={{ background: bg, padding: '12px 20px', borderBottom: '1px solid var(--color-border)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-        <span style={{ fontSize: 13, fontWeight: 600, color }}>
-          {allPass ? '✅ Đủ tài liệu — sẵn sàng gửi' : `AI đã kiểm tra ${uploaded}/${total} tài liệu`}
-        </span>
+        <span style={{ fontSize: 13, fontWeight: 600, color }}>{label}</span>
         <span style={{ fontSize: 12, color, fontWeight: 600 }}>{pct}%</span>
       </div>
-      <div style={{ height: 4, background: allPass ? '#34d399' : '#e5e7eb', borderRadius: 2 }}>
-        <div style={{ height: '100%', width: `${pct}%`, background: allPass ? '#10b981' : 'var(--color-cta)', borderRadius: 2, transition: 'width 0.3s ease' }} />
+      <div style={{ height: 4, background: '#e5e7eb', borderRadius: 2 }}>
+        <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: 2, transition: 'width 0.3s ease' }} />
       </div>
     </div>
   )
@@ -49,6 +65,7 @@ export default function ChecklistScreen() {
   const [detailItem, setDetailItem] = useState(null)
   const [activeUploadId, setActiveUploadId] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   const [confidenceNote, setConfidenceNote] = useState(null)
   const [skipped, setSkipped] = useState({})
   const fileInputRef = useRef(null)
@@ -103,6 +120,8 @@ export default function ChecklistScreen() {
 
     const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf']
     if (!allowed.includes(file.type)) {
+      // Un-skip the item so the error renders in the normal row (not hidden in compact skipped row)
+      setSkipped(s => ({ ...s, [activeUploadId]: false }))
       setDocs(d => ({ ...d, [activeUploadId]: { error: true, status: 'fail', notes: 'Chỉ chấp nhận ảnh (JPG, PNG) hoặc PDF. Vui lòng chọn lại tệp.' } }))
       setActiveUploadId(null)
       return
@@ -166,11 +185,14 @@ export default function ChecklistScreen() {
       if (!ok) return
     }
     setSubmitting(true)
+    setSubmitError('')
     try {
-      await fetch(`${API_BASE}/api/application/${applicationId}/submit`, { method: 'POST' })
+      const res = await fetch(`${API_BASE}/api/application/${applicationId}/submit`, { method: 'POST' })
+      if (!res.ok) throw new Error()
       navigate('status-timeline')
     } catch {
       setSubmitting(false)
+      setSubmitError('Gửi hồ sơ thất bại. Vui lòng thử lại.')
     }
   }
 
@@ -180,7 +202,7 @@ export default function ChecklistScreen() {
       <ProgressBar current={10} total={11} />
 
       {!loading && items.length > 0 && (
-        <ReadinessBanner uploaded={uploadedCount + skippedCount} total={totalCount} allPass={allPass} />
+        <ReadinessBanner uploaded={uploadedCount} skipped={skippedCount} total={totalCount} allPass={allPass} readyToSubmit={canSubmit} />
       )}
 
       <div style={{ flex: 1, paddingBottom: canSubmit ? 'calc(100px + env(safe-area-inset-bottom))' : 24 }}>
@@ -299,6 +321,9 @@ export default function ChecklistScreen() {
 
       {canSubmit && (
         <BottomActionArea>
+          {submitError && (
+            <p style={{ fontSize: 13, color: '#991b1b', textAlign: 'center', marginBottom: 8, padding: '0 4px' }}>{submitError}</p>
+          )}
           <CTAButton
             label={submitting ? 'Đang gửi...' : 'Gửi hồ sơ cho tư vấn viên'}
             onClick={handleSubmit}
