@@ -77,6 +77,29 @@ class TestDocumentUpload:
         )
         assert res.status_code == 404
 
+    def test_upload_word_doc_returns_400(self, client):
+        """Backend must reject Word files regardless of frontend validation."""
+        app_id = ready_app(client)
+        fake_word = io.BytesIO(b"PK\x03\x04" + b"\x00" * 100)  # minimal docx header
+        res = client.post(
+            f"/api/application/{app_id}/documents",
+            files={"file": ("payslips.docx", fake_word, "application/vnd.openxmlformats-officedocument.wordprocessingml.document")},
+            data={"doc_type": "payslips"},
+        )
+        assert res.status_code == 400
+        assert "PDF" in res.json()["detail"] or "ảnh" in res.json()["detail"].lower()
+
+    def test_upload_docx_extension_returns_400(self, client):
+        """Extension check catches Word files even with generic content-type."""
+        app_id = ready_app(client)
+        fake_word = io.BytesIO(b"some content")
+        res = client.post(
+            f"/api/application/{app_id}/documents",
+            files={"file": ("document.docx", fake_word, "application/octet-stream")},
+            data={"doc_type": "payslips"},
+        )
+        assert res.status_code == 400
+
     def test_multiple_uploads_same_doc_type(self, client):
         """Uploading a replacement for the same doc_type should succeed."""
         app_id = ready_app(client)

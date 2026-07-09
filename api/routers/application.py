@@ -16,6 +16,8 @@ UPLOADS_DIR = Path(__file__).parent.parent.parent / "uploads"
 UPLOADS_DIR.mkdir(exist_ok=True)
 
 IMAGE_TYPES = {"image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"}
+PDF_TYPE = "application/pdf"
+ALLOWED_UPLOAD_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".pdf"}
 
 
 class DestinationUpdate(BaseModel):
@@ -131,6 +133,13 @@ async def upload_document(
     if not app:
         raise HTTPException(status_code=404, detail="Application not found")
 
+    suffix = Path(file.filename or "").suffix.lower()
+    if suffix not in ALLOWED_UPLOAD_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail="Chỉ chấp nhận ảnh (JPG, PNG, WebP) hoặc PDF. Vui lòng chọn lại tệp."
+        )
+
     app_dir = UPLOADS_DIR / str(app_id)
     app_dir.mkdir(exist_ok=True)
 
@@ -178,26 +187,48 @@ def review_document(app_id: int, doc_id: int, db: Session = Depends(get_db)):
 
     if file_path and file_path.exists():
         content_type = _guess_media_type(file_path.name)
+        profile_ctx = {**(app.profile_json or {}), "destination": app.destination}
+
         if content_type in IMAGE_TYPES:
             try:
-                image_bytes = file_path.read_bytes()
                 result = review_document_image(
-                    image_bytes=image_bytes,
+                    image_bytes=file_path.read_bytes(),
                     media_type=content_type,
                     doc_type=doc.doc_type,
-                    profile={**(app.profile_json or {}), "destination": app.destination},
+                    profile=profile_ctx,
                 )
                 doc.review_status = result.get("status", "pass")
                 doc.review_notes = result.get("reason")
             except Exception:
-                doc.review_status = "pass"
-                doc.review_notes = None
+                doc.review_status = "needs_clarification"
+                doc.review_notes = "Không thể tự động kiểm tra. Đội tư vấn sẽ xem xét."
+
+        elif content_type == PDF_TYPE:
+            try:
+                import fitz  # PyMuPDF
+                pdf_doc = fitz.open(str(file_path))
+                page = pdf_doc[0]
+                pix = page.get_pixmap(dpi=150)
+                png_bytes = pix.tobytes("png")
+                pdf_doc.close()
+                result = review_document_image(
+                    image_bytes=png_bytes,
+                    media_type="image/png",
+                    doc_type=doc.doc_type,
+                    profile=profile_ctx,
+                )
+                doc.review_status = result.get("status", "pass")
+                doc.review_notes = result.get("reason")
+            except Exception:
+                doc.review_status = "needs_clarification"
+                doc.review_notes = "Không thể tự động kiểm tra file PDF. Đội tư vấn sẽ xem xét."
+
         else:
-            doc.review_status = "pass"
-            doc.review_notes = None
+            doc.review_status = "fail"
+            doc.review_notes = "Định dạng file không được hỗ trợ. Vui lòng tải lên ảnh hoặc PDF."
     else:
-        doc.review_status = "pass"
-        doc.review_notes = None
+        doc.review_status = "needs_clarification"
+        doc.review_notes = "Không tìm thấy file. Vui lòng thử tải lên lại."
 
     # For passport images: also extract personal info for form pre-fill
     if doc.doc_type == "passport" and file_path and file_path.exists():
