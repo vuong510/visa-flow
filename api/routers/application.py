@@ -33,6 +33,10 @@ class ItineraryUpdate(BaseModel):
     itinerary: list
 
 
+class DocumentSkip(BaseModel):
+    doc_type: str
+
+
 @router.get("/health")
 def health():
     return {"status": "ok"}
@@ -161,9 +165,63 @@ async def upload_document(
     return {"document_id": doc.id, "doc_type": doc_type, "status": "pending"}
 
 
+@router.post("/application/{app_id}/documents/skip")
+def skip_document(app_id: int, body: DocumentSkip, db: Session = Depends(get_db)):
+    app = db.get(Application, app_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+
+    doc = (
+        db.query(Document)
+        .filter(Document.application_id == app_id, Document.doc_type == body.doc_type)
+        .order_by(Document.id.desc())
+        .first()
+    )
+
+    # Không ghi đè tài liệu đã upload/đang review — trả trạng thái thực tế
+    if doc and doc.review_status in ("pass", "pending"):
+        return {"document_id": doc.id, "doc_type": body.doc_type, "status": doc.review_status}
+
+    if doc:
+        doc.review_status = "skipped"
+        doc.file_path = None  # chỉ gỡ tham chiếu, không xóa file vật lý trên đĩa
+        doc.review_notes = "Khách bổ sung trực tiếp cho nhân viên visa"
+    else:
+        doc = Document(
+            application_id=app_id,
+            doc_type=body.doc_type,
+            file_path=None,
+            review_status="skipped",
+            review_notes="Khách bổ sung trực tiếp cho nhân viên visa",
+        )
+        db.add(doc)
+    db.commit()
+    db.refresh(doc)
+    return {"document_id": doc.id, "doc_type": body.doc_type, "status": "skipped"}
+
+
+@router.post("/application/{app_id}/documents/unskip")
+def unskip_document(app_id: int, body: DocumentSkip, db: Session = Depends(get_db)):
+    app = db.get(Application, app_id)
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+    db.query(Document).filter(
+        Document.application_id == app_id,
+        Document.doc_type == body.doc_type,
+        Document.review_status == "skipped",
+    ).delete()
+    db.commit()
+    return {"ok": True}
+
+
 @router.get("/application/{app_id}/documents")
 def list_documents(app_id: int, db: Session = Depends(get_db)):
-    docs = db.query(Document).filter(Document.application_id == app_id).all()
+    docs = (
+        db.query(Document)
+        .filter(Document.application_id == app_id)
+        .order_by(Document.id)
+        .all()
+    )
     return [
         {
             "id": d.id,
@@ -181,6 +239,11 @@ def review_document(app_id: int, doc_id: int, db: Session = Depends(get_db)):
     doc = db.get(Document, doc_id)
     if not doc or doc.application_id != app_id:
         raise HTTPException(status_code=404, detail="Document not found")
+    if doc.review_status == "skipped":
+        raise HTTPException(
+            status_code=400,
+            detail="Tài liệu đã được đánh dấu bổ sung sau, không có file để kiểm tra.",
+        )
 
     app = db.get(Application, app_id)
     file_path = Path(doc.file_path) if doc.file_path else None

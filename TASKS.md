@@ -41,3 +41,8 @@
 - PostgreSQL migration, Cloudflare R2, MoMo payment SDK, admin dashboard
 - Real payment gateway integration (replace demo_completed)
 - Document upload: add PDF support via Anthropic document API
+
+## Feedback tester (2026-07-12)
+
+- ✅ **Skip upload tài liệu** — ghép 2 bản: UX "Bỏ qua/Hoàn tác" từ origin/main (Song Han feedback) + backend persistence (`review_status="skipped"`, endpoint skip/unskip, guard race + guard AI review). Spec: `_bmad-output/implementation-artifacts/spec-skip-document-upload.md`. Bản cũ đầy đủ: branch `backup-local-skip`.
+- ⏳ **Cập nhật bảng giá visa mới** — CHỜ giá final. Vị trí: `visa-client/src/screens/PriceScreen.jsx` (990.000/550.000/1.540.000 ₫). Xem `deferred-work.md`.

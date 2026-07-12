@@ -108,6 +108,6 @@ class Document(Base):
     application_id = Column(Integer, ForeignKey("applications.id"), nullable=False, index=True)
     doc_type       = Column(String(100), nullable=False)
     file_path      = Column(String(500))
-    review_status  = Column(String(30), default="pending")   # "pending" | "pass" | "fail" | "needs_clarification"
+    review_status  = Column(String(30), default="pending")   # "pending" | "pass" | "fail" | "needs_clarification" | "skipped"
     review_notes   = Column(Text)
     created_at     = Column(DateTime, default=datetime.utcnow)

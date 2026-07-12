@@ -101,11 +101,47 @@ export default function ChecklistScreen() {
       if (!res.ok) return
       const data = await res.json()
       const docsMap = {}
+      const skippedMap = {}
       for (const d of data) {
-        docsMap[d.doc_type] = { id: d.id, status: d.review_status, notes: d.review_notes }
+        if (d.review_status === 'skipped') {
+          skippedMap[d.doc_type] = true
+        } else {
+          docsMap[d.doc_type] = { id: d.id, status: d.review_status, notes: d.review_notes }
+        }
       }
       setDocs(docsMap)
+      setSkipped(s => ({ ...s, ...skippedMap }))
     } catch (_) {}
+  }
+
+  // Skip lưu backend (review_status="skipped") để giữ qua reload và cho nhân viên visa thấy.
+  // UI optimistic; server từ chối khi doc_type đã có file (pass/pending) → revert + đồng bộ lại.
+  async function handleSkip(docId) {
+    setSkipped(s => ({ ...s, [docId]: true }))
+    try {
+      const res = await fetch(`${API_BASE}/api/application/${applicationId}/documents/skip`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ doc_type: docId }),
+      })
+      if (!res.ok) throw new Error()
+      const data = await res.json()
+      if (data.status !== 'skipped') {
+        setSkipped(s => ({ ...s, [docId]: false }))
+        loadExistingDocs()
+      }
+    } catch {
+      setSkipped(s => ({ ...s, [docId]: false }))
+    }
+  }
+
+  async function handleUnskip(docId) {
+    setSkipped(s => ({ ...s, [docId]: false }))
+    fetch(`${API_BASE}/api/application/${applicationId}/documents/unskip`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ doc_type: docId }),
+    }).catch(() => {})
   }
 
   function triggerUpload(docId) {
@@ -121,7 +157,7 @@ export default function ChecklistScreen() {
     const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf']
     if (!allowed.includes(file.type)) {
       // Un-skip the item so the error renders in the normal row (not hidden in compact skipped row)
-      setSkipped(s => ({ ...s, [activeUploadId]: false }))
+      handleUnskip(activeUploadId)
       setDocs(d => ({ ...d, [activeUploadId]: { error: true, status: 'fail', notes: 'Chỉ chấp nhận ảnh (JPG, PNG) hoặc PDF. Vui lòng chọn lại tệp.' } }))
       setActiveUploadId(null)
       return
@@ -130,6 +166,8 @@ export default function ChecklistScreen() {
     const docId = activeUploadId
     setActiveUploadId(null)
 
+    // dọn trạng thái skip cũ (cả row skipped trên backend) trước khi upload
+    if (skipped[docId]) handleUnskip(docId)
     setDocs(d => ({ ...d, [docId]: { uploading: true } }))
 
     try {
@@ -274,7 +312,7 @@ export default function ChecklistScreen() {
                       Tải lên
                     </button>
                     <button
-                      onClick={() => setSkipped(s => ({ ...s, [item.id]: false }))}
+                      onClick={() => handleUnskip(item.id)}
                       style={{ flexShrink: 0, padding: '5px 8px', border: '1px solid #d1d5db', borderRadius: 6, background: 'transparent', fontSize: 12, color: '#6b7280', cursor: 'pointer' }}
                     >
                       Hoàn tác
@@ -298,7 +336,7 @@ export default function ChecklistScreen() {
                   />
                   {!isUploaded && item.id !== 'passport' && (
                     <button
-                      onClick={() => setSkipped(s => ({ ...s, [item.id]: true }))}
+                      onClick={() => handleSkip(item.id)}
                       style={{ display: 'block', width: '100%', textAlign: 'center', padding: '5px', background: 'none', border: 'none', fontSize: 12, color: '#9ca3af', cursor: 'pointer', marginBottom: 2 }}
                     >
                       Tôi chưa có tài liệu này
