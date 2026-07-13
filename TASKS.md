@@ -9,8 +9,11 @@
 - [x] Ground chatbot theo feedback tester (chị) → spec `_bmad-output/implementation-artifacts/spec-chat-grounding-facts.md` (one-shot, done)
   - FACTS: nộp qua ủy thác (không nộp trực tiếp LSQ), ảnh 4.5×3.5cm/6 tháng/nền trắng; cấm địa chỉ + xác nhận/phủ nhận; cấm CJK (cả nhánh itinerary); chống injection context/history; không xưng "tôi"
   - Smoke test live pass cả 3 kịch bản lỗi tester báo
-  - Kích thước ảnh: CHỐT 4.5×3.5cm theo chị Yến (domain authority — không đổi theo kiến thức model)
-  - Còn chờ: hotline chính thức Sông Hàn Tourist để thêm vào FACTS của chatbot
+  - Kích thước ảnh: CHỐT 4.5×3.5cm theo chị Yến (domain authority — không đổi theo kiến thức model); được xác nhận lần 2 bởi visa_checklist.json của japan-visa-bot (45×35mm)
+- [x] Port đợt 1 từ Diễm bot (japan-visa-bot) vào chat → spec `_bmad-output/implementation-artifacts/spec-chat-diem-persona-port.md` (one-shot, done)
+  - Persona Thu Diễm (em/anh-chị/ạ), hotline 028 7301 2939 / 028 3848 1390 (tìm thấy trong _base.md — hết treo), P0 compliance, out-of-scope + disclaimer, 7 hard rules + spec ảnh đầy đủ (CHỈ scope visa Nhật)
+  - Đợt 2 (chưa làm): case rules theo nghề/nhóm, bộ eval personas.json, pronoun theo gender, fix router "gợi ý" — xem deferred-work.md
+  - Phí (520k+200k, hết hạn 31/3/2026) + thời gian xử lý: CHỜ chị Yến xác nhận số mới rồi thêm vào FACTS
 
 ## Completed This Session
 

@@ -18,4 +18,9 @@
 ## Deferred từ review chat-grounding (2026-07-13)
 - Chưa có bộ eval tự động cho chatbot (địa chỉ → từ chối; tự nộp → quy định ủy thác; không CJK trong output) — mỗi lần sửa prompt có thể regress lặng lẽ.
 - FACTS chưa có hotline/kênh liên hệ thật của Sông Hàn Tourist — khi có số chính thức thì thêm vào để referral mạnh hơn (hiện trỏ về chat in-app + gửi hồ sơ).
-- Persona bot cho chat visa-flow chưa chốt (em/Thu Diễm như japan-visa-bot hay trung tính?) — đang né bằng luật "không tự xưng tôi".
+- ~~Persona bot cho chat visa-flow chưa chốt~~ → ĐÃ CHỐT 13/07: dùng Thu Diễm (port đợt 1).
+
+## Deferred từ port Diễm đợt 1 (2026-07-13)
+- Router keyword trong `api/routers/chat.py:28` — substring "gợi ý"/"plan" hijack cả câu hỏi thường ("gợi ý cách chứng minh tài chính") sang nhánh itinerary, bypass mọi guardrail; kèm `except: pass` nuốt lỗi. Cần intent check chặt hơn.
+- Pronoun theo gender: `profile` có thể chứa gender (từ OCR CCCD) — bot đang hard-code "anh/chị"; đợt 2 truyền gender vào context như Diễm bot làm. Headline "Hồ sơ của bạn trông tốt ✓" màn eligibility cũng còn "bạn".
+- Đợt 2 còn lại: case rules theo nghề/nhóm đi từ jp_module.md; bộ eval từ tests/personas.json; phí + thời gian xử lý chờ chị Yến xác nhận.
