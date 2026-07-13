@@ -29,7 +29,9 @@ async def extract_id(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Không thể đọc tài liệu: {e}")
 
+    if result.get("error") == "not_id_document":
+        raise HTTPException(status_code=422, detail="Ảnh này không phải hộ chiếu hoặc CCCD. Vui lòng chọn đúng ảnh giấy tờ tùy thân.")
     if result.get("error"):
-        raise HTTPException(status_code=422, detail="Không thể đọc thông tin từ ảnh. Vui lòng chụp lại rõ hơn.")
+        raise HTTPException(status_code=422, detail="Không thể đọc thông tin từ ảnh. Vui lòng chụp lại rõ hơn (đủ sáng, không bị mờ).")
 
     return result

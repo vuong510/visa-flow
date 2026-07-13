@@ -252,7 +252,8 @@ Rules:
 - Dates must be YYYY-MM-DD format
 - Names must be uppercase Latin characters only (no Vietnamese diacritics)
 - gender: "male" if Nam/M, "female" if Nữ/F
-- If image is unreadable or not an ID document, return {"error": "cannot_read"}"""
+- If image is clearly NOT an ID document (e.g. invoice, receipt, photo, screenshot of something else), return {"error": "not_id_document"}
+- If image IS an ID document but unreadable (blurry, dark, partial), return {"error": "cannot_read"}"""
 
     user_content = [
         {
