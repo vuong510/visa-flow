@@ -92,7 +92,7 @@ test.describe("ChecklistScreen — skip flow", () => {
     ).toBeVisible({ timeout: 3000 });
   });
 
-  test("submitting with skipped required items shows confirm dialog", async ({
+  test("submitting with skipped required items shows confirm sheet", async ({
     page,
   }) => {
     await completeFlowToChecklist(page);
@@ -102,13 +102,44 @@ test.describe("ChecklistScreen — skip flow", () => {
       await page.waitForTimeout(100);
       skipBtns = page.getByRole("button", { name: /tôi chưa có/i });
     }
-    // Listen for the confirm dialog
-    const dialogPromise = page.waitForEvent("dialog");
+    // Let the optimistic skip POSTs settle so none reverts after we open the sheet
+    await page.waitForLoadState("networkidle");
+    // BottomSheet with the required-skipped list should open (no native dialog)
     await page.getByRole("button", { name: /gửi hồ sơ/i }).click();
-    const dialog = await dialogPromise;
-    expect(dialog.message()).toMatch(/chưa tải lên|tài liệu bắt buộc/i);
-    await dialog.dismiss(); // Cancel — should stay on page
+    const sheetHeading = page.getByRole("heading", {
+      name: /tài liệu bắt buộc còn thiếu/i,
+    });
+    await expect(sheetHeading).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /vẫn gửi/i })
+    ).toBeVisible();
+    // Cancel via BottomSheet's built-in "Đóng" button — sheet closes, still on checklist
+    await page.getByRole("button", { name: /đóng/i }).click();
+    await expect(sheetHeading).not.toBeVisible();
     await expect(page.getByText(/chuẩn bị hồ sơ/i)).toBeVisible();
+  });
+
+  test("confirm sheet — Vẫn gửi hồ sơ submits and navigates to status timeline", async ({
+    page,
+  }) => {
+    await completeFlowToChecklist(page);
+    let skipBtns = page.getByRole("button", { name: /tôi chưa có/i });
+    while ((await skipBtns.count()) > 0) {
+      await skipBtns.first().click();
+      await page.waitForTimeout(100);
+      skipBtns = page.getByRole("button", { name: /tôi chưa có/i });
+    }
+    // Let the optimistic skip POSTs settle so none reverts after we open the sheet
+    await page.waitForLoadState("networkidle");
+    await page.getByRole("button", { name: /gửi hồ sơ/i }).click();
+    await expect(
+      page.getByRole("heading", { name: /tài liệu bắt buộc còn thiếu/i })
+    ).toBeVisible();
+    await page.getByRole("button", { name: /vẫn gửi/i }).click();
+    // StatusTimelineScreen — NavHeader title "Tiến trình hồ sơ"
+    await expect(
+      page.getByText(/tiến trình hồ sơ/i).first()
+    ).toBeVisible({ timeout: 10000 });
   });
 
   test("optional items show Không bắt buộc badge", async ({ page }) => {

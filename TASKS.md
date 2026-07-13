@@ -1,5 +1,12 @@
 # TASKS
 
+## Session 2026-07-13
+
+- [x] UX + editorial review màn "Chuẩn bị hồ sơ" theo `docs/vi-ux-style-guide.md` → spec `_bmad-output/implementation-artifacts/spec-checklist-review-fixes.md` (done, 1 loopback bad_spec)
+  - Copy fixes (7), banner vàng all-skipped (đếm non-passport), confirm BottomSheet thay window.confirm, Hoàn tác thành text link, contrast, bỏ image/gif, e2e cập nhật + test mới
+  - Chưa chốt (Ask First trong spec): đổi label CTA "Gửi hồ sơ cho tư vấn viên" → có brand; "Hỏi Diễm" thay "AI chat"; deferred mới trong `deferred-work.md`
+  - E2e playwright CHƯA chạy (cần app đang chạy) — chỉ mới lint/build/grep + 3 review agents
+
 ## Completed This Session
 
 - [x] PRD finalized: `_bmad-output/planning-artifacts/prds/prd-vuongnguyen-2026-06-29/prd.md`

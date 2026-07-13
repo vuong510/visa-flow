@@ -9,3 +9,8 @@
 - Cân nhắc unique constraint `(application_id, doc_type)` cho bảng `documents` (cần migration) để chặn row trùng ở tầng DB.
 - Row `skipped` cũ vẫn còn trong `GET /documents` sau khi khách upload lại cùng doc_type (FE dedupe last-wins nên không ảnh hưởng UI; chỉ ảnh hưởng staff-view tương lai — cân nhắc dọn row skipped khi upload).
 - Race 2 tab giữa `review_document` và `skip_document` (check-then-act không atomic) — cần transaction/lock nếu app lên production.
+
+## Deferred từ review checklist-review-fixes (2026-07-13)
+- `tests/e2e/checklist_skip.spec.ts` — vòng lặp `waitForTimeout(100)` khi skip hàng loạt là nguồn flake (nên thay bằng locator auto-wait / `expect.toPass()`); kèm race: skip POST bị revert sau khi loop kết thúc có thể unmount CTA submit giữa test (pre-existing).
+- `ChecklistScreen.jsx` — message lỗi định dạng upload "Chỉ chấp nhận ảnh (JPG, PNG) hoặc PDF" thiếu WebP dù `allowed`/`accept` nhận webp (copy pre-existing).
+- E2e chưa cover nhánh lỗi API của confirm sheet (submit fail → sheet giữ mở + error trong sheet) — cần mock backend failure (route interception) mới test được.
