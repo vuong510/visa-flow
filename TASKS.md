@@ -9,7 +9,8 @@
 - [x] Ground chatbot theo feedback tester (chị) → spec `_bmad-output/implementation-artifacts/spec-chat-grounding-facts.md` (one-shot, done)
   - FACTS: nộp qua ủy thác (không nộp trực tiếp LSQ), ảnh 4.5×3.5cm/6 tháng/nền trắng; cấm địa chỉ + xác nhận/phủ nhận; cấm CJK (cả nhánh itinerary); chống injection context/history; không xưng "tôi"
   - Smoke test live pass cả 3 kịch bản lỗi tester báo
-  - CẦN CHỊ XÁC NHẬN: kích thước ảnh 4.5×3.5 (reviewer nghi spec MOFA là 4.5×4.5); hotline chính thức để thêm vào FACTS
+  - Kích thước ảnh: CHỐT 4.5×3.5cm theo chị Yến (domain authority — không đổi theo kiến thức model)
+  - Còn chờ: hotline chính thức Sông Hàn Tourist để thêm vào FACTS của chatbot
 
 ## Completed This Session
 
