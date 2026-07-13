@@ -28,11 +28,17 @@ def chat(req: ChatRequest, db: Session = Depends(get_db)):
     is_itinerary = any(kw in msg_lower for kw in _ITINERARY_KEYWORDS)
     app_id = req.context.get("applicationId")
 
-    if is_itinerary and app_id:
+    app = None
+    if app_id:
         try:
             app = db.get(Application, int(app_id))
-            td = app.travel_dates if app and isinstance(app.travel_dates, dict) else {}
-            if app and td.get("departure") and td.get("return"):
+        except Exception:
+            app = None
+
+    if is_itinerary and app:
+        try:
+            td = app.travel_dates if isinstance(app.travel_dates, dict) else {}
+            if td.get("departure") and td.get("return"):
                 from api.ai import suggest_itinerary_chat
                 result = suggest_itinerary_chat(
                     destination=app.destination or "japan",
@@ -43,5 +49,9 @@ def chat(req: ChatRequest, db: Session = Depends(get_db)):
         except Exception:
             pass
 
-    reply = chat_with_haiku(messages, req.context)
+    # Checklist đã cache trên application = đúng nội dung khách đang thấy trong UI —
+    # bơm vào prompt để bot tư vấn được "giấy tờ nào cần / cách lấy" từ nội dung kiểm duyệt
+    checklist = app.checklist_json if app and isinstance(app.checklist_json, dict) else None
+
+    reply = chat_with_haiku(messages, req.context, checklist)
     return {"reply": reply}

@@ -24,3 +24,10 @@
 - Router keyword trong `api/routers/chat.py:28` — substring "gợi ý"/"plan" hijack cả câu hỏi thường ("gợi ý cách chứng minh tài chính") sang nhánh itinerary, bypass mọi guardrail; kèm `except: pass` nuốt lỗi. Cần intent check chặt hơn.
 - Pronoun theo gender: `profile` có thể chứa gender (từ OCR CCCD) — bot đang hard-code "anh/chị"; đợt 2 truyền gender vào context như Diễm bot làm. Headline "Hồ sơ của bạn trông tốt ✓" màn eligibility cũng còn "bạn".
 - Đợt 2 còn lại: case rules theo nghề/nhóm đi từ jp_module.md; bộ eval từ tests/personas.json; phí + thời gian xử lý chờ chị Yến xác nhận.
+
+## Deferred từ review chat-checklist-context (2026-07-13)
+- IDOR: /chat (và hầu hết endpoint) nhận applicationId không kiểm tra ownership theo session_id — khách có thể đọc checklist/ngày đi của application khác qua bot. Cần story auth/ownership trước khi lên production thật.
+- checklist_json cache 1 lần không invalidate khi user đổi travel_dates/employment_type — bot + UI có thể nói ngày cũ.
+- Row checklist_json cũ từ thời còn generate bằng LLM (trước khi chuyển deterministic) chưa được purge/đánh version — giờ được inject với nhãn "đã kiểm duyệt".
+- Logging: /chat có 2 chỗ nuốt exception im lặng — không biết bot đang trả lời "mù" hay "có checklist".
+- Prompt caching cho system prompt chat (giờ ~2-3K token/message với checklist).

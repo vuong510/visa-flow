@@ -14,6 +14,10 @@
   - Persona Thu Diễm (em/anh-chị/ạ), hotline 028 7301 2939 / 028 3848 1390 (tìm thấy trong _base.md — hết treo), P0 compliance, out-of-scope + disclaimer, 7 hard rules + spec ảnh đầy đủ (CHỈ scope visa Nhật)
   - Đợt 2 (chưa làm): case rules theo nghề/nhóm, bộ eval personas.json, pronoun theo gender, fix router "gợi ý" — xem deferred-work.md
   - Phí (520k+200k, hết hạn 31/3/2026) + thời gian xử lý: CHỜ chị Yến xác nhận số mới rồi thêm vào FACTS
+- [x] Chat hết "mù" checklist → spec `_bmad-output/implementation-artifacts/spec-chat-checklist-context.md` (one-shot, done)
+  - /chat bơm app.checklist_json (đúng nội dung UI) vào prompt — bot trả lời được "cần giấy gì / lấy ở đâu" từ how_to_get kiểm duyệt
+  - Sanitize chống injection qua travel_dates; unit test formatter 5/5
+  - QUAN TRỌNG (deferred): IDOR applicationId không có ownership check — phải fix trước khi production thật
 
 ## Completed This Session
 

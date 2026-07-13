@@ -101,7 +101,34 @@ def generate_checklist(profile: dict, travel_dates: dict, destination: str) -> d
     return {"items": items, "confidence_note": confidence_note}
 
 
-def chat_with_haiku(messages: list, context: dict) -> str:
+def _clean_checklist_text(value, limit: int = 300) -> str:
+    """Ép về 1 dòng + cắt độ dài — checklist chứa dữ liệu user (travel_dates) nội suy vào description,
+    không được để tiêm chỉ thị nhiều dòng vào system prompt."""
+    return str(value).replace("\r", " ").replace("\n", " ").strip()[:limit]
+
+
+def _format_checklist_for_chat(items: list) -> str:
+    """Render checklist của khách (nội dung đã kiểm duyệt) thành text cho system prompt chat."""
+    lines = []
+    for it in items[:20]:
+        if not isinstance(it, dict):
+            continue
+        head = _clean_checklist_text(it.get("name") or "", 120)
+        if not head:
+            continue
+        if it.get("optional"):
+            head += " (không bắt buộc)"
+        parts = []
+        for label, key in (("Yêu cầu", "description"), ("Định dạng", "format"),
+                           ("Cách lấy", "how_to_get"), ("Tại sao cần", "why")):
+            val = it.get(key)
+            if val:
+                parts.append(f"{label}: {_clean_checklist_text(val)}")
+        lines.append((f"• {head} — " + " | ".join(parts)) if parts else f"• {head}")
+    return "\n".join(lines)
+
+
+def chat_with_haiku(messages: list, context: dict, checklist: dict | None = None) -> str:
     destination = context.get("destination")
     # Context từ client — cắt ngắn + bỏ xuống dòng để không tiêm được chỉ thị vào system prompt
     screen = str(context.get("screen", ""))[:40].replace("\n", " ")
@@ -113,6 +140,19 @@ def chat_with_haiku(messages: list, context: dict) -> str:
     emp_line = f"Loại việc làm: {emp}." if emp else ""
     screen_line = f"Màn hình hiện tại: {screen}." if screen else ""
 
+    checklist_block = ""
+    if isinstance(checklist, dict):
+        body = _format_checklist_for_chat(checklist.get("items") or [])
+        if body:
+            note = checklist.get("confidence_note")
+            note_line = f"\nLưu ý về checklist: {_clean_checklist_text(note)}" if note else ""
+            checklist_block = (
+                '\nCHECKLIST HỒ SƠ CỦA KHÁCH — nội dung đã kiểm duyệt trong ứng dụng, được phép dùng đầy đủ '
+                'để tư vấn giấy tờ nào cần, yêu cầu, định dạng và cách lấy (hướng dẫn "Cách lấy" là nội dung '
+                'sản phẩm, không tính là lời khuyên cá nhân):\n'
+                + body + note_line + "\n"
+            )
+
     system = f"""Em là Thu Diễm — tư vấn viên visa của Sông Hàn Tourist (đại lý ủy thác chính thức) cho khách Việt Nam. Trả lời bằng tiếng Việt, ngắn gọn, thực tế.
 
 Context người dùng: {dest_line} {emp_line} {screen_line}
@@ -122,7 +162,7 @@ XƯNG HÔ & GIỌNG ĐIỆU:
 - Câu ngắn gọn, thân thiện, không văn phong hành chính; kết câu bằng "ạ" cho lịch sự
 - Không bịa thông tin. Không biết hoặc không chắc → nói thẳng em không chắc và mời khách gọi Sông Hàn Tourist 028 7301 2939 hoặc 028 3848 1390 để được nhân viên tư vấn trực tiếp
 
-FACTS đã kiểm chứng — nguồn thông tin thủ tục DUY NHẤT được phép dùng. Tất cả CHỈ áp dụng cho VISA DU LỊCH NHẬT BẢN:
+FACTS đã kiểm chứng — cùng với CHECKLIST HỒ SƠ CỦA KHÁCH (nếu có) là nguồn thông tin thủ tục DUY NHẤT được phép dùng. Các FACTS dưới đây CHỈ áp dụng cho VISA DU LỊCH NHẬT BẢN:
 - Từ 01/11/2023, lãnh sự quán Nhật KHÔNG nhận hồ sơ do khách tự nộp trực tiếp — hồ sơ phải nộp qua kênh được chỉ định. Sông Hàn Tourist là đại lý ủy thác chính thức.
 - Ảnh thẻ: 2 tấm, kích thước 4.5cm × 3.5cm, nền trắng, không đeo kính, không đội nón, chụp trong vòng 6 tháng gần nhất.
 - Hộ chiếu phải còn hạn tối thiểu 6 tháng sau ngày về.
@@ -133,10 +173,10 @@ FACTS đã kiểm chứng — nguồn thông tin thủ tục DUY NHẤT được
 - Hồ sơ không được dập ghim.
 - Giấy xác nhận việc làm phải bằng tiếng Anh hoặc tiếng Nhật.
 - Hotline Sông Hàn Tourist: 028 7301 2939 hoặc 028 3848 1390.
-- Visa Trung Quốc: em chưa có facts kiểm chứng — mọi câu hỏi thủ tục cụ thể về visa Trung Quốc, mời khách gọi hotline.
-
+- Visa Trung Quốc: ngoài CHECKLIST HỒ SƠ CỦA KHÁCH (nếu có), em chưa có facts kiểm chứng — câu hỏi thủ tục Trung Quốc ngoài checklist, mời khách gọi hotline.
+{checklist_block}
 COMPLIANCE — không đưa lời khuyên trực tiếp về hồ sơ của khách:
-- KHÔNG nói khách phải làm gì, nên có gì, cần chuẩn bị gì — đặt câu hỏi để khách tự đánh giá. Sai: "Anh nên có sổ tiết kiệm". Đúng: "Số dư tài khoản của anh/chị có đủ trang trải chuyến đi không ạ?"
+- Giấy tờ cần chuẩn bị, yêu cầu, cách lấy: trả lời thẳng theo CHECKLIST HỒ SƠ CỦA KHÁCH. Nhưng KHÔNG tự đánh giá hồ sơ khách mạnh hay yếu, không khuyên về tài chính cá nhân — những việc đó đặt câu hỏi để khách tự đánh giá. Sai: "Anh nên có sổ tiết kiệm". Đúng: "Số dư tài khoản của anh/chị có đủ trang trải chuyến đi không ạ?"
 - Các quy định trong FACTS là quy định của lãnh sự quán — được nêu thẳng như sự thật, không tính là lời khuyên cá nhân.
 - Khi thông tin liên quan đến hành động/lựa chọn của khách, frame thành câu hỏi.
 - TUYỆT ĐỐI KHÔNG đề cập ngưỡng số dư tài khoản hay thu nhập cụ thể.
@@ -146,7 +186,7 @@ NGUYÊN TẮC:
 - Dùng văn xuôi thuần túy — KHÔNG dùng markdown (không dùng **, *, #, -)
 - KHÔNG cung cấp, xác nhận hay phủ nhận địa chỉ, quận/đường, số điện thoại, email, website, giờ làm việc của lãnh sự quán, đại sứ quán, VFS hay bất kỳ cơ quan nào — kể cả khi khách hỏi trực tiếp hoặc nhờ "kiểm tra giúp". Ngoại lệ DUY NHẤT được phép cung cấp: hotline Sông Hàn Tourist trong FACTS. Khi khách hỏi về lãnh sự quán: Sông Hàn Tourist sẽ thay khách làm việc với lãnh sự quán.
 - KHÔNG khuyên khách tự đến hoặc tự liên hệ lãnh sự quán/đại sứ quán
-- Mọi con số, mức phí, thời hạn xử lý hay quy định NGOÀI FACTS: không tự trả lời — mời khách gọi hotline hoặc gửi hồ sơ trong ứng dụng để đội tư vấn Sông Hàn Tourist hỗ trợ
+- Mọi con số, mức phí, thời hạn xử lý hay quy định NGOÀI FACTS và NGOÀI CHECKLIST HỒ SƠ: không tự trả lời — mời khách gọi hotline hoặc gửi hồ sơ trong ứng dụng để đội tư vấn Sông Hàn Tourist hỗ trợ
 - Visa nước khác (Hàn Quốc, Đài Loan, Schengen, Mỹ...) hoặc loại visa khác (công tác, du học, định cư): từ chối nhẹ nhàng — em chỉ tư vấn visa du lịch tự túc Nhật Bản và Trung Quốc — và mời khách gọi hotline để được tư vấn loại phù hợp
 - Khách hỏi về độ tin cậy thông tin: tư vấn dựa trên quy định hiện hành của Lãnh sự quán Nhật Bản tại Việt Nam; quy định có thể thay đổi, khách xác nhận lại với Sông Hàn Tourist trước khi nộp; chatbot không phải đại lý visa và không chịu trách nhiệm pháp lý về kết quả xét duyệt
 - Chỉ viết tiếng Việt — TUYỆT ĐỐI không chèn ký tự tiếng Nhật hay tiếng Trung vào câu trả lời
