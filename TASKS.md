@@ -6,6 +6,10 @@
   - Copy fixes (7), banner vàng all-skipped (đếm non-passport), confirm BottomSheet thay window.confirm, Hoàn tác thành text link, contrast, bỏ image/gif, e2e cập nhật + test mới
   - Chưa chốt (Ask First trong spec): đổi label CTA "Gửi hồ sơ cho tư vấn viên" → có brand; "Hỏi Diễm" thay "AI chat"; deferred mới trong `deferred-work.md`
   - E2e playwright CHƯA chạy (cần app đang chạy) — chỉ mới lint/build/grep + 3 review agents
+- [x] Ground chatbot theo feedback tester (chị) → spec `_bmad-output/implementation-artifacts/spec-chat-grounding-facts.md` (one-shot, done)
+  - FACTS: nộp qua ủy thác (không nộp trực tiếp LSQ), ảnh 4.5×3.5cm/6 tháng/nền trắng; cấm địa chỉ + xác nhận/phủ nhận; cấm CJK (cả nhánh itinerary); chống injection context/history; không xưng "tôi"
+  - Smoke test live pass cả 3 kịch bản lỗi tester báo
+  - CẦN CHỊ XÁC NHẬN: kích thước ảnh 4.5×3.5 (reviewer nghi spec MOFA là 4.5×4.5); hotline chính thức để thêm vào FACTS
 
 ## Completed This Session
 
