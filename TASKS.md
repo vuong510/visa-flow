@@ -1,5 +1,12 @@
 # TASKS
 
+## Session 2026-07-14
+
+- [x] Bộ docs AI-context toàn sản phẩm (deep scan, bmad-document-project) → `docs/index.md` là điểm vào
+  - 12 file: overview, source tree, integration, architecture×2, api-contracts (31 endpoints/8 LLM), data-models (5 tables), component inventory, dev/deploy guide
+  - Phát hiện mới: 8 AI surfaces (thêm admin verify + agents pipeline 6 con chạy MOCK OCR); bug forms.py:130 (itinerary luôn 7 ngày); PDF tự tick "No" 6 câu tiền án; railway.toml không volume; e2e checklist_skip helper lỗi thời
+  - Mục đích: input cho eval plan design (kèm docs/chatbot-behavior-spec.md cho phần chat)
+
 ## Session 2026-07-13
 
 - [x] UX + editorial review màn "Chuẩn bị hồ sơ" theo `docs/vi-ux-style-guide.md` → spec `_bmad-output/implementation-artifacts/spec-checklist-review-fixes.md` (done, 1 loopback bad_spec)

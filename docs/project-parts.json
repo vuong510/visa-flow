@@ -1,0 +1,24 @@
+{
+  "repository_type": "multi-part",
+  "parts": [
+    {
+      "part_id": "api",
+      "project_type_id": "backend",
+      "display_name": "FastAPI backend + AI surfaces + agents pipeline",
+      "root_path": "api/ (+ agents/, db/, core/, static/)",
+      "tech": "Python 3.14, FastAPI 0.135, SQLAlchemy 2.0, anthropic 0.86, PyMuPDF"
+    },
+    {
+      "part_id": "client",
+      "project_type_id": "web",
+      "display_name": "React web client",
+      "root_path": "visa-client/",
+      "tech": "React 19.2, Vite 8, no router (switch/case screen state), CSS inline + tokens"
+    }
+  ],
+  "integration_points": [
+    {"from": "client", "to": "api", "type": "REST/JSON", "details": "fetch qua API_BASE, xem docs/integration-architecture.md"},
+    {"from": "api", "to": "Anthropic API", "type": "SDK", "details": "Haiku (chat/eligibility/itinerary) + Sonnet (vision OCR/review)"},
+    {"from": "api", "to": "static/checklists/*.json", "type": "file", "details": "nguồn sự thật checklist — nuôi UI, chat prompt, form"}
+  ]
+}

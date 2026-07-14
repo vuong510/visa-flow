@@ -1,0 +1,121 @@
+{
+  "workflow_version": "1.2.0",
+  "timestamps": {
+    "started": "2026-07-14T02:07:34Z",
+    "last_updated": "2026-07-14T02:25:00Z",
+    "completed": "2026-07-14T02:25:00Z"
+  },
+  "mode": "initial_scan",
+  "scan_level": "deep",
+  "project_root": "/Users/vuongnguyen/Desktop/visa-flow",
+  "project_knowledge": "docs",
+  "completed_steps": [
+    {
+      "step": "step_1",
+      "status": "completed",
+      "timestamp": "2026-07-14T02:07:34Z",
+      "summary": "Classified as multi-part with 2 parts: api (backend), client (web). User confirmed."
+    },
+    {
+      "step": "step_2",
+      "status": "completed",
+      "timestamp": "2026-07-14T02:07:34Z",
+      "summary": "Existing docs inventoried. User focus: AI surfaces + agents pipeline + form filler + full frontend flow + deploy/data."
+    },
+    {
+      "step": "step_3",
+      "status": "completed",
+      "timestamp": "2026-07-14T02:12:00Z",
+      "summary": "Tech stack: FastAPI 0.135 + anthropic 0.86 (api); React 19.2 + Vite 8 (client)."
+    },
+    {
+      "step": "step_4",
+      "status": "completed",
+      "timestamp": "2026-07-14T02:13:00Z",
+      "summary": "Deep scan via 2 parallel subagents. api: 31 endpoints (8 LLM), 5 tables, 8 AI surfaces, agents pipeline documented. client: 9 screens, 10 components, real flow mapped. Wrote api-contracts-api.md, data-models-api.md (in architecture files)."
+    },
+    {
+      "step": "step_5",
+      "status": "completed",
+      "timestamp": "2026-07-14T02:14:00Z",
+      "summary": "source-tree-analysis.md written (annotated tree, 2-generation backend boundary)."
+    },
+    {
+      "step": "step_6",
+      "status": "completed",
+      "timestamp": "2026-07-14T02:15:00Z",
+      "summary": "development-guide.md + deployment-guide.md written (incl. Railway volume risk)."
+    },
+    {
+      "step": "step_7",
+      "status": "completed",
+      "timestamp": "2026-07-14T02:15:30Z",
+      "summary": "integration-architecture.md written: 12 integration points mapped to flow steps, cross-part data flows for eval."
+    },
+    {
+      "step": "step_8",
+      "status": "completed",
+      "timestamp": "2026-07-14T02:13:30Z",
+      "summary": "architecture-api.md + architecture-client.md written by scan subagents."
+    },
+    {
+      "step": "step_9",
+      "status": "completed",
+      "timestamp": "2026-07-14T02:16:00Z",
+      "summary": "project-overview.md, component-inventory-client.md, project-parts.json written."
+    },
+    {
+      "step": "step_10",
+      "status": "completed",
+      "timestamp": "2026-07-14T02:17:00Z",
+      "summary": "index.md master index written with eval-plan getting-started path."
+    },
+    {
+      "step": "step_11_validation",
+      "status": "completed",
+      "timestamp": "2026-07-14T02:18:00Z",
+      "summary": "All 12 files exist (798 lines md). Zero '(To be generated)'/TBD/TODO markers found."
+    },
+    {
+      "step": "step_12",
+      "status": "completed",
+      "timestamp": "2026-07-14T02:25:00Z",
+      "summary": "Workflow complete. User chose finalize. Docs committed."
+    }
+  ],
+  "current_step": "completed",
+  "project_types": [
+    {
+      "part_id": "api",
+      "project_type_id": "backend",
+      "display_name": "FastAPI backend + AI agents"
+    },
+    {
+      "part_id": "client",
+      "project_type_id": "web",
+      "display_name": "React 19 + Vite 8 web client"
+    }
+  ],
+  "findings": {
+    "project_classification": "multi-part, 2 parts, Python/FastAPI + React/Vite, AI product",
+    "api": "31 endpoints (8 LLM), 5 tables, 8 AI surfaces, agents pipeline legacy (mock OCR input)",
+    "client": "9 screens, 10 components (1 dead), reload loses flow, e2e helper outdated",
+    "key_risks": "forms.py json.loads bug (itinerary always 7 days); criminal-history auto-No in PDF; global IDOR; railway.toml no volume"
+  },
+  "outputs_generated": [
+    "project-scan-report.json",
+    "architecture-api.md",
+    "api-contracts-api.md",
+    "data-models-api.md",
+    "architecture-client.md",
+    "component-inventory-client.md",
+    "source-tree-analysis.md",
+    "development-guide.md",
+    "deployment-guide.md",
+    "integration-architecture.md",
+    "project-overview.md",
+    "project-parts.json",
+    "index.md"
+  ],
+  "resume_instructions": "Steps 1-11 validation done. At step 11 review menu awaiting user; then step 12 finalize."
+}
