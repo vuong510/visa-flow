@@ -10,6 +10,10 @@
   - (1) itinerary parse fix — PDF ra đúng số ngày chuyến đi; (2) review PDF mọi trang 1 call Sonnet; (3) bỏ auto-"No" 6 câu tiền án — bước "Khai báo" mới (5 bước form-filling), câu hỏi trích nguyên văn từ PDF MOFA; (4) eligibility Python-first: working_days.py + vn_holidays.json (múi giờ VN, nghỉ bù), rule 10 ngày làm việc + 180 ngày deterministic, LLM chỉ còn xét freelancer
   - pytest đã vào venv (requirements-dev.txt); review 3-agent: auditor ACCEPT, 8 patch robustness đã áp
   - CHỜ CHỊ YẾN: đối chiếu vn_holidays.json (ngày âm + nghỉ bù) với công bố chính thức
+- [x] Chat biết tiến độ thật → spec `_bmad-output/implementation-artifacts/spec-chat-progress-context.md` (one-shot, done, 103 test)
+  - Bơm eligibility + status từng tài liệu + OCR (mask số HC/CCCD, bỏ địa chỉ) vào prompt
+  - QUAN TRỌNG: chat giờ có ownership check (sessionId phải khớp) — IDOR không còn đọc được PII qua bot; các endpoint khác VẪN CHƯA có ownership
+  - Reply được strip markdown tất định; fix rules-of-hooks có sẵn trong ChatWidget; behavior spec đã cập nhật (nguồn context thứ ba + 3 regression seed mới)
 
 ## Session 2026-07-13
 

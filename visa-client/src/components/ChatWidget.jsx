@@ -2,8 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 
 export default function ChatWidget() {
-  const { destination, screen, profile, applicationId, API_BASE, setItineraryJson, tripFormData } = useApp()
-  if (screen === 'price') return null
+  const { destination, screen, profile, applicationId, sessionId, API_BASE, setItineraryJson, tripFormData } = useApp()
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
   const [history, setHistory] = useState([])
@@ -43,7 +42,7 @@ export default function ChatWidget() {
         body: JSON.stringify({
           message: text,
           history,
-          context: { destination, screen, profile, applicationId, visit_purpose: tripFormData?.visit_purpose },
+          context: { destination, screen, profile, applicationId, sessionId, visit_purpose: tripFormData?.visit_purpose },
         }),
       })
       const data = await res.json()
@@ -79,6 +78,9 @@ export default function ChatWidget() {
       send()
     }
   }
+
+  // Guard đặt SAU toàn bộ hooks — early-return trước hooks vi phạm Rules of Hooks
+  if (screen === 'price') return null
 
   return (
     <>
