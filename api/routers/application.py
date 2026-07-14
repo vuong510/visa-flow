@@ -76,22 +76,95 @@ def update_profile(app_id: int, body: ProfileUpdate, db: Session = Depends(get_d
 
 @router.post("/application/{app_id}/eligibility")
 def run_eligibility(app_id: int, db: Session = Depends(get_db)):
-    from api.ai import assess_eligibility
+    import json
+    from api.working_days import vn_today
     app = db.get(Application, app_id)
     if not app:
         raise HTTPException(status_code=404, detail="Application not found")
-    try:
-        result = assess_eligibility(
-            profile=app.profile_json or {},
-            travel_dates=app.travel_dates or {},
-            destination=app.destination or "japan",
-        )
-    except Exception as e:
-        raise HTTPException(status_code=503, detail=f"AI service error: {str(e)}")
+
+    profile = app.profile_json or {}
+    travel_dates = app.travel_dates or {}
+    # Legacy rows may store travel_dates as a JSON string (same guard as forms.py)
+    if isinstance(travel_dates, str):
+        try:
+            travel_dates = json.loads(travel_dates)
+        except Exception:
+            travel_dates = {}
+    if not isinstance(travel_dates, dict):
+        travel_dates = {}
+    destination = app.destination or "japan"
+    today = vn_today()
+
+    # Deterministic Python pre-checks — no LLM call when either rule fails
+    result = _deterministic_eligibility(profile, travel_dates, destination, today)
+
+    if result is None:
+        from api.ai import assess_eligibility
+        try:
+            result = assess_eligibility(
+                profile=profile,
+                travel_dates=travel_dates,
+                destination=destination,
+            )
+        except Exception as e:
+            raise HTTPException(status_code=503, detail=f"AI service error: {str(e)}")
+
     app.eligibility_result = result.get("result")
     app.eligibility_data = result
     db.commit()
     return result
+
+
+def _deterministic_eligibility(profile, travel_dates, destination, today):
+    """Python-first eligibility rules. Returns a FE-shaped result dict when a
+    hard rule fails, or None when both checks pass (→ caller invokes the LLM)."""
+    from datetime import date, timedelta
+    from api.working_days import check_departure_rule, check_prior_denial_rule
+
+    dest_name = "Nhật Bản" if destination == "japan" else destination
+
+    # Rule 1 — 180 ngày sau lần từ chối cùng điểm đến
+    if not check_prior_denial_rule(profile, destination, today):
+        retry_note = ""
+        try:
+            denial_date = date.fromisoformat(str(profile.get("denial_date")))
+            retry_from = (denial_date + timedelta(days=180)).strftime("%d/%m/%Y")
+            retry_note = f" Bạn có thể nộp lại từ ngày {retry_from}."
+        except (TypeError, ValueError):
+            pass
+        return {
+            "result": "not_eligible",
+            "headline": "Bạn cần chờ đủ 180 ngày sau lần từ chối trước",
+            "bullets": [
+                f"Hồ sơ của bạn từng bị từ chối visa {dest_name} trong vòng 180 ngày gần đây",
+                "Theo quy định, hồ sơ nộp lại trước thời hạn này sẽ không được xét duyệt",
+            ],
+            "reason": f"Bạn cần chờ đủ 180 ngày kể từ ngày bị từ chối visa {dest_name} trước khi nộp hồ sơ mới.{retry_note}",
+            "confidence_label": "Độ tin cậy AI: Cao",
+        }
+
+    # Rule 2 — khởi hành phải SAU mốc 10 ngày làm việc kể từ hôm nay
+    departure_raw = (travel_dates or {}).get("departure", "")
+    try:
+        departure = date.fromisoformat(str(departure_raw))
+    except (TypeError, ValueError):
+        departure = None  # không parse được → để LLM xử như cũ
+    if departure is not None:
+        ok, moc = check_departure_rule(today, departure)
+        if not ok:
+            moc_fmt = moc.strftime("%d/%m/%Y")
+            return {
+                "result": "not_eligible",
+                "headline": "Ngày khởi hành quá gần",
+                "bullets": [
+                    "Hồ sơ visa cần tối thiểu 10 ngày làm việc để xử lý (không tính Thứ 7, Chủ nhật và ngày lễ)",
+                    f"Bạn hãy chọn ngày khởi hành sau ngày {moc_fmt}",
+                ],
+                "reason": f"Chuyến đi cần khởi hành sau ngày {moc_fmt} (10 ngày làm việc kể từ hôm nay, không tính Thứ 7, Chủ nhật và ngày lễ).",
+                "confidence_label": "Độ tin cậy AI: Cao",
+            }
+
+    return None
 
 
 @router.post("/application/{app_id}/payment/demo")
@@ -255,8 +328,7 @@ def review_document(app_id: int, doc_id: int, db: Session = Depends(get_db)):
         if content_type in IMAGE_TYPES:
             try:
                 result = review_document_image(
-                    image_bytes=file_path.read_bytes(),
-                    media_type=content_type,
+                    images=[(file_path.read_bytes(), content_type)],
                     doc_type=doc.doc_type,
                     profile=profile_ctx,
                 )
@@ -270,13 +342,17 @@ def review_document(app_id: int, doc_id: int, db: Session = Depends(get_db)):
             try:
                 import fitz  # PyMuPDF
                 pdf_doc = fitz.open(str(file_path))
-                page = pdf_doc[0]
-                pix = page.get_pixmap(dpi=150)
-                png_bytes = pix.tobytes("png")
+                # Render TẤT CẢ các trang (dpi 150) — gửi hết trong MỘT call Sonnet
+                page_images = [
+                    (page.get_pixmap(dpi=150).tobytes("png"), "image/png")
+                    for page in pdf_doc
+                ]
                 pdf_doc.close()
+                if not page_images:
+                    # Zero-page PDF → fall into the needs_clarification catch below
+                    raise ValueError("PDF has no renderable pages")
                 result = review_document_image(
-                    image_bytes=png_bytes,
-                    media_type="image/png",
+                    images=page_images,
                     doc_type=doc.doc_type,
                     profile=profile_ctx,
                 )

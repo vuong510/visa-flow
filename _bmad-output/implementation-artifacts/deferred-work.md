@@ -31,3 +31,12 @@
 - Row checklist_json cũ từ thời còn generate bằng LLM (trước khi chuyển deterministic) chưa được purge/đánh version — giờ được inject với nhãn "đã kiểm duyệt".
 - Logging: /chat có 2 chỗ nuốt exception im lặng — không biết bot đang trả lời "mù" hay "có checklist".
 - Prompt caching cho system prompt chat (giờ ~2-3K token/message với checklist).
+
+## Deferred từ review 4-fixes (2026-07-14)
+- Review PDF KHÔNG cap số trang (chỉ định user) — vector DoS/chi phí: PDF nghìn trang → OOM/API limit. Cân nhắc giới hạn size/số trang ở endpoint upload thay vì ở review.
+- Dates không parse được (departure/denial_date rác) giờ không còn ai enforce rule ngày (prompt đã bỏ luật, Python skip) — cân nhắc nâng thành edge_case deterministic thay vì thả qua LLM.
+- `declarations` (6 câu tiền án) chỉ nằm trong state màn FormFilling — rời màn/refresh là mất, và bước Xem lại chưa hiển thị 6 câu trước khi tải. Cân nhắc đưa vào AppContext + hiện ở review step.
+- Ngày ký trên form (`form_filler.py` T150) vẫn dùng datetime.today() server-local — ngoài phạm vi khối RB5 nên chưa sửa; đổi sang vn_today() khi được phép đụng form logic.
+- Deploy giữa chừng: khách đang ở bước cũ sẽ dính 422 khi tải form (6 field mới bắt buộc) — chấp nhận với demo.
+- `fill_visa_forms_for_group` (helper không có caller) sẽ silent-skip mọi member vì thiếu 6 key mới — gỡ hoặc sửa nếu có ngày wire up.
+- Lịch lễ: ngày âm (Giỗ Tổ, Tết) + ngày liền kề 2/9 trong vn_holidays.json cần chị Yến đối chiếu công bố chính thức.

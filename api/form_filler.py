@@ -408,10 +408,31 @@ def _fill_visa_page2(page2, info: dict):
     # ── Date of application (auto = today) ────────────────────────────────────
     _set("T150[0]", datetime.today().strftime("%d/%m/%Y"))
 
-    # ── Yes/No criminal history questions — all defaulted to No ─────────────
+    # ── Yes/No criminal history questions — from the user's declaration ─────
     # 6 radio groups RB5[0]–RB5[5]
     # Each group sorted by x: left(≈502) = Yes, right(≈539) = No
-    # We always tick No; a warning is shown to the user in the chat UI.
+    # Question mapping (extracted from static/visa_form_blank.pdf page 2 text,
+    # NOT in vertical order — form order top→bottom is 3, 0, 1, 5, 4, 2):
+    #   RB5[0] — been sentenced to imprisonment for 1 year or more in any country?
+    #   RB5[1] — been deported or removed from Japan or any country for
+    #            overstaying your visa or violating any law or regulation?
+    #   RB5[2] — committed trafficking in persons or incited or aided another
+    #            to commit such an offence?
+    #   RB5[3] — been convicted of a crime or offence in any country?
+    #   RB5[4] — engaged in prostitution, or in the intermediation or
+    #            solicitation of a prostitute ... or any other activity
+    #            directly connected to prostitution?
+    #   RB5[5] — been convicted and sentenced for a drug offence ... narcotics,
+    #            marijuana, opium, stimulants or psychotropic substances?
+    _RB5_KEYS = {
+        0: "sentenced_1yr_plus",
+        1: "deported_or_removed",
+        2: "human_trafficking",
+        3: "conviction_any_crime",
+        4: "prostitution_related",
+        5: "drug_offense",
+    }
+
     rb5_groups = {}
     for w in page2.widgets():
         name = w.field_name.split(".")[-1]
@@ -419,17 +440,38 @@ def _fill_visa_page2(page2, info: dict):
             rb5_groups.setdefault(name, []).append(w)
 
     for idx in range(6):
+        key = _RB5_KEYS[idx]
+        if key not in info:
+            raise ValueError(
+                f"Missing criminal-declaration answer '{key}' (RB5[{idx}]) — "
+                "all 6 Yes/No declarations are required, no silent default."
+            )
+        value = info[key]
+        if not isinstance(value, bool):
+            # e.g. the string "false" is truthy and would wrongly tick Yes
+            raise ValueError(
+                f"Criminal-declaration answer '{key}' (RB5[{idx}]) must be a bool, "
+                f"got {type(value).__name__}: {value!r}"
+            )
+        answered_yes = value
         group_name = f"RB5[{idx}]"
         buttons = rb5_groups.get(group_name, [])
-        if not buttons:
-            continue
+        if len(buttons) != 2:
+            # A declaration that cannot be ticked must never be silently skipped
+            raise ValueError(
+                f"Radio group {group_name} ('{key}'): expected exactly 2 buttons "
+                f"in the blank form, found {len(buttons)}"
+            )
         buttons.sort(key=lambda w: w.rect.x0)
-        no_btn = buttons[-1]  # rightmost = No
-        states = no_btn.button_states() or {}
+        target_btn = buttons[0] if answered_yes else buttons[-1]  # left = Yes, right = No
+        states = target_btn.button_states() or {}
         on_vals = [s for s in (states.get("normal") or []) if s != "Off"]
-        if on_vals:
-            no_btn.field_value = on_vals[0]
-            no_btn.update()
+        if not on_vals:
+            raise ValueError(
+                f"Radio group {group_name} ('{key}'): no on-state export value found"
+            )
+        target_btn.field_value = on_vals[0]
+        target_btn.update()
 
 
 # ── Schedule form ──────────────────────────────────────────────────────────────

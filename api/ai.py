@@ -36,10 +36,8 @@ def assess_eligibility(profile: dict, travel_dates: dict, destination: str) -> d
     system = f"""Bạn là chuyên gia đánh giá hồ sơ visa {dest_name} cho công dân Việt Nam.
 
 LUẬT ÁP DỤNG (theo thứ tự, dừng ở luật đầu tiên phù hợp):
-1. CHẶN CỨNG: Nếu prior_denial=true VÀ denial_country="{destination}" VÀ denial_date trong vòng 180 ngày trước ngày hôm nay → result="not_eligible"
-2. CHẶN CỨNG: Nếu ngày khởi hành ít hơn 10 ngày làm việc (bỏ qua thứ 7, CN) kể từ hôm nay → result="not_eligible"
-3. TRƯỜNG HỢP ĐẶC BIỆT: Nếu employment_type="freelancer" → result="edge_case"
-4. MẶC ĐỊNH: result="eligible"
+1. TRƯỜNG HỢP ĐẶC BIỆT: Nếu employment_type="freelancer" → result="edge_case"
+2. MẶC ĐỊNH: result="eligible"
 
 TÍN HIỆU TÍCH CỰC (thêm vào bullets cho eligible/edge_case):
 - Nếu has_prior_stamps=true: thêm "Có dấu nhập cảnh trước đây — tín hiệu tích cực"
@@ -349,7 +347,12 @@ Rules:
     return _parse_json(response.content[0].text)
 
 
-def review_document_image(image_bytes: bytes, media_type: str, doc_type: str, profile: dict) -> dict:
+def review_document_image(images: list, doc_type: str, profile: dict) -> dict:
+    """Review a document in ONE Sonnet call.
+
+    images: list of (bytes, media_type) tuples — one entry per page/image.
+    A single photo is a 1-element list; a multi-page PDF passes every rendered page.
+    """
     employment_type = (profile or {}).get("employment_type", "")
     destination = (profile or {}).get("destination", "")
 
@@ -368,6 +371,7 @@ Nguyên tắc:
 - Khi không chắc → "needs_clarification" thay vì "fail"
 - Lý do phải bằng tiếng Việt, cụ thể và hữu ích"""
 
+    page_note = f"Tài liệu gồm {len(images)} trang (mỗi ảnh là một trang, theo thứ tự).\n" if len(images) > 1 else ""
     user_content = [
         {
             "type": "image",
@@ -376,12 +380,13 @@ Nguyên tắc:
                 "media_type": media_type,
                 "data": base64.standard_b64encode(image_bytes).decode("utf-8"),
             }
-        },
-        {
-            "type": "text",
-            "text": f"Loại tài liệu: {doc_type}\nLoại việc làm: {employment_type}\nĐiểm đến: {destination}\n\nKiểm tra tài liệu này."
         }
+        for image_bytes, media_type in images
     ]
+    user_content.append({
+        "type": "text",
+        "text": f"Loại tài liệu: {doc_type}\n{page_note}Loại việc làm: {employment_type}\nĐiểm đến: {destination}\n\nKiểm tra tài liệu này."
+    })
 
     response = client.messages.create(
         model=SONNET,

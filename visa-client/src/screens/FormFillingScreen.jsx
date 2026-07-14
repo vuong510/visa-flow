@@ -3,6 +3,7 @@ import NavHeader from '../components/NavHeader'
 import ProgressBar from '../components/ProgressBar'
 import BottomActionArea from '../components/BottomActionArea'
 import CTAButton from '../components/CTAButton'
+import OptionButton from '../components/OptionButton'
 import { useApp } from '../context/AppContext'
 
 // ─── shared inline styles ───────────────────────────────────────────────────
@@ -417,8 +418,76 @@ function Step3({ onNext }) {
   )
 }
 
-// ─── Step 4 — Preview & Download ─────────────────────────────────────────────
-function Step4({ personalFields, onFinish }) {
+// ─── Step 4 — Criminal-history declaration ───────────────────────────────────
+// 6 câu Yes/No dịch từ text thật của form MOFA (static/visa_form_blank.pdf, trang 2),
+// giữ nguyên thứ tự trên form. Key trùng tên field backend (PersonalInfo / RB5[0-5]).
+const DECLARATION_QUESTIONS = [
+  { key: 'conviction_any_crime', label: 'Bạn đã từng bị kết án về một tội nào ở bất kỳ quốc gia nào chưa?' },
+  { key: 'sentenced_1yr_plus', label: 'Bạn đã từng bị kết án tù từ 1 năm trở lên ở bất kỳ quốc gia nào chưa?' },
+  { key: 'deported_or_removed', label: 'Bạn đã từng bị trục xuất khỏi Nhật Bản hoặc bất kỳ quốc gia nào vì ở quá hạn visa hoặc vi phạm pháp luật chưa?' },
+  { key: 'drug_offense', label: 'Bạn đã từng bị kết án về tội liên quan đến ma túy (chất gây nghiện, cần sa, thuốc phiện, chất kích thích hoặc chất hướng thần) ở bất kỳ quốc gia nào chưa?' },
+  { key: 'prostitution_related', label: 'Bạn đã từng tham gia mại dâm, môi giới hoặc dụ dỗ mại dâm cho người khác, cung cấp địa điểm cho mại dâm, hoặc bất kỳ hoạt động nào liên quan trực tiếp đến mại dâm chưa?' },
+  { key: 'human_trafficking', label: 'Bạn đã từng phạm tội buôn người, hoặc xúi giục, giúp sức người khác phạm tội buôn người chưa?' },
+]
+
+function Step4({ declarations, setDeclarations, onNext }) {
+  const answeredAll = DECLARATION_QUESTIONS.every(q => typeof declarations[q.key] === 'boolean')
+
+  function answer(key, value) {
+    setDeclarations(d => ({ ...d, [key]: value }))
+  }
+
+  return (
+    <div>
+      <div style={cardStyle}>
+        <h2 style={{ fontSize: 17, fontWeight: 700, marginBottom: 4 }}>Bước 4: Khai báo</h2>
+        <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 16, lineHeight: 1.5 }}>
+          Đơn xin visa yêu cầu bạn trả lời 6 câu hỏi dưới đây. Câu trả lời sẽ được điền
+          đúng như bạn khai vào đơn. Vui lòng trả lời trung thực — khai sai có thể dẫn đến
+          từ chối visa.
+        </p>
+
+        {DECLARATION_QUESTIONS.map((q, i) => (
+          <div key={q.key} style={{ marginBottom: 18 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 8, lineHeight: 1.5 }}>
+              {i + 1}. {q.label}
+            </p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ flex: 1 }}>
+                <OptionButton
+                  label="Có"
+                  selected={declarations[q.key] === true}
+                  onClick={() => answer(q.key, true)}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <OptionButton
+                  label="Không"
+                  selected={declarations[q.key] === false}
+                  onClick={() => answer(q.key, false)}
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+
+        <p style={{ fontSize: 12, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+          Lưu ý: chọn "Có" nếu bạn từng nhận bản án, kể cả án đã được hưởng án treo.
+        </p>
+      </div>
+
+      {!answeredAll && (
+        <p style={{ fontSize: 12, color: 'var(--color-text-muted)', textAlign: 'center', marginBottom: 8 }}>
+          Vui lòng trả lời đủ 6 câu hỏi để tiếp tục
+        </p>
+      )}
+      <CTAButton label="Tiếp tục →" onClick={onNext} disabled={!answeredAll} />
+    </div>
+  )
+}
+
+// ─── Step 5 — Preview & Download ─────────────────────────────────────────────
+function Step5({ personalFields, declarations, onFinish }) {
   const { applicationId, API_BASE, extractedInfo, tripFormData, itineraryJson } = useApp()
   const [downloading, setDownloading] = useState(false)
 
@@ -429,7 +498,7 @@ function Step4({ personalFields, onFinish }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          personal_info: { ...extractedInfo, ...personalFields },
+          personal_info: { ...extractedInfo, ...personalFields, ...declarations },
           trip_details: tripFormData,
           itinerary: itineraryJson,
         }),
@@ -456,7 +525,7 @@ function Step4({ personalFields, onFinish }) {
   return (
     <div>
       <div style={cardStyle}>
-        <h2 style={{ fontSize: 17, fontWeight: 700, marginBottom: 12 }}>Bước 4: Xem lại & Tải xuống</h2>
+        <h2 style={{ fontSize: 17, fontWeight: 700, marginBottom: 12 }}>Bước 5: Xem lại & Tải xuống</h2>
 
         {/* Personal info summary */}
         <div style={{ marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid var(--color-border)' }}>
@@ -512,8 +581,9 @@ export default function FormFillingScreen() {
   const { navigate } = useApp()
   const [step, setStep] = useState(1)
   const [personalFields, setPersonalFields] = useState({})
+  const [declarations, setDeclarations] = useState({})
 
-  const STEP_LABELS = ['Cá nhân', 'Chuyến đi', 'Lịch trình', 'Tải xuống']
+  const STEP_LABELS = ['Cá nhân', 'Chuyến đi', 'Lịch trình', 'Khai báo', 'Tải xuống']
 
   function handleBack() {
     if (step === 1) navigate('price')
@@ -563,7 +633,10 @@ export default function FormFillingScreen() {
           <Step3 onNext={() => setStep(4)} />
         )}
         {step === 4 && (
-          <Step4 personalFields={personalFields} onFinish={() => navigate('checklist')} />
+          <Step4 declarations={declarations} setDeclarations={setDeclarations} onNext={() => setStep(5)} />
+        )}
+        {step === 5 && (
+          <Step5 personalFields={personalFields} declarations={declarations} onFinish={() => navigate('checklist')} />
         )}
       </div>
     </div>

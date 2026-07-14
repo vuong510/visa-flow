@@ -35,6 +35,15 @@ class PersonalInfo(BaseModel):
     accommodation: str = ""
     accommodation_address: str = ""
     accommodation_phone: str = ""
+    # Khai báo tiền án — 6 câu Yes/No trên trang 2 form MOFA (RB5[0-5]).
+    # BẮT BUỘC, không default: thiếu câu nào → 422, không âm thầm tick "No".
+    # Thứ tự dưới đây theo thứ tự câu hỏi trên form (top→bottom).
+    conviction_any_crime: bool   # RB5[3] — convicted of a crime or offence in any country
+    sentenced_1yr_plus: bool     # RB5[0] — sentenced to imprisonment for 1 year or more
+    deported_or_removed: bool    # RB5[1] — deported/removed from Japan or any country
+    drug_offense: bool           # RB5[5] — drug offence (narcotics, marijuana, opium...)
+    prostitution_related: bool   # RB5[4] — prostitution or directly connected activity
+    human_trafficking: bool      # RB5[2] — trafficking in persons / incited or aided
 
 
 class FormsRequest(BaseModel):
@@ -100,6 +109,13 @@ def _build_info(application: Application, personal: PersonalInfo) -> dict:
         "accommodation": personal.accommodation,
         "accommodation_address": personal.accommodation_address,
         "accommodation_phone": personal.accommodation_phone,
+        # Criminal-history declaration (RB5[0-5] on page 2)
+        "conviction_any_crime": personal.conviction_any_crime,
+        "sentenced_1yr_plus": personal.sentenced_1yr_plus,
+        "deported_or_removed": personal.deported_or_removed,
+        "drug_offense": personal.drug_offense,
+        "prostitution_related": personal.prostitution_related,
+        "human_trafficking": personal.human_trafficking,
         # From profile/application
         "nationality": "vietnam",
         "occupation": occupation,
@@ -126,12 +142,15 @@ def download_forms(application_id: int, body: FormsRequest, db: Session = Depend
     info = _build_info(application, body.personal_info)
 
     try:
-        _td = {}
-        if application.travel_dates:
+        # travel_dates is normally already a dict (JSON column) — only parse strings
+        _td = application.travel_dates or {}
+        if isinstance(_td, str):
             try:
-                _td = json.loads(application.travel_dates)
+                _td = json.loads(_td)
             except Exception:
-                pass
+                _td = {}
+        if not isinstance(_td, dict):
+            _td = {}
 
         if application.itinerary_json:
             itinerary = application.itinerary_json
