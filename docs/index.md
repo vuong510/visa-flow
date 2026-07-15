@@ -37,6 +37,7 @@
 
 ## Tài liệu chuyên đề có sẵn (không sinh bởi scan này)
 
+- [Eval Plan](./eval-plan.md) — kế hoạch kiểm chứng 8 AI surfaces: 5 tầng đo, ưu tiên rủi ro, cadence, kiến trúc harness `tests/eval/`
 - [Chatbot Behavior Spec](./chatbot-behavior-spec.md) — hợp đồng hành vi chat Thu Diễm: persona, FACTS, 10 guardrails, regression seeds → **input trực tiếp cho eval plan phần chat**
 - [project-context.md](../project-context.md) — quy ước dev cho AI (đọc đầu mỗi session)
 - [TASKS.md](../TASKS.md) — nhật ký việc theo session

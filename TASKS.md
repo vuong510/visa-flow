@@ -1,5 +1,11 @@
 # TASKS
 
+## Session 2026-07-15
+
+- [x] Eval plan → `docs/eval-plan.md`: 5 tầng đo (deterministic → programmatic → kịch bản → LLM-judge → adversarial), ưu tiên theo rủi ro (chat + eligibility = P0), cadence + chi phí, kiến trúc harness `tests/eval/`
+  - Việc kế tiếp theo plan: (1) build harness khung + regression_seeds; (4) nhờ chị Yến gắn nhãn golden set doc review/OCR
+- Cập nhật index docs: thêm eval-plan.md
+
 ## Session 2026-07-14
 
 - [x] Bộ docs AI-context toàn sản phẩm (deep scan, bmad-document-project) → `docs/index.md` là điểm vào
