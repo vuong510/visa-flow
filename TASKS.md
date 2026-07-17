@@ -5,6 +5,11 @@
 - [x] Eval plan → `docs/eval-plan.md`: 5 tầng đo (deterministic → programmatic → kịch bản → LLM-judge → adversarial), ưu tiên theo rủi ro (chat + eligibility = P0), cadence + chi phí, kiến trúc harness `tests/eval/`
   - Việc kế tiếp theo plan: (1) build harness khung + regression_seeds; (4) nhờ chị Yến gắn nhãn golden set doc review/OCR
 - Cập nhật index docs: thêm eval-plan.md
+- [x] (16-17/07) Eval harness đợt 1 → spec `_bmad-output/implementation-artifacts/spec-eval-harness-1.md` (done)
+  - `tests/eval/`: 8 checks tầng 2 + 13 regression seeds + runner 2 gate; 151 pytest xanh
+  - Baseline live: 39/39 run pass (100%), lưu `docs/eval-baseline-20260716.json` — mốc so sánh cho mọi lần đổi prompt sau này
+  - Cách dùng: `python3 -m tests.eval.run_eval --repeat 3` (live, tốn ~40 call Haiku) / `--dry-run` (miễn phí)
+  - Đợt 2 còn lại: guardrails.json G1-G10 × biến thể, LLM-judge, golden set chờ chị Yến
 
 ## Session 2026-07-14
 
