@@ -123,3 +123,5 @@ class Feedback(Base):
     message        = Column(Text, nullable=False)
     client_id      = Column(String(64), unique=True, nullable=False, index=True)   # idempotency key for retry from local queue
     created_at     = Column(DateTime, default=datetime.utcnow)
+    triage_batch   = Column(String(64), index=True, nullable=True)    # slug grouping this feedback with same-root-cause feedback
+    triage_status  = Column(String(20), nullable=True)                # "pending" | "approved" | "dismissed" (free-text, no DB enum elsewhere in this project)
