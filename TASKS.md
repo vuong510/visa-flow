@@ -1,5 +1,18 @@
 # TASKS
 
+## Session 2026-07-21
+
+- [x] Brainstorm luồng feedback + review-to-fix bán tự động → `_bmad-output/brainstorming/brainstorm-feedback-review-to-fix-2026-07-21/`
+- [x] Spec `spec-feedback-capture` (done) → `FeedbackWidget.jsx` (FAB bottom-left 🚩, riêng biệt với ChatWidget), bảng `Feedback` mới, `POST /api/feedback` idempotent theo `client_id`, localStorage retry queue khi backend down
+  - Review 3 lớp (blind hunter/edge-case hunter/acceptance auditor) phát hiện race condition thật ở idempotency check — đã fix + test lại (172 pytest)
+  - Đã verify sống trên browser: happy path, backend-down-thì-queue, reload-thì-tự-sync — cả 3 đều đúng với dữ liệu thật
+  - Commit `46ae69c`
+- [x] Spec `spec-review-to-fix` (done) → `tools/feedback_triage.py` CLI (`list-pending`/`assign-batch`/`set-status`/`generate-spec`), state ở `feedback-triage.md`
+  - Round 1 review phát hiện 1 bad_spec thật: `generate-spec` từng định sinh spec-template.md với placeholder — acceptance auditor lần theo code `bmad-quick-dev/step-02-plan.md` thật, xác nhận draft-resume sẽ giữ nguyên placeholder rác vào spec đã duyệt. Sửa: đổi sang sinh `intent-<slug>.md` thuần (không frontmatter/frozen) để quick-dev nhận đúng là intent thô
+  - Cùng đợt fix: duplicate batch section khi assign-batch lặp slug, re-tag id sang batch khác không cảnh báo, injection/path-traversal qua slug, write-before-commit
+  - Commit `1e9602e`
+- **Việc còn dang dở:** `feedback-triage.md` và bảng `Feedback` hiện chưa có dữ liệu thật (chưa có real user nào dùng FeedbackWidget ngoài test) — quy trình triage (`list-pending` → điều tra thủ công → `assign-batch` → `set-status` → `generate-spec`) chưa được chạy với ca thật nào. Chờ feedback thật đổ về rồi dùng.
+
 ## Session 2026-07-15
 
 - [x] Eval plan → `docs/eval-plan.md`: 5 tầng đo (deterministic → programmatic → kịch bản → LLM-judge → adversarial), ưu tiên theo rủi ro (chat + eligibility = P0), cadence + chi phí, kiến trúc harness `tests/eval/`
