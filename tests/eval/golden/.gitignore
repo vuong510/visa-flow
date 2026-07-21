@@ -1,0 +1,7 @@
+# Golden set chứa giấy tờ khách thật (PII) — mặc định CHẶN TẤT CẢ,
+# chỉ giữ khung thư mục và tài liệu hướng dẫn (nhãn cũng gửi qua kênh riêng, không commit)
+*
+!*/
+!.gitignore
+!.gitkeep
+!README.md

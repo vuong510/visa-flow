@@ -10,6 +10,10 @@
   - Baseline live: 39/39 run pass (100%), lưu `docs/eval-baseline-20260716.json` — mốc so sánh cho mọi lần đổi prompt sau này
   - Cách dùng: `python3 -m tests.eval.run_eval --repeat 3` (live, tốn ~40 call Haiku) / `--dry-run` (miễn phí)
   - Đợt 2 còn lại: guardrails.json G1-G10 × biến thể, LLM-judge, golden set chờ chị Yến
+- [x] (17-21/07) Eval harness đợt 2a → guardrails suite + template golden set (commit, xem spec-eval-harness-1.md)
+  - 30 seed adversarial G1-G10 ×3 biến thể + should_NOT_regex; 2 vòng review siết (matcher strict, seed reshape 2 lần vì bot từ chối bằng nhiều cách hơn dự đoán — 12 fail đều là harness oan, bot đúng 100% trên transcript sạch)
+  - Template gắn nhãn cho chị Yến: nhãn dạng MASK (3 số cuối), golden/.gitignore deny-all — không để PII khách vào git
+  - ⚠️ API KEY HẾT CREDIT tối 17/07 (lỗi "credit balance too low", còn nguyên đến 21/07) — baseline guardrails cuối bị đứt giữa run, KHÔNG commit; NẠP CREDIT rồi chạy: `python3 -m tests.eval.run_eval --scenarios tests/eval/scenarios/guardrails.json --repeat 3 --out docs/eval-guardrails-baseline-<ngày>.json`
 
 ## Session 2026-07-14
 
