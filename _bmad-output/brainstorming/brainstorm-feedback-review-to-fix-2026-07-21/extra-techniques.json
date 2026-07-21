@@ -1,0 +1,7 @@
+[
+  {
+    "category": "domain-specific",
+    "technique_name": "The Friction Autopsy",
+    "description": "Walk through a process step by step and tag every human touchpoint by cognitive type: Lookup, Pattern Recognition, Conditional Rules, Judgment, Relationship, or Procedural. Steps tagged Lookup/Pattern Recognition/Conditional Rules are prime AI-replacement candidates; Judgment and Relationship are harder. Reveals the exact anatomy of human work and which parts are worth automating — especially useful for AI product design in regulated or process-heavy domains."
+  }
+]

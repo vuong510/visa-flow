@@ -1,5 +1,6 @@
 import { AppProvider, useApp } from './context/AppContext'
 import ChatWidget from './components/ChatWidget'
+import FeedbackWidget from './components/FeedbackWidget'
 import LandingScreen from './screens/LandingScreen'
 import DestinationScreen from './screens/DestinationScreen'
 import ProfileQuestionsScreen from './screens/ProfileQuestionsScreen'
@@ -36,6 +37,7 @@ export default function App() {
     <AppProvider>
       <Router />
       <ChatWidget />
+      <FeedbackWidget />
     </AppProvider>
   )
 }

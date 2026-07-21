@@ -111,3 +111,15 @@ class Document(Base):
     review_status  = Column(String(30), default="pending")   # "pending" | "pass" | "fail" | "needs_clarification" | "skipped"
     review_notes   = Column(Text)
     created_at     = Column(DateTime, default=datetime.utcnow)
+
+
+class Feedback(Base):
+    __tablename__ = "feedbacks"
+
+    id             = Column(Integer, primary_key=True, index=True)
+    application_id = Column(Integer, ForeignKey("applications.id"), nullable=True, index=True)  # nullable: user may feedback before an application exists (e.g. landing screen)
+    session_id     = Column(String(36), index=True)
+    screen         = Column(String(50))
+    message        = Column(Text, nullable=False)
+    client_id      = Column(String(64), unique=True, nullable=False, index=True)   # idempotency key for retry from local queue
+    created_at     = Column(DateTime, default=datetime.utcnow)

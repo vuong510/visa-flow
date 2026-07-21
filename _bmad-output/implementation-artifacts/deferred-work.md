@@ -1,4 +1,11 @@
 
+## Deferred từ review feedback-capture (2026-07-21)
+- `/api/feedback` không kiểm tra ownership giữa `session_id` và `application_id` (client tự khai `application_id` bất kỳ) — cùng pattern IDOR đã ghi nhận ở các endpoint khác trong app; cần một story auth/ownership chung, không riêng endpoint này.
+- `/api/feedback` không có rate-limit/CAPTCHA — giống mọi endpoint khác trong app hiện tại (spam/storage-DoS vector nếu app public).
+- `FeedbackWidget.jsx` không có aria-expanded/role=dialog/focus trap — giống `ChatWidget`/`BottomSheet` hiện tại, chưa có convention a11y nào trong codebase; cần một đợt a11y riêng nếu ưu tiên.
+- `screen` lưu như free-text string không enum/whitelist ở cả FE lẫn bảng `Feedback` — nếu tên màn hình bị đổi/gõ sai trong tương lai, dữ liệu phân tích bị phân mảnh âm thầm không ai biết.
+- `/api/feedback` không kiểm tra `application_id` có tồn tại thật hay không (FK không được enforce ở SQLite, không có `PRAGMA foreign_keys`) — có thể tạo row `Feedback` mồ côi; giống pattern hiện có ở `documents`, cân nhắc một đợt kiểm tra FK-integrity chung.
+
 ## Cập nhật bảng giá visa mới (deferred 2026-07-12)
 - Nguồn: feedback tester — "đổi lại theo bảng giá visa mới"
 - Chờ: bảng giá final từ user (phí tư vấn + phí nộp hồ sơ, có thể khác nhau giữa Nhật/Trung)

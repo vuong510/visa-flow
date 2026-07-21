@@ -12,6 +12,7 @@ from api.routers.chat import router as chat_router
 from api.routers.forms import router as forms_router
 from api.routers.extract import router as extract_router
 from api.routers.admin import router as admin_router
+from api.routers.feedback import router as feedback_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -39,6 +40,7 @@ app.include_router(chat_router, prefix="/api")
 app.include_router(forms_router, prefix="/api")
 app.include_router(extract_router, prefix="/api")
 app.include_router(admin_router, prefix="/api")
+app.include_router(feedback_router, prefix="/api")
 
 FRONTEND_DIR = Path(__file__).parent.parent / "visa-client" / "dist"
 LEGACY_DIR = Path(__file__).parent.parent / "frontend"
