@@ -1,4 +1,12 @@
 
+## Deferred từ review checklist-status-button-clarity (2026-07-23)
+- `ChecklistScreen.jsx:325-343` (dòng tài liệu đã "Bỏ qua") vẫn còn đúng pattern gây nhầm lẫn chip/nút mà fix này giải quyết ở `DocumentItem.jsx`: nút pill viền xanh "Tải lên" đứng cạnh text "Đã bỏ qua" + nút "Hoàn tác" không viền — 2 kiểu affordance khác nhau cạnh nhau, dễ nhầm hơn. Code path này không đi qua `DocumentItem`, nên fix hiện tại không chạm tới. Cần áp cùng pattern text-link khi có dịp sửa màn skip.
+- Trạng thái `pass` render cả `StatusChip` ("Đạt", pill xanh lá) lẫn dấu `✓` riêng cạnh nhau (`DocumentItem.jsx`) — cùng kiểu tín hiệu trùng lặp như bug đã fix, chỉ là chưa có ai báo vì không gây nhầm (cả hai đều đọc là "đạt", không phải chip-vs-nút). Cân nhắc bỏ bớt 1 trong 2 nếu dọn UI đợt sau.
+- `DESIGN.md:471` ghi action link là "Tải lên" / "Xem lại", nhưng code thực tế dùng "Tải lên" / "Tải lại" cho state fail/needs_clarification — lệch giữa spec gốc và implementation. "Tải lại" (re-upload) có vẻ đúng nghĩa hơn "Xem lại" (review again) cho state này, nhưng cần quyết định copy chính thức thay vì đoán.
+- Màu đỏ cho action link ở state fail/needs_clarification (kế thừa từ nút viền đỏ cũ) chưa được xác nhận lại có còn hợp lý không khi đã đổi sang dạng text-link thuần theo `DESIGN.md` (spec gốc ghi action link dùng `color.text-link` cho mọi state, không phân biệt theo trạng thái).
+- Không có state hover/active/focus riêng cho bất kỳ phần tử tương tác inline-style nào trong `DocumentItem.jsx` (và toàn bộ codebase nói chung — không có class CSS nào định nghĩa `:hover`) — người dùng desktop/chuột không có phản hồi khi rê chuột qua nút.
+- `StatusChip.jsx:2-8` dùng hex cứng (vd `#d1fae5`/`#065f46` cho pass) lệch với token đã khai trong `DESIGN.md` (`success-light: #DCFCE7`, `success: #16A34A`) — có từ trước, không phải do đợt sửa này.
+
 ## Deferred từ review feedback-capture (2026-07-21)
 - `/api/feedback` không kiểm tra ownership giữa `session_id` và `application_id` (client tự khai `application_id` bất kỳ) — cùng pattern IDOR đã ghi nhận ở các endpoint khác trong app; cần một story auth/ownership chung, không riêng endpoint này.
 - `/api/feedback` không có rate-limit/CAPTCHA — giống mọi endpoint khác trong app hiện tại (spam/storage-DoS vector nếu app public).
