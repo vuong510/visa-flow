@@ -7,9 +7,17 @@ export default function DocumentItem({ item, docState, onUpload, onDetail }) {
     ? 'reviewing'
     : docState?.status || 'pending'
 
-  const hasFail = status === 'fail' || status === 'needs_clarification'
+  const isFail = status === 'fail'
+  const isClarify = status === 'needs_clarification'
+  const hasFail = isFail || isClarify
   const actionLabel = status === 'pending' ? 'Tải lên' : hasFail ? 'Tải lại' : null
   const actionColor = hasFail ? 'var(--color-error)' : 'var(--color-cta)'
+  // needs_clarification không chặn gửi hồ sơ (đội tư vấn sẽ xem trực tiếp) — không nên nhìn
+  // báo động y hệt fail thật; màu/nhãn khớp đúng bảng màu StatusChip cho từng state.
+  const notesStyle = isFail
+    ? { background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b' }
+    : { background: '#fef3c7', border: '1px solid #fbbf24', color: '#92400e' }
+  const notesLabel = isFail ? '⚠️ Lý do: ' : 'Cần làm rõ: '
 
   return (
     <div style={{ borderBottom: '1px solid var(--color-border)' }}>
@@ -55,13 +63,12 @@ export default function DocumentItem({ item, docState, onUpload, onDetail }) {
         <div style={{
           margin: '0 0 12px',
           padding: '10px 12px',
-          background: '#fef2f2',
           borderRadius: 8,
           fontSize: 13,
-          color: '#991b1b',
           lineHeight: 1.5,
+          ...notesStyle,
         }}>
-          {docState.notes}
+          <strong>{notesLabel}</strong>{docState.notes}
         </div>
       )}
     </div>

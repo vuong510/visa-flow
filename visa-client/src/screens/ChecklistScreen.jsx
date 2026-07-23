@@ -71,6 +71,7 @@ export default function ChecklistScreen() {
   const [confidenceNote, setConfidenceNote] = useState(null)
   const [skipped, setSkipped] = useState({})
   const [confirmSheetOpen, setConfirmSheetOpen] = useState(false)
+  const [bulkSkipping, setBulkSkipping] = useState(false)
   const fileInputRef = useRef(null)
 
   useEffect(() => {
@@ -222,6 +223,20 @@ export default function ChecklistScreen() {
     )
 
   const skippedRequiredItems = nonItineraryItems.filter(item => !item.optional && skipped[item.id] && !docs[item.id]?.id)
+  const remainingCount = totalCount - uploadedCount - skippedCount
+
+  // Escape hatch cho user bị kẹt/nản giữa chừng — tái dùng đúng handleSkip từng món
+  // (không bỏ qua món đã upload hoặc đã skip rồi), luồng xác nhận khi submit đã có sẵn xử lý phần còn lại.
+  // Hộ chiếu KHÔNG được skip (đã upload từ bước eligibility, giống mọi lối skip khác trong màn này).
+  async function handleSkipAll() {
+    if (bulkSkipping) return
+    setBulkSkipping(true)
+    const targets = nonItineraryItems.filter(item =>
+      item.id !== 'passport' && !docs[item.id]?.id && !skipped[item.id]
+    )
+    await Promise.all(targets.map(item => handleSkip(item.id)))
+    setBulkSkipping(false)
+  }
 
   // Skip có thể bị revert nền (server từ chối) — tự đóng sheet nếu không còn item bắt buộc bị bỏ qua
   // (không đóng khi đang gửi để lỗi API còn chỗ render trong sheet)
@@ -368,6 +383,30 @@ export default function ChecklistScreen() {
                 </div>
               )
             })}
+            {remainingCount > 0 && (
+              <button
+                type="button"
+                onClick={handleSkipAll}
+                disabled={bulkSkipping}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  textAlign: 'center',
+                  marginTop: 16,
+                  padding: '14px',
+                  background: '#f0f9ff',
+                  border: '1px solid #bae6fd',
+                  borderRadius: 10,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: '#0369a1',
+                  cursor: bulkSkipping ? 'default' : 'pointer',
+                  opacity: bulkSkipping ? 0.6 : 1,
+                }}
+              >
+                {bulkSkipping ? 'Đang bỏ qua...' : 'Chưa sẵn sàng tự làm? Bỏ qua tất cả và để tư vấn viên hỗ trợ'}
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -424,11 +463,30 @@ export default function ChecklistScreen() {
         <BottomSheet open={true} title={detailItem.name} onClose={() => setDetailItem(null)}>
           <div style={{ padding: '0 0 8px' }}>
             {detailItem.how_to_get && (
-              <div style={{ marginBottom: 16, background: '#f0f9ff', borderRadius: 10, padding: '12px 14px' }}>
+              <div style={{ marginBottom: 8, background: '#f0f9ff', borderRadius: 10, padding: '12px 14px' }}>
                 <p style={{ fontSize: 12, fontWeight: 600, color: '#0369a1', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>Cách lấy</p>
                 <p style={{ fontSize: 14, lineHeight: 1.65, color: '#0c4a6e' }}>{detailItem.how_to_get}</p>
               </div>
             )}
+            <button
+              type="button"
+              onClick={() => window.__openChatWithMessage?.(`Em không biết lấy ${detailItem.name} ở đâu, chị/anh giúp em với ạ`)}
+              style={{
+                display: 'inline-block',
+                marginBottom: 16,
+                marginLeft: -6,
+                padding: '10px 6px',
+                background: 'none',
+                border: 'none',
+                fontSize: 13,
+                fontWeight: 600,
+                color: 'var(--color-cta)',
+                textDecoration: 'underline',
+                cursor: 'pointer',
+              }}
+            >
+              Chưa rõ cách lấy? Hỏi ngay
+            </button>
             <div style={{ marginBottom: 14 }}>
               <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Yêu cầu</p>
               <p style={{ fontSize: 14, lineHeight: 1.6 }}>{detailItem.description}</p>
