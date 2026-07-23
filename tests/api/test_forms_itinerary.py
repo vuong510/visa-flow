@@ -141,3 +141,41 @@ class TestFormsValidation:
             json={"personal_info": incomplete},
         )
         assert res.status_code == 422
+
+
+class TestRedownload:
+    """Bấm 'Tiếp tục' ở Bước 5 lưu form-info xuống backend độc lập với việc có tải ZIP hay
+    không (spec-redownload-visa-form.md) — cho phép gọi lại /forms/download sau, không kèm
+    personal_info trong body, mà vẫn tạo đúng ZIP từ dữ liệu đã lưu."""
+
+    def test_redownload_without_saved_info_returns_404(self, client, new_application):
+        res = client.post(f"/api/application/{new_application}/forms/download", json={})
+        assert res.status_code == 404
+        assert res.json()["detail"] == "Chưa có thông tin đơn để tải lại"
+
+    def test_form_info_saved_then_redownload_without_body_succeeds(self, client, new_application, itinerary_calls):
+        client.put(f"/api/application/{new_application}/profile", json={
+            "profile_json": {"employment_type": "employee"},
+            "travel_dates": TRAVEL_DATES,
+        })
+        save_res = client.patch(
+            f"/api/application/{new_application}/form-info",
+            json={"personal_info": PERSONAL_INFO},
+        )
+        assert save_res.status_code == 200
+
+        res = client.post(f"/api/application/{new_application}/forms/download", json={})
+        assert res.status_code == 200
+        widgets = _schedule_widgets(res.content)
+        assert widgets.get("DateRow1"), "ZIP tái tạo từ dữ liệu đã lưu phải có lịch trình"
+
+    def test_form_info_non_japan_returns_400(self, client):
+        res = client.post("/api/application/start")
+        app_id = res.json()["application_id"]
+        client.patch(f"/api/application/{app_id}/destination", json={"destination": "china"})
+
+        res = client.patch(
+            f"/api/application/{app_id}/form-info",
+            json={"personal_info": PERSONAL_INFO},
+        )
+        assert res.status_code == 400

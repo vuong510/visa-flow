@@ -98,6 +98,7 @@ class Application(Base):
     submitted_at       = Column(DateTime)
     itinerary_json     = Column(JSON)                # user-confirmed AI-generated itinerary
     extracted_info_json = Column(JSON)               # OCR-extracted personal info from passport/CCCD
+    form_personal_info_json = Column(JSON)           # PersonalInfo body từ form-filling (Bước 5) — cho phép tải lại đơn visa sau khi rời màn FormFilling
     created_at         = Column(DateTime, default=datetime.utcnow)
 
 

@@ -59,7 +59,7 @@ function ReadinessBanner({ uploaded, nonPassportUploaded, skipped, total, allPas
 }
 
 export default function ChecklistScreen() {
-  const { applicationId, API_BASE, navigate, checklist: ctxChecklist, setChecklist: setCtxChecklist, itineraryJson } = useApp()
+  const { applicationId, API_BASE, navigate, checklist: ctxChecklist, setChecklist: setCtxChecklist, itineraryJson, destination, formInfoSaved } = useApp()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -72,7 +72,39 @@ export default function ChecklistScreen() {
   const [skipped, setSkipped] = useState({})
   const [confirmSheetOpen, setConfirmSheetOpen] = useState(false)
   const [bulkSkipping, setBulkSkipping] = useState(false)
+  const [redownloading, setRedownloading] = useState(false)
   const fileInputRef = useRef(null)
+
+  // Tải lại đơn visa đã điền ở FormFilling (Bước 5) — dữ liệu đã lưu backend khi bấm "Tiếp tục",
+  // kể cả nếu lúc đó user chưa từng bấm tải. Không gửi personal_info: backend tự lấy từ DB.
+  async function handleRedownloadForm() {
+    setRedownloading(true)
+    try {
+      const res = await fetch(`${API_BASE}/api/application/${applicationId}/forms/download`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+      if (res.status === 404) {
+        alert('Chưa có thông tin đơn đã lưu. Vui lòng điền lại đơn ở bước "Điền đơn visa".')
+        return
+      }
+      if (!res.ok) throw new Error()
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'visa-forms.zip'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      setTimeout(() => URL.revokeObjectURL(url), 100)
+    } catch {
+      alert('Không thể tải lại đơn. Vui lòng thử lại.')
+    } finally {
+      setRedownloading(false)
+    }
+  }
 
   useEffect(() => {
     loadChecklist()
@@ -296,6 +328,28 @@ export default function ChecklistScreen() {
             <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#0c4a6e', lineHeight: 1.55 }}>
               AI sẽ kiểm tra từng tài liệu và cảnh báo nếu có vấn đề — giúp bạn hoàn thiện hồ sơ giấy đúng chuẩn trước khi nộp cho đại sứ quán.
             </div>
+            {destination === 'japan' && formInfoSaved && (
+              <button
+                type="button"
+                onClick={handleRedownloadForm}
+                disabled={redownloading}
+                style={{
+                  display: 'block',
+                  marginTop: 10,
+                  padding: '10px 6px',
+                  background: 'none',
+                  border: 'none',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: 'var(--color-cta)',
+                  textDecoration: 'underline',
+                  cursor: redownloading ? 'default' : 'pointer',
+                  opacity: redownloading ? 0.6 : 1,
+                }}
+              >
+                {redownloading ? 'Đang tạo lại đơn...' : '⬇ Tải lại đơn xin visa đã điền'}
+              </button>
+            )}
           </div>
         )}
 

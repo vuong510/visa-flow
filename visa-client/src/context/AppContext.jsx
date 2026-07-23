@@ -16,6 +16,7 @@ export function AppProvider({ children }) {
   const [extractedInfo, setExtractedInfo] = useState({})
   const [tripFormData, setTripFormData] = useState({})
   const [screen, setScreen] = useState('landing')
+  const [formInfoSaved, setFormInfoSaved] = useState(false)
 
   async function startApplication() {
     const res = await fetch(`${API_BASE}/api/application/start`, { method: 'POST' })
@@ -52,6 +53,7 @@ export function AppProvider({ children }) {
       itineraryJson, setItineraryJson,
       extractedInfo, setExtractedInfo,
       tripFormData, setTripFormData,
+      formInfoSaved, setFormInfoSaved,
       screen, navigate, startApplication,
       updateDestination, API_BASE,
     }}>

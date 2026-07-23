@@ -47,7 +47,9 @@ class PersonalInfo(BaseModel):
 
 
 class FormsRequest(BaseModel):
-    personal_info: PersonalInfo
+    # Optional: FormFillingScreen luôn gửi kèm (giữ nguyên hành vi cũ). Khi gọi lại từ màn khác
+    # (redownload) không có state để gửi — backend tự lấy từ Application.form_personal_info_json.
+    personal_info: Optional[PersonalInfo] = None
 
 
 def _build_info(application: Application, personal: PersonalInfo) -> dict:
@@ -139,7 +141,15 @@ def download_forms(application_id: int, body: FormsRequest, db: Session = Depend
     if application.destination != "japan":
         raise HTTPException(status_code=400, detail="Form generation only supported for Japan visa")
 
-    info = _build_info(application, body.personal_info)
+    if body.personal_info is not None:
+        personal = body.personal_info
+    else:
+        stored = application.form_personal_info_json
+        if not stored:
+            raise HTTPException(status_code=404, detail="Chưa có thông tin đơn để tải lại")
+        personal = PersonalInfo(**stored)
+
+    info = _build_info(application, personal)
 
     try:
         # travel_dates is normally already a dict (JSON column) — only parse strings
@@ -159,17 +169,23 @@ def download_forms(application_id: int, body: FormsRequest, db: Session = Depend
                 destination=application.destination,
                 departure=_td.get("departure", ""),
                 return_date=_td.get("return", ""),
-                hotel_name=body.personal_info.accommodation,
-                hotel_phone=body.personal_info.accommodation_phone,
+                hotel_name=personal.accommodation,
+                hotel_phone=personal.accommodation_phone,
             )
         info["itinerary"] = itinerary
-        if itinerary and body.personal_info.accommodation:
-            info["hotel_city"] = body.personal_info.accommodation
+        if itinerary and personal.accommodation:
+            info["hotel_city"] = personal.accommodation
 
         visa_bytes = fill_visa_form(info)
         schedule_bytes = fill_schedule(info)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"PDF generation failed: {e}")
+
+    if body.personal_info is not None:
+        # Refresh lưu trữ SAU khi sinh PDF thành công — tránh lưu đè dữ liệu có thể gây lỗi
+        # PDF lên trên bản cũ còn dùng được, nếu generation phía trên throw.
+        application.form_personal_info_json = personal.model_dump()
+        db.commit()
 
     zip_buf = io.BytesIO()
     with zipfile.ZipFile(zip_buf, "w", zipfile.ZIP_DEFLATED) as zf:
@@ -182,3 +198,23 @@ def download_forms(application_id: int, body: FormsRequest, db: Session = Depend
         media_type="application/zip",
         headers={"Content-Disposition": "attachment; filename=visa-forms.zip"},
     )
+
+
+class FormInfoSaveRequest(BaseModel):
+    personal_info: PersonalInfo
+
+
+@router.patch("/application/{application_id}/form-info")
+def save_form_info(application_id: int, body: FormInfoSaveRequest, db: Session = Depends(get_db)):
+    # Lưu-only, không sinh PDF — gọi lúc bấm "Tiếp tục" ở Bước 5 kể cả khi user chưa từng bấm
+    # tải, để màn khác (vd Checklist) có thể tải lại đơn sau mà không cần FE giữ state.
+    application = db.get(Application, application_id)
+    if not application:
+        raise HTTPException(status_code=404, detail="Application not found")
+
+    if application.destination != "japan":
+        raise HTTPException(status_code=400, detail="Form generation only supported for Japan visa")
+
+    application.form_personal_info_json = body.personal_info.model_dump()
+    db.commit()
+    return {"status": "saved"}

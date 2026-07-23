@@ -13,6 +13,7 @@ def init_db():
     for col_sql in [
         "ALTER TABLE applications ADD COLUMN itinerary_json JSON",
         "ALTER TABLE applications ADD COLUMN extracted_info_json JSON",
+        "ALTER TABLE applications ADD COLUMN form_personal_info_json JSON",
         "ALTER TABLE feedbacks ADD COLUMN triage_batch VARCHAR(64)",
         "ALTER TABLE feedbacks ADD COLUMN triage_status VARCHAR(20)",
     ]:

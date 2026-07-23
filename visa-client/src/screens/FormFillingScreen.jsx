@@ -578,7 +578,7 @@ function Step5({ personalFields, declarations, onFinish }) {
 
 // ─── Main FormFillingScreen ───────────────────────────────────────────────────
 export default function FormFillingScreen() {
-  const { navigate } = useApp()
+  const { navigate, applicationId, API_BASE, extractedInfo, setFormInfoSaved } = useApp()
   const [step, setStep] = useState(1)
   const [personalFields, setPersonalFields] = useState({})
   const [declarations, setDeclarations] = useState({})
@@ -588,6 +588,30 @@ export default function FormFillingScreen() {
   function handleBack() {
     if (step === 1) navigate('price')
     else setStep(s => s - 1)
+  }
+
+  // Lưu personal_info xuống backend TRƯỚC khi rời màn — độc lập với việc user có bấm
+  // "Tải đơn xin visa (ZIP)" hay không, để màn Checklist có thể tải lại sau. Best-effort:
+  // lỗi lưu không được chặn điều hướng, user vẫn đi tiếp bình thường như trước đây.
+  // formInfoSaved cho ChecklistScreen biết có dữ liệu thật để redownload hay không, thay vì
+  // đoán qua destination (có thể sai nếu request này fail).
+  async function handleFinish() {
+    try {
+      const res = await fetch(`${API_BASE}/api/application/${applicationId}/form-info`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ personal_info: { ...extractedInfo, ...personalFields, ...declarations } }),
+      })
+      if (res.ok) {
+        setFormInfoSaved(true)
+      } else {
+        console.warn('Lưu form-info thất bại, redownload sau sẽ không khả dụng:', res.status)
+      }
+    } catch (err) {
+      // best-effort — không chặn navigate, chỉ mất khả năng tải lại sau
+      console.warn('Lưu form-info thất bại, redownload sau sẽ không khả dụng:', err)
+    }
+    navigate('checklist')
   }
 
   return (
@@ -636,7 +660,7 @@ export default function FormFillingScreen() {
           <Step4 declarations={declarations} setDeclarations={setDeclarations} onNext={() => setStep(5)} />
         )}
         {step === 5 && (
-          <Step5 personalFields={personalFields} declarations={declarations} onFinish={() => navigate('checklist')} />
+          <Step5 personalFields={personalFields} declarations={declarations} onFinish={handleFinish} />
         )}
       </div>
     </div>
