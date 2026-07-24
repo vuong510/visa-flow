@@ -113,10 +113,21 @@ export default function EligibilityScreen() {
 
   const canContinue = result && result.result !== 'not_eligible'
 
+  // Bỏ màn chi phí khỏi luồng — đi thẳng sang điền đơn. Vẫn gọi payment/demo (âm thầm, không
+  // hiện overlay) để giữ nguyên feasibility_ok=True/payment_status="demo_completed" trên Application.
+  async function handleContinue() {
+    try {
+      await fetch(`${API_BASE}/api/application/${applicationId}/payment/demo`, { method: 'POST' })
+    } catch {
+      // best-effort — không chặn điều hướng, 2 cờ này hiện không được đọc ở đâu khác
+    }
+    navigate('form-filling')
+  }
+
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--color-background)' }}>
       <NavHeader title="Đánh giá hồ sơ" showBack={false} />
-      <ProgressBar current={7} total={11} />
+      <ProgressBar current={7} total={10} />
 
       <div style={{ flex: 1, padding: '24px 20px', paddingBottom: canContinue ? 'calc(100px + env(safe-area-inset-bottom))' : 24 }}>
         {loading && showSkeleton && <SkeletonCard />}
@@ -155,7 +166,7 @@ export default function EligibilityScreen() {
 
       {canContinue && (
         <BottomActionArea>
-          <CTAButton label="Xem chi phí dịch vụ" onClick={() => navigate('price')} />
+          <CTAButton label="Tiếp tục →" onClick={handleContinue} />
         </BottomActionArea>
       )}
     </div>

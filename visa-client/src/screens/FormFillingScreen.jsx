@@ -592,7 +592,7 @@ export default function FormFillingScreen() {
   const STEP_LABELS = ['Cá nhân', 'Chuyến đi', 'Lịch trình', 'Khai báo', 'Tải xuống']
 
   function handleBack() {
-    if (step === 1) navigate('price')
+    if (step === 1) navigate('eligibility-loading')
     else setStep(s => s - 1)
   }
 
@@ -623,7 +623,7 @@ export default function FormFillingScreen() {
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--color-background)' }}>
       <NavHeader title="Điền đơn visa" showBack onBack={handleBack} />
-      <ProgressBar current={9} total={11} />
+      <ProgressBar current={8} total={10} />
 
       {/* Step indicator */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: 8, padding: '12px 20px 0' }}>

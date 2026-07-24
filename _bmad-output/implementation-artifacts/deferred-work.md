@@ -5,9 +5,6 @@
 - **T57[0] ("Issuing authority") và T57[1] ("Place of issue") luôn nhận cùng 1 giá trị** ("Immigration Department" sau fix, trước đó cùng là "Cục Quản lý Xuất nhập cảnh") — có từ trước, đợt này chỉ dịch chứ không đổi cấu trúc. Nên nhờ chị Yến xác nhận lại 2 ô này có thực sự nên giống hệt nhau không theo đúng cách form MOFA yêu cầu điền.
 - `visa-client/src/components/PersonalInfoModal.jsx` — component mồ côi, không import/dùng ở đâu trong app, đã dùng đúng tên field mới (`place_of_birth`/`home_address`/`accommodation`) từ trước nhưng thiếu `company_phone` nếu sau này được dùng lại.
 - Field `email` không có validate định dạng (FE chỉ có `type="email"` nhưng không nằm trong `<form>` nên browser không tự chặn; backend nhận `str` bất kỳ) — khớp với mức validate lỏng chung của cả form hiện tại (chỉ check required), không phải riêng field này.
-
-## Queued — bỏ trang Chi phí dịch vụ khỏi luồng (2026-07-24)
-- Nguồn: user yêu cầu cùng lúc với spec-form-fields-translation-fix, tách ra theo multi-goal check (2 việc độc lập). KHÔNG phải defect — là việc kế tiếp sẽ làm ngay sau khi form-fields-translation-fix xong trong cùng phiên.
 - Scope đã chốt: bỏ hẳn PriceScreen khỏi navigation cho MỌI user (không cần flag), EligibilityScreen → thẳng form-filling. Cần tự quyết định lại chỗ set `feasibility_ok=True` (hiện set trong `payment/demo` endpoint) và tính lại số bước `ProgressBar` toàn bộ màn sau eligibility. Giữ nguyên code PriceScreen.jsx, chỉ bỏ khỏi luồng điều hướng.
 
 ## Deferred từ review redownload-visa-form (2026-07-23)

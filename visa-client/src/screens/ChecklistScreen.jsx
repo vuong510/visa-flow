@@ -307,7 +307,7 @@ export default function ChecklistScreen() {
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--color-background)' }}>
       <NavHeader title="Chuẩn bị hồ sơ" showBack={false} />
-      <ProgressBar current={10} total={11} />
+      <ProgressBar current={9} total={10} />
 
       {!loading && items.length > 0 && (
         <ReadinessBanner uploaded={uploadedCount} nonPassportUploaded={nonPassportUploaded} skipped={skippedCount} total={totalCount} allPass={allPass} readyToSubmit={canSubmit} />
