@@ -32,6 +32,7 @@ class PersonalInfo(BaseModel):
     email: str = ""
     company_name: str = ""
     company_address: str = ""
+    company_phone: str = ""
     accommodation: str = ""
     accommodation_address: str = ""
     accommodation_phone: str = ""
@@ -108,6 +109,7 @@ def _build_info(application: Application, personal: PersonalInfo) -> dict:
         "email": personal.email,
         "company_name": personal.company_name,
         "company_address": personal.company_address,
+        "company_phone": personal.company_phone,
         "accommodation": personal.accommodation,
         "accommodation_address": personal.accommodation_address,
         "accommodation_phone": personal.accommodation_phone,

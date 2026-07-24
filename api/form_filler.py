@@ -306,9 +306,9 @@ def fill_visa_form(info: dict) -> bytes:
 
     # ── Hardcoded issuing authority fields ───────────────────────────────────
     # T57[0] = issuing authority, T57[1] = place of issue
-    # Both hardcoded for Vietnamese passports
-    for suffix, value in (("T57[0]", "Cục Quản lý Xuất nhập cảnh"),
-                          ("T57[1]", "Cục Quản lý Xuất nhập cảnh")):
+    # Both hardcoded for Vietnamese passports — tên tiếng Anh, form MOFA không nhận tiếng Việt có dấu
+    for suffix, value in (("T57[0]", "Immigration Department"),
+                          ("T57[1]", "Immigration Department")):
         w = _find_widget(page1, suffix)
         if w:
             _set_widget(w, value)
